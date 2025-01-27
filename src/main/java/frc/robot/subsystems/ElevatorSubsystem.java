@@ -17,6 +17,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 @Logged
 public class ElevatorSubsystem extends SubsystemBase {
