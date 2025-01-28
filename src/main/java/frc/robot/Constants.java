@@ -9,6 +9,9 @@ import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.signals.InvertedValue;
+
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -48,4 +51,19 @@ public class Constants {
         public static final Distance INTAKE_HEIGHT = Inches.of(0);
     }
 
+    public class EndEffectorConstants {
+
+        //Motors
+        public static final int MOTOR_LEFT_ID = 0;
+        public static final int MOTOR_RIGHT_ID = 0;
+        public static final MotorOutputConfigs MOTOR_LEFT_CONFIGS = new MotorOutputConfigs();
+        MOTOR_LEFT_CONFIGS.Inverted = InvertedValue.Clockwise_Positive;
+
+        //Lidar
+        public static final int FRONT_LIDAR_ID = 0;
+        public static final int BACK_LIDAR_ID = 0;
+
+        //Speed
+        public static final double SPEED = 1;
+    }
 }
