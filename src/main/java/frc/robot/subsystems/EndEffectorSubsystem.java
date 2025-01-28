@@ -4,13 +4,15 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Constants.EndEffectorConstants.*;
+
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 
 public class EndEffectorSubsystem extends SubsystemBase {
 
@@ -22,16 +24,18 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
   /** Creates a new EndEffectorSubsystem. */
   public EndEffectorSubsystem() {
-    motorLeft = new TalonFX(Constants.EndEffectorConstants.MOTOR_LEFT_ID);
-    motorRight = new TalonFX(Constants.EndEffectorConstants.MOTOR_RIGHT_ID);
+    motorLeft = new TalonFX(MOTOR_LEFT_ID);
+    motorRight = new TalonFX(MOTOR_RIGHT_ID);
 
-    frontLidar = new DigitalInput(Constants.EndEffectorConstants.FRONT_LIDAR_ID);
-    backLidar = new DigitalInput(Constants.EndEffectorConstants.BACK_LIDAR_ID);
+    motorLeft.getConfigurator().apply(MOTOR_LEFT_CONFIGS);
+
+    frontLidar = new DigitalInput(FRONT_LIDAR_ID);
+    backLidar = new DigitalInput(BACK_LIDAR_ID);
   }
 
-  public void forward() {
-    motorLeft.set(Constants.EndEffectorConstants.SPEED);
-    motorRight.set(Constants.EndEffectorConstants.SPEED);
+  public void forward(double speedDutyCycle) {
+    motorLeft.set(speedDutyCycle);
+    motorRight.set(speedDutyCycle);
   }
 
   public void stop() {
@@ -39,12 +43,12 @@ public class EndEffectorSubsystem extends SubsystemBase {
     motorRight.setControl(new NeutralOut());
   }
 
-  public Command forwardCommand() {
-    return this.runEnd(() -> forward(), () -> stop());
+  public Command forwardCommand(double speedDutyCycle) {
+    return this.runEnd(() -> forward(speedDutyCycle), () -> stop());
   }
 
   public Command intakeCommand() {
-    return this.forwardCommand().until(() -> !backLidar.get());
+    return this.forwardCommand(INTAKE_SPEED).until(() -> !backLidar.get());
   }
 
   @Override

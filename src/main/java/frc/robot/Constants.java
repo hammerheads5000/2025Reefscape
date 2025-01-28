@@ -18,14 +18,15 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 
 public class Constants {
-    public class ElevatorConstants {
+    public static class ElevatorConstants {
         public static final Voltage MAX_OUTPUT = Volts.of(12);
         public static final Voltage MIN_OUTPUT = Volts.of(-12);
 
         // Motors
         public static final int MOTOR_1_ID = 12;
         public static final int MOTOR_2_ID = 13;
-        public static final boolean MOTOR_OPPOSE_DIRECTION = true; // whether motor 2 rotates the same direction as motor 1
+        public static final boolean MOTOR_OPPOSE_DIRECTION = true; // whether motor 2 rotates the same direction as
+                                                                   // motor 1
 
         // PID
         public static final double kP = 1.0; // volts per inch error
@@ -51,19 +52,21 @@ public class Constants {
         public static final Distance INTAKE_HEIGHT = Inches.of(0);
     }
 
-    public class EndEffectorConstants {
-
-        //Motors
+    public static class EndEffectorConstants {
+        // Motors
         public static final int MOTOR_LEFT_ID = 0;
         public static final int MOTOR_RIGHT_ID = 0;
-        public static final MotorOutputConfigs MOTOR_LEFT_CONFIGS = new MotorOutputConfigs();
-        MOTOR_LEFT_CONFIGS.Inverted = InvertedValue.Clockwise_Positive;
+        
+        public static final MotorOutputConfigs MOTOR_LEFT_CONFIGS = new MotorOutputConfigs()
+                .withInverted(InvertedValue.Clockwise_Positive);
+        public static final MotorOutputConfigs MOTOR_RIGHT_CONFIGS = new MotorOutputConfigs()
+                .withInverted(InvertedValue.Clockwise_Positive);
 
-        //Lidar
+        // Lidar
         public static final int FRONT_LIDAR_ID = 0;
         public static final int BACK_LIDAR_ID = 0;
 
-        //Speed
-        public static final double SPEED = 1;
+        // Speed
+        public static final double INTAKE_SPEED = 1; // duty cycle out
     }
 }
