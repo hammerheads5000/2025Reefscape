@@ -20,9 +20,9 @@ public class Constants {
         public static final Voltage MIN_OUTPUT = Volts.of(-12);
 
         // Motors
-        public static final int MOTOR_1_ID = 0;
-        public static final int MOTOR_2_ID = 0;
-        public static final boolean MOTOR_OPPOSE_DIRECTION = false; // whether motor 2 rotates the same direction as motor 1
+        public static final int MOTOR_1_ID = 12;
+        public static final int MOTOR_2_ID = 13;
+        public static final boolean MOTOR_OPPOSE_DIRECTION = true; // whether motor 2 rotates the same direction as motor 1
 
         // PID
         public static final double kP = 1.0; // volts per inch error
