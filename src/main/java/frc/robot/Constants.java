@@ -68,5 +68,6 @@ public class Constants {
 
         // Speed
         public static final double INTAKE_SPEED = 1; // duty cycle out
+        public static final double OUTAKE_SPEED = 1;
     }
 }
