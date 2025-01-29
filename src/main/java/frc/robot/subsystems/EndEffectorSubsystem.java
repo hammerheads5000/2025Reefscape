@@ -6,15 +6,15 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.EndEffectorConstants.*;
 
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-@logged
+@Logged
 public class EndEffectorSubsystem extends SubsystemBase {
 
   TalonFX motorLeft;
@@ -53,7 +53,7 @@ public class EndEffectorSubsystem extends SubsystemBase {
   }
 
   public Command outtakeCommand(){
-    return this.reverseCommand(OUTTAKE_SPEED).until(( -> !frontLidar.get()));
+    return this.forwardCommand(OUTAKE_SPEED).until(() -> !frontLidar.get());
   }
 
   

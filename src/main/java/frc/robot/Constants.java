@@ -4,11 +4,13 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.signals.InvertedValue;
 
@@ -27,6 +29,8 @@ public class Constants {
         public static final int MOTOR_2_ID = 13;
         public static final boolean MOTOR_OPPOSE_DIRECTION = true; // whether motor 2 rotates the same direction as
                                                                    // motor 1
+        public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
+            .withStatorCurrentLimit(Amps.of(20));
 
         // PID
         public static final double kP = 1.0; // volts per inch error
@@ -61,6 +65,8 @@ public class Constants {
                 .withInverted(InvertedValue.Clockwise_Positive);
         public static final MotorOutputConfigs MOTOR_RIGHT_CONFIGS = new MotorOutputConfigs()
                 .withInverted(InvertedValue.Clockwise_Positive);
+        public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
+            .withStatorCurrentLimit(Amps.of(10));
 
         // Lidar
         public static final int FRONT_LIDAR_ID = 0;
@@ -68,6 +74,6 @@ public class Constants {
 
         // Speed
         public static final double INTAKE_SPEED = 1; // duty cycle out
-        public static final double OUTTAKE_SPEED = 1;
+        public static final double OUTAKE_SPEED = 1;
     }
 }
