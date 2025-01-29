@@ -8,8 +8,6 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Volts;
-
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -17,13 +15,9 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Voltage;
 
 public class Constants {
     public static class ElevatorConstants {
-        public static final Voltage MAX_OUTPUT = Volts.of(12);
-        public static final Voltage MIN_OUTPUT = Volts.of(-12);
-
         // Motors
         public static final int MOTOR_1_ID = 12;
         public static final int MOTOR_2_ID = 13;
@@ -33,16 +27,16 @@ public class Constants {
             .withStatorCurrentLimit(Amps.of(20));
 
         // PID
-        public static final double kP = 1.0; // volts per inch error
-        public static final double kI = 0; // volts per inch-seconds error
-        public static final double kD = 0; // volts per inch per second error
+        public static final double kP = 1.0; // amps per inch error
+        public static final double kI = 0; // amps per inch-seconds error
+        public static final double kD = 0; // amps per inch per second error
         public static final Distance TOLERANCE = Inches.of(1);
 
         // Feedforward
-        public static final double kS = 0; // volts to overcome static friction
-        public static final double kG = 0; // volts to overcome gravity
-        public static final double kV = 0; // feedforward volts per inch per second
-        public static final double kA = 0; // feedforward volts per inch per second^2
+        public static final double kS = 0; // amps to overcome static friction
+        public static final double kG = 0; // amps to overcome gravity
+        public static final double kV = 0; // feedforward amps per inch per second
+        public static final double kA = 0; // feedforward amps per inch per second^2
 
         // Trapezoid profile constraints
         public static final LinearVelocity MAX_VELOCITY = InchesPerSecond.of(72);

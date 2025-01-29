@@ -12,7 +12,7 @@ import static frc.robot.Constants.ElevatorConstants.*;
 
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.epilogue.Logged;
@@ -31,7 +31,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   TalonFX motor1;
   TalonFX motor2;
 
-  VoltageOut motorControl;
+  TorqueCurrentFOC motorControl;
   Follower followerControl;
 
   /** Creates a new ElevatorSubsystem. */
