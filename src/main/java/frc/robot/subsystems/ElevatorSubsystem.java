@@ -79,7 +79,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     if (instant) {
       return this.runOnce(() -> setHeight(height));
     }
-    return this.run(() -> setHeight(height)).until(() -> controller.atGoal());
+    return this.startEnd(() -> setHeight(height), null).until(() -> controller.atGoal());
   }
 
   public Command goToL1Command(boolean instant) {

@@ -66,8 +66,10 @@ public class Constants {
         public static final int FRONT_LIDAR_ID = 0;
         public static final int BACK_LIDAR_ID = 0;
 
-        // Speed
-        public static final double INTAKE_SPEED = 1; // duty cycle out
-        public static final double OUTAKE_SPEED = 1;
+        // Speed (duty cycle)
+        public static final double INTAKE_SPEED = 1; 
+        public static final double SCORE_SPEED = 1;
+        public static final double FAST_TROUGH_SPEED = 0.5;
+        public static final double SLOW_TROUGH_SPEED = 0.25;
     }
 }

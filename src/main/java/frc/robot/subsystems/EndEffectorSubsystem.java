@@ -39,24 +39,38 @@ public class EndEffectorSubsystem extends SubsystemBase {
     motorRight.set(speedDutyCycle);
   }
 
+  public void setMotors(double left, double right) {
+    motorLeft.set(left);
+    motorRight.set(right);
+  }
+
   public void stop() {
     motorLeft.setControl(new NeutralOut());
     motorRight.setControl(new NeutralOut());
   }
 
   public Command forwardCommand(double speedDutyCycle) {
-    return this.runEnd(() -> forward(speedDutyCycle), () -> stop());
+    return this.startEnd(() -> forward(speedDutyCycle), () -> stop());
   }
 
   public Command intakeCommand() {
     return this.forwardCommand(INTAKE_SPEED).until(() -> !backLidar.get());
   }
 
-  public Command outtakeCommand(){
-    return this.forwardCommand(OUTAKE_SPEED).until(() -> !frontLidar.get());
+  public Command scoreCommand() {
+    return this.forwardCommand(SCORE_SPEED).until(() -> !frontLidar.get());
   }
 
-  
+  public Command troughLeftCommand() {
+    return this.startEnd(() -> setMotors(FAST_TROUGH_SPEED, SLOW_TROUGH_SPEED), this::stop)
+        .until(() -> !frontLidar.get());
+  }
+
+  public Command troughRightCommand() {
+    return this.startEnd(() -> setMotors(SLOW_TROUGH_SPEED, FAST_TROUGH_SPEED), this::stop)
+        .until(() -> !frontLidar.get());
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
