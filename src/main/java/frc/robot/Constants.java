@@ -13,6 +13,7 @@ import static edu.wpi.first.units.Units.Seconds;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -31,18 +32,11 @@ public class Constants {
         public static final Angle SCORING_ANGLE_TOLERANCE = Degrees.of(5);
 
         // output: m/s, measure: m
-        public static final double kP_X_SCORING = 1.0;
-        public static final double kI_X_SCORING = 0.0;
-        public static final double kD_X_SCORING = 0.0;
-
-        public static final double kP_Y_SCORING = 1.0;
-        public static final double kI_Y_SCORING = 0.0;
-        public static final double kD_Y_SCORING = 0.0;
-
-        // output deg/s, measure: deg
-        public static final double kP_ANGLE_SCORING = 1.0;
-        public static final double kI_ANGLE_SCORING = 0.0;
-        public static final double kD_ANGLE_SCORING = 0.0;
+        public static final PIDConstants SCORING_PID_X = new PIDConstants(1.0, 0.0, 0.0);
+        public static final PIDConstants SCORING_PID_Y = new PIDConstants(1.0, 0.0, 0.0);
+        // output: deg/s, measure: deg
+        public static final PIDConstants SCORING_PID_ANGLE = new PIDConstants(1.0, 0.0, 0.0);
+        
     }
 
     public static class ElevatorConstants {
@@ -54,10 +48,8 @@ public class Constants {
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Amps.of(20));
 
-        // PID
-        public static final double kP = 1.0; // amps per inch error
-        public static final double kI = 0; // amps per inch-seconds error
-        public static final double kD = 0; // amps per inch per second error
+        // PID (amps, inches)
+        public static final PIDConstants PID = new PIDConstants(1.0, 0.0, 0.0);
         public static final Distance TOLERANCE = Inches.of(1);
 
         // Feedforward
