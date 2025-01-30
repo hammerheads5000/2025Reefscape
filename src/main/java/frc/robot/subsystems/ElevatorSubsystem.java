@@ -36,13 +36,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   /** Creates a new ElevatorSubsystem. */
   public ElevatorSubsystem() {
-    controller = new ProfiledPIDController(kP, kI, kD,
-        new TrapezoidProfile.Constraints(MAX_VELOCITY.in(MetersPerSecond),
-            MAX_ACCELERATION.in(MetersPerSecondPerSecond)));
+    controller = CONTROL_CONSTANTS.getProfiledPIDController();
 
-    elevatorFeedforward = new ElevatorFeedforward(kS, kG, kV, kA);
-
-    controller.setTolerance(TOLERANCE.in(Inches));
+    elevatorFeedforward = CONTROL_CONSTANTS.getElevatorFeedforward();
 
     followerControl = new Follower(motor1.getDeviceID(), MOTOR_OPPOSE_DIRECTION);
     motor2.setControl(followerControl);

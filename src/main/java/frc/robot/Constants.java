@@ -9,34 +9,33 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Second;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.LinearAcceleration;
-import edu.wpi.first.units.measure.LinearVelocity;
 
 public class Constants {
     public static class SwerveConstants {
         // Aligning to the reef to score coral
-        public static final Distance SCORING_ALIGN_TOLERANCE_X = Inches.of(2);
-        public static final Distance SCORING_ALIGN_TOLERANCE_Y = Inches.of(4);
-        public static final Angle SCORING_ANGLE_TOLERANCE = Degrees.of(5);
 
         // output: m/s, measure: m
-        public static final PIDConstants SCORING_PID_X = new PIDConstants(1.0, 0.0, 0.0);
-        public static final PIDConstants SCORING_PID_Y = new PIDConstants(1.0, 0.0, 0.0);
-        // output: deg/s, measure: deg
-        public static final PIDConstants SCORING_PID_ANGLE = new PIDConstants(1.0, 0.0, 0.0);
+        public static final ControlConstants<DistanceUnit> SCORING_PID_X = new ControlConstants<DistanceUnit>(
+                1.0, 0.0, 0.0, Inches.of(2));
+        public static final ControlConstants<DistanceUnit> SCORING_PID_Y = new ControlConstants<DistanceUnit>(
+                1.0, 0.0, 0.0, Inches.of(4));
         
+        // output: deg/s, measure: deg
+        public static final ControlConstants<AngleUnit> SCORING_PID_ANGLE = new ControlConstants<AngleUnit>(
+                1.0, 0.0, 0.0, Degrees.of(5));
+
     }
 
     public static class ElevatorConstants {
@@ -48,19 +47,12 @@ public class Constants {
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Amps.of(20));
 
-        // PID (amps, inches)
-        public static final PIDConstants PID = new PIDConstants(1.0, 0.0, 0.0);
-        public static final Distance TOLERANCE = Inches.of(1);
-
-        // Feedforward
-        public static final double kS = 0; // amps to overcome static friction
-        public static final double kG = 0; // amps to overcome gravity
-        public static final double kV = 0; // feedforward amps per inch per second
-        public static final double kA = 0; // feedforward amps per inch per second^2
-
-        // Trapezoid profile constraints
-        public static final LinearVelocity MAX_VELOCITY = InchesPerSecond.of(72);
-        public static final LinearAcceleration MAX_ACCELERATION = InchesPerSecond.of(72).div(Seconds.of(1));
+        // Control (amps, inches)
+        public static final ControlConstants<DistanceUnit> CONTROL_CONSTANTS = new ControlConstants<DistanceUnit>(
+            1.0, 0.0, 0.0, Inches.of(1),
+            0, 0, 0, 0,
+            InchesPerSecond.ofNative(72), InchesPerSecond.ofNative(72).per(Second)
+        );
 
         // Setpoints
         public static final Distance L1_HEIGHT = Inches.of(0);

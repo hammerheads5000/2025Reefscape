@@ -6,15 +6,15 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static frc.robot.Constants.SwerveConstants.*;
-
-import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.ControlConstants;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class AlignToPoseCommand extends Command {
@@ -24,12 +24,13 @@ public class AlignToPoseCommand extends Command {
     PIDController pidControllerAngle;
 
     /** Creates a new AlignToPoseCommand. */
-    public AlignToPoseCommand(Pose2d targetPose, PIDConstants pidConstantsX, PIDConstants pidConstantsY, PIDConstants pidConstantsAngle) {
+    public AlignToPoseCommand(Pose2d targetPose, ControlConstants<DistanceUnit> pidConstantsX,
+            ControlConstants<DistanceUnit> pidConstantsY, ControlConstants<AngleUnit> pidConstantsAngle) {
         this.targetPose = targetPose;
 
-        pidControllerX = new PIDController(pidConstantsX.kP, pidConstantsX.kI, pidConstantsX.kD);
-        pidControllerY = new PIDController(pidConstantsY.kP, pidConstantsY.kI, pidConstantsY.kD);
-        pidControllerAngle = new PIDController(pidConstantsAngle.kP, pidConstantsAngle.kI, pidConstantsAngle.kD);
+        pidControllerX = pidConstantsX.getPIDController();
+        pidControllerY = pidConstantsY.getPIDController();
+        pidControllerAngle = pidConstantsAngle.getPIDController();
 
         pidControllerX.setSetpoint(0);
         pidControllerY.setSetpoint(0);
@@ -47,7 +48,8 @@ public class AlignToPoseCommand extends Command {
         Pose2d relativePose = getPose().relativeTo(targetPose);
         LinearVelocity xVel = MetersPerSecond.of(pidControllerX.calculate(relativePose.getTranslation().getX()));
         LinearVelocity yVel = MetersPerSecond.of(pidControllerY.calculate(relativePose.getTranslation().getY()));
-        AngularVelocity angleVel = DegreesPerSecond.of(pidControllerAngle.calculate(relativePose.getRotation().getDegrees()));
+        AngularVelocity angleVel = DegreesPerSecond
+                .of(pidControllerAngle.calculate(relativePose.getRotation().getDegrees()));
 
         // TODO: Swerve relative drive to xVel, yVel, angleVel
     }
@@ -64,10 +66,6 @@ public class AlignToPoseCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return (
-            getPose().getTranslation().getMeasureX().minus(targetPose.getTranslation().getMeasureX()).lte(SCORING_ALIGN_TOLERANCE_X)
-            && getPose().getTranslation().getMeasureY().minus(targetPose.getTranslation().getMeasureY()).lte(SCORING_ALIGN_TOLERANCE_Y)
-            && getPose().getRotation().getMeasure().minus(targetPose.getRotation().getMeasure()).lte(SCORING_ANGLE_TOLERANCE)
-        );
+        return (pidControllerX.atSetpoint() && pidControllerY.atSetpoint() && pidControllerAngle.atSetpoint());
     }
 }
