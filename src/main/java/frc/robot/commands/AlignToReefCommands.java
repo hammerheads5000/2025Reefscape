@@ -7,6 +7,7 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.Constants.FieldConstants.*;
+import static frc.robot.Constants.SwerveConstants.*;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -48,6 +49,6 @@ public class AlignToReefCommands {
     }
 
     public static Command alignToReef(int side, int relativePos) {
-        return new AlignToPoseCommand(getReefPose(side, relativePos));
+        return new AlignToPoseCommand(getReefPose(side, relativePos), SCORING_PID_X, SCORING_PID_Y, SCORING_PID_ANGLE);
     }
 }
