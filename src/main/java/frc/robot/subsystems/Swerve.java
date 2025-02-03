@@ -193,7 +193,7 @@ public class Swerve extends SubsystemBase {
                 .withVelocityX(xVel).withVelocityY(yVel).withRotationalRate(rotVel));
     }
 
-    public void driveRobotCentric(ChassisSpeeds chassisSpeeds) {
+    public void applyChassisSpeeds(ChassisSpeeds chassisSpeeds) {
         drivetrain.setControl(pathApplyRobotSpeeds.withSpeeds(chassisSpeeds));
     }
 
