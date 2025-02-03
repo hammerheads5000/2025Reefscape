@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.*;
 import static frc.robot.Constants.SIM_LOOP_PERIOD;
 import static frc.robot.Constants.SwerveConstants.*;
 
-import java.util.EnumSet;
 import java.util.function.Consumer;
 
 import org.photonvision.EstimatedRobotPose;
@@ -17,16 +16,13 @@ import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.networktables.DoubleArraySubscriber;
-import edu.wpi.first.networktables.NetworkTableEvent;
-import edu.wpi.first.networktables.NetworkTableListener;
-import edu.wpi.first.networktables.StructSubscriber;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Notifier;
@@ -34,7 +30,6 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.VisionConstants;
 import frc.robot.Constants.SwerveConstants.BackLeft;
 import frc.robot.Constants.SwerveConstants.BackRight;
 import frc.robot.Constants.SwerveConstants.FrontLeft;
@@ -48,8 +43,6 @@ public class Swerve extends SubsystemBase {
     private SwerveRequest.FieldCentric fieldCentricRequest;
     private SwerveRequest.RobotCentric robotCentricRequest;
     private SwerveRequest.ApplyRobotSpeeds pathApplyRobotSpeeds;
-
-    private DoubleArraySubscriber aprilTagSubscriber;
 
     // #region SysId Setup
     /* Swerve requests to apply during SysId characterization */
@@ -137,17 +130,6 @@ public class Swerve extends SubsystemBase {
                 .withDriveRequestType(DRIVE_REQUEST_TYPE).withSteerRequestType(STEER_REQUEST_TYPE);
         pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds()
                 .withDriveRequestType(DRIVE_REQUEST_TYPE).withSteerRequestType(STEER_REQUEST_TYPE);
-
-        aprilTagSubscriber = VisionConstants.POSE_TOPIC.subscribe(new double[3]);
-
-        // creates listener such that when the pose estimate NetworkTables topic
-        // is updated, it calls applyVisionMeasurement to update pose
-        NetworkTableListener.createListener(
-                aprilTagSubscriber,
-                EnumSet.of(NetworkTableEvent.Kind.kValueAll), // listens for any value change
-                event -> {
-                    applyVisionMeasurement(event.valueData.value.getDoubleArray(), event.valueData.value.getTime());
-                });
     }
 
     private void startSimThread() {
@@ -215,6 +197,7 @@ public class Swerve extends SubsystemBase {
         drivetrain.setControl(pathApplyRobotSpeeds.withSpeeds(chassisSpeeds));
     }
 
+    @Logged
     public Pose2d getPose() {
         return drivetrain.getState().Pose;
     }
@@ -253,7 +236,7 @@ public class Swerve extends SubsystemBase {
      *                  (meters), y (meters), rotation (radians)}
      * @param timestamp timestamp in microseconds
      */
-    public void applyVisionMeasurement(double[] poseArray, long timestamp) {
+    public void addVisionMeasurement(double[] poseArray, long timestamp) {
         // converts array of format {x (m), y (m), rotation (rad)} to Pose2d
         Pose2d pose = new Pose2d(poseArray[0], poseArray[1], new Rotation2d(poseArray[2]));
         double timestampSeconds = Microseconds.of(timestamp).in(Seconds);
