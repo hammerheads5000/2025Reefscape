@@ -4,11 +4,31 @@
 
 package frc.robot;
 
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.VisionSubsystem;
 
 public class RobotContainer {
+  // #region Controllers
+  CommandXboxController primaryController = new CommandXboxController(0);
+  // #endregion
+
+  // #region Subsystems
+  Swerve swerve = new Swerve();
+  VisionSubsystem visionSubsystem = new VisionSubsystem(swerve);
+  ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
+  SwerveTelemetry swerveTelemetry = new SwerveTelemetry();
+  // #endregion
+
+  // #region Commands
+  // #endregion
+
   public RobotContainer() {
+    swerve.registerTelemetry(swerveTelemetry::telemeterize);
     configureBindings();
   }
 

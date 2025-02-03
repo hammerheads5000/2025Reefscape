@@ -79,8 +79,8 @@ public class VisionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        updatePoseEstimator(poseEstimatorFL, camFL);
-        updatePoseEstimator(poseEstimatorFR, camFR);
-        updatePoseEstimator(poseEstimatorB, camB);
+        hasTarget = updatePoseEstimator(poseEstimatorFL, camFL) ||
+                updatePoseEstimator(poseEstimatorFR, camFR) ||
+                updatePoseEstimator(poseEstimatorB, camB);
     }
 }
