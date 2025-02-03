@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.ControlConstants;
+import frc.robot.subsystems.Swerve;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class AlignToPoseCommand extends Command {
@@ -23,9 +24,11 @@ public class AlignToPoseCommand extends Command {
     PIDController pidControllerY;
     PIDController pidControllerAngle;
 
+    private Swerve swerve;
+
     /** Creates a new AlignToPoseCommand. */
     public AlignToPoseCommand(Pose2d targetPose, ControlConstants<DistanceUnit> pidConstantsX,
-            ControlConstants<DistanceUnit> pidConstantsY, ControlConstants<AngleUnit> pidConstantsAngle) {
+            ControlConstants<DistanceUnit> pidConstantsY, ControlConstants<AngleUnit> pidConstantsAngle, Swerve swerve) {
         this.targetPose = targetPose;
 
         pidControllerX = pidConstantsX.getPIDController();
@@ -35,6 +38,8 @@ public class AlignToPoseCommand extends Command {
         pidControllerX.setSetpoint(0);
         pidControllerY.setSetpoint(0);
         pidControllerAngle.setSetpoint(0);
+
+        this.swerve = swerve;
     }
 
     // Called when the command is initially scheduled.
@@ -51,7 +56,7 @@ public class AlignToPoseCommand extends Command {
         AngularVelocity angleVel = DegreesPerSecond
                 .of(pidControllerAngle.calculate(relativePose.getRotation().getDegrees()));
 
-        // TODO: Swerve relative drive to xVel, yVel, angleVel
+        swerve.driveRobotCentric(xVel, yVel, angleVel);
     }
 
     // Called once the command ends or is interrupted.

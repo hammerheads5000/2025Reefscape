@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Swerve;
 
 /** Add your docs here. */
 
@@ -48,7 +49,7 @@ public class AlignToReefCommands {
                 Rotation2d.fromDegrees(-60 * side));
     }
 
-    public static Command alignToReef(int side, int relativePos) {
-        return new AlignToPoseCommand(getReefPose(side, relativePos), SCORING_PID_X, SCORING_PID_Y, SCORING_PID_ANGLE);
+    public static Command alignToReef(int side, int relativePos, Swerve swerve) {
+        return new AlignToPoseCommand(getReefPose(side, relativePos), SCORING_PID_X, SCORING_PID_Y, SCORING_PID_ANGLE, swerve);
     }
 }

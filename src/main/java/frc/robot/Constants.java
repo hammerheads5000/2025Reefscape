@@ -52,6 +52,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Frequency;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Time;
@@ -65,7 +66,20 @@ public class Constants {
 
     public static final NetworkTableInstance INST = NetworkTableInstance.getDefault();
 
+    public static final double CONTROLLER_DEADBAND = .225;
+
     public static class SwerveConstants {
+        public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(3);//define later
+        public static final AngularVelocity DEFAULT_ROT_SPEED = RotationsPerSecond.of(1.5);
+
+        public static final LinearVelocity FAST_DRIVE_SPEED = MetersPerSecond.of(8);//find values later
+        public static final AngularVelocity FAST_ROT_SPEED = RotationsPerSecond.of(4);
+
+        public static final LinearVelocity SLOW_DRIVE_SPEED = MetersPerSecond.of(1);
+        public static final AngularVelocity SLOW_ROT_SPEED = RotationsPerSecond.of(1);
+
+        public static final LinearAcceleration MAX_TELEOP_ACCEL = MetersPerSecondPerSecond.of(15);
+
         // distance between modules on same side (front to back or left to right)
         private static final Distance MODULE_DISTANCE = Inches.of(23.75);
 
