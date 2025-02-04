@@ -35,11 +35,16 @@ public class RobotContainer {
     // #region Triggers
     Trigger fastSpeedTrigger = primaryController.rightTrigger();
     Trigger slowSpeedTrigger = primaryController.leftTrigger();
+    
+    Trigger elevatorUpTrigger = primaryController.povUp();
+    Trigger elevatorDownTrigger = primaryController.povDown();
     // #endregion
 
     public RobotContainer() {
         swerve.registerTelemetry(swerveTelemetry::telemeterize);
         swerve.setDefaultCommand(teleopSwerve);
+
+        elevatorSubsystem.disable();
         configureBindings();
 
     }
@@ -47,6 +52,9 @@ public class RobotContainer {
     private void configureBindings() {
         fastSpeedTrigger.whileTrue(teleopSwerve.fastSpeedCommand());
         slowSpeedTrigger.whileTrue(teleopSwerve.slowSpeedCommand());
+
+        elevatorUpTrigger.whileTrue(elevatorSubsystem.moveUpManualCommand());
+        elevatorDownTrigger.whileTrue(elevatorSubsystem.moveDownManualCommand());
     }
 
     public Command getAutonomousCommand() {

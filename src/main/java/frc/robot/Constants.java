@@ -309,6 +309,10 @@ public class Constants {
         public static final Distance L3_HEIGHT = Inches.of(0);
         public static final Distance L4_HEIGHT = Inches.of(0);
         public static final Distance INTAKE_HEIGHT = Inches.of(0);
+
+        // Manual control (duty cycle)
+        public static final double MANUAL_UP_SPEED = 0.3;
+        public static final double MANUAL_DOWN_SPEED = -0.2;
     }
 
     public static class EndEffectorConstants {

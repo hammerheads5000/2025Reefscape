@@ -25,77 +25,96 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 @Logged
 public class ElevatorSubsystem extends SubsystemBase {
-  ProfiledPIDController controller;
-  ElevatorFeedforward elevatorFeedforward;
+    ProfiledPIDController controller;
+    ElevatorFeedforward elevatorFeedforward;
 
-  TalonFX motor1;
-  TalonFX motor2;
+    TalonFX motor1;
+    TalonFX motor2;
 
-  TorqueCurrentFOC motorControl;
-  Follower followerControl;
+    TorqueCurrentFOC motorControl;
+    Follower followerControl;
 
-  /** Creates a new ElevatorSubsystem. */
-  public ElevatorSubsystem() {
-    controller = CONTROL_CONSTANTS.getProfiledPIDController();
+    boolean enabled = true;
 
-    elevatorFeedforward = CONTROL_CONSTANTS.getElevatorFeedforward();
+    /** Creates a new ElevatorSubsystem. */
+    public ElevatorSubsystem() {
+        controller = CONTROL_CONSTANTS.getProfiledPIDController();
 
-    followerControl = new Follower(motor1.getDeviceID(), MOTOR_OPPOSE_DIRECTION);
-    motor2.setControl(followerControl);
-  }
+        elevatorFeedforward = CONTROL_CONSTANTS.getElevatorFeedforward();
 
-  public Distance getHeight() {
-    return Meters.of(0);
-  }
-
-  public void setHeight(Distance height) {
-    controller.setGoal(height.in(Meters));
-  }
-
-  public void stop() {
-    motor1.setControl(new NeutralOut());
-  }
-
-  private void controlUpdate() {
-    double output = controller.calculate(getHeight().in(Inches));
-    output += elevatorFeedforward.calculate(controller.getSetpoint().velocity);
-    motor1.setControl(motorControl.withOutput(output));
-  }
-
-  @Override
-  public void periodic() {
-    controlUpdate();
-  }
-
-  public Command stopCommand() {
-    return this.runOnce(this::stop);
-  }
-
-  public Command goToHeightCommand(boolean instant, Distance height) {
-    if (instant) {
-      return this.runOnce(() -> setHeight(height));
+        followerControl = new Follower(motor1.getDeviceID(), MOTOR_OPPOSE_DIRECTION);
+        motor2.setControl(followerControl);
     }
-    return this.startEnd(() -> setHeight(height), null).until(() -> controller.atGoal());
-  }
 
-  public Command goToL1Command(boolean instant) {
-    return goToHeightCommand(instant, L1_HEIGHT);
-  }
+    public void enable() {
+        enabled = true;
+    }
+    
+    public void disable() {
+        enabled = false;
+    }
 
-  public Command goToL2Command(boolean instant) {
-    return goToHeightCommand(instant, L2_HEIGHT);
-  }
+    public Distance getHeight() {
+        return Meters.of(0);
+    }
 
-  public Command goToL3Command(boolean instant) {
-    return goToHeightCommand(instant, L3_HEIGHT);
-  }
+    public void setHeight(Distance height) {
+        controller.setGoal(height.in(Meters));
+    }
 
-  public Command goToL4Command(boolean instant) {
-    return goToHeightCommand(instant, L4_HEIGHT);
-  }
+    public void stop() {
+        motor1.setControl(new NeutralOut());
+    }
 
-  public Command goToIntakePosCommand(boolean instant) {
-    return goToHeightCommand(instant, INTAKE_HEIGHT);
-  }
+    private void controlUpdate() {
+        double output = controller.calculate(getHeight().in(Inches));
+        output += elevatorFeedforward.calculate(controller.getSetpoint().velocity);
+        motor1.setControl(motorControl.withOutput(output));
+    }
+
+    @Override
+    public void periodic() {
+        if (enabled)
+            controlUpdate();
+    }
+
+    public Command stopCommand() {
+        return this.runOnce(this::stop);
+    }
+
+    public Command moveUpManualCommand() {
+        return this.runEnd(() -> motor1.setControl(motorControl.withOutput(MANUAL_UP_SPEED)), this::stop);
+    }
+
+    public Command moveDownManualCommand() {
+        return this.runEnd(() -> motor1.setControl(motorControl.withOutput(MANUAL_DOWN_SPEED)), this::stop);
+    }
+
+    public Command goToHeightCommand(boolean instant, Distance height) {
+        if (instant) {
+            return this.runOnce(() -> setHeight(height));
+        }
+        return this.startEnd(() -> setHeight(height), null).until(() -> controller.atGoal());
+    }
+
+    public Command goToL1Command(boolean instant) {
+        return goToHeightCommand(instant, L1_HEIGHT);
+    }
+
+    public Command goToL2Command(boolean instant) {
+        return goToHeightCommand(instant, L2_HEIGHT);
+    }
+
+    public Command goToL3Command(boolean instant) {
+        return goToHeightCommand(instant, L3_HEIGHT);
+    }
+
+    public Command goToL4Command(boolean instant) {
+        return goToHeightCommand(instant, L4_HEIGHT);
+    }
+
+    public Command goToIntakePosCommand(boolean instant) {
+        return goToHeightCommand(instant, INTAKE_HEIGHT);
+    }
 
 }
