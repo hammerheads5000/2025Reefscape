@@ -27,6 +27,8 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.ClosedLoopOutputType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathConstraints;
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -260,6 +262,15 @@ public class Constants {
         public static final ControlConstants<AngleUnit> SCORING_PID_ANGLE = new ControlConstants<AngleUnit>(
                 1.0, 0.0, 0.0, Degrees.of(5));
 
+    }
+
+    public static class AutoConstants {
+        // Test Autos
+        public static final PathConstraints CONSTRAINTS = new PathConstraints(
+                SwerveConstants.DEFAULT_DRIVE_SPEED,
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1)),
+                SwerveConstants.DEFAULT_ROT_SPEED,
+                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1)));
     }
 
     public static class VisionConstants {

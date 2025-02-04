@@ -22,6 +22,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 @Logged
 public class ElevatorSubsystem extends SubsystemBase {
@@ -41,6 +42,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         controller = CONTROL_CONSTANTS.getProfiledPIDController();
 
         elevatorFeedforward = CONTROL_CONSTANTS.getElevatorFeedforward();
+
+        motor1 = new TalonFX(MOTOR_1_ID, Constants.CAN_FD_BUS);
+        motor2 = new TalonFX(MOTOR_2_ID, Constants.CAN_FD_BUS);
 
         followerControl = new Follower(motor1.getDeviceID(), MOTOR_OPPOSE_DIRECTION);
         motor2.setControl(followerControl);
@@ -83,11 +87,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Command moveUpManualCommand() {
-        return this.runEnd(() -> motor1.setControl(motorControl.withOutput(MANUAL_UP_SPEED)), this::stop);
+        return this.runEnd(() -> motor1.set(MANUAL_UP_SPEED), this::stop);
     }
 
     public Command moveDownManualCommand() {
-        return this.runEnd(() -> motor1.setControl(motorControl.withOutput(MANUAL_DOWN_SPEED)), this::stop);
+        return this.runEnd(() -> motor1.set(MANUAL_DOWN_SPEED), this::stop);
     }
 
     public Command goToHeightCommand(boolean instant, Distance height) {

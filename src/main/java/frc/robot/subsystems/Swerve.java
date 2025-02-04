@@ -15,6 +15,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
@@ -25,8 +29,10 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -197,9 +203,12 @@ public class Swerve extends SubsystemBase {
         drivetrain.setControl(pathApplyRobotSpeeds.withSpeeds(chassisSpeeds));
     }
 
-    @Logged
     public Pose2d getPose() {
         return drivetrain.getState().Pose;
+    }
+
+    public ChassisSpeeds getChassisSpeeds() {
+        return drivetrain.getState().Speeds;
     }
 
     /**
@@ -249,6 +258,35 @@ public class Swerve extends SubsystemBase {
 
     public void registerTelemetry(Consumer<SwerveDriveState> telemetryFunction) {
         drivetrain.registerTelemetry(telemetryFunction);
+    }
+
+    private RobotConfig getPPConfig() {
+        RobotConfig config = null;
+        try {
+            config = RobotConfig.fromGUISettings();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return config;
+    }
+
+    private void configPathPlanner() {
+        AutoBuilder.configure(
+            this::getPose,
+            this::resetOdometry,
+            this::getChassisSpeeds,
+            (speeds, feedforwards) -> applyChassisSpeeds(speeds),
+            new PPHolonomicDriveController(
+                new PIDConstants(0),
+                new PIDConstants(0)
+            ),
+            getPPConfig(),
+            () -> DriverStation.getAlliance().isPresent() 
+                && DriverStation.getAlliance().get() == Alliance.Red,
+            this
+        );
     }
 
     @Override

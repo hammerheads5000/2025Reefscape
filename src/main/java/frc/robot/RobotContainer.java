@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.autos.TestPathCommands;
 import frc.robot.commands.AlignToReefCommands;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -23,7 +24,7 @@ public class RobotContainer {
 
     // #region Subsystems
     Swerve swerve = new Swerve();
-    VisionSubsystem visionSubsystem = new VisionSubsystem(swerve);
+    //VisionSubsystem visionSubsystem = new VisionSubsystem(swerve);
     ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     SwerveTelemetry swerveTelemetry = new SwerveTelemetry();
     // #endregion
@@ -35,7 +36,7 @@ public class RobotContainer {
     // #region Triggers
     Trigger fastSpeedTrigger = primaryController.rightTrigger();
     Trigger slowSpeedTrigger = primaryController.leftTrigger();
-    
+
     Trigger elevatorUpTrigger = primaryController.povUp();
     Trigger elevatorDownTrigger = primaryController.povDown();
     // #endregion
@@ -58,6 +59,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
+        return TestPathCommands.moveForwardTest();
     }
 }
