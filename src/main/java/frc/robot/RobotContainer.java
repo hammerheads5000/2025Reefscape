@@ -4,10 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.AlignToReefCommands;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.Swerve;
@@ -38,6 +41,19 @@ public class RobotContainer {
         swerve.registerTelemetry(swerveTelemetry::telemeterize);
         swerve.setDefaultCommand(teleopSwerve);
         configureBindings();
+
+        testReefPoses();
+    }
+
+    private void testReefPoses() {
+        for (int side = 0; side < 6; side++) {
+            Pose2d left = AlignToReefCommands.getReefPose(side, -1);
+            Pose2d center = AlignToReefCommands.getReefPose(side, 0);
+            Pose2d right = AlignToReefCommands.getReefPose(side, 1);
+            SmartDashboard.putNumberArray("Left"+side, new double[]{left.getTranslation().getX(), left.getTranslation().getY(), left.getRotation().getDegrees()});
+            SmartDashboard.putNumberArray("Center"+side, new double[]{center.getTranslation().getX(), center.getTranslation().getY(), center.getRotation().getDegrees()});
+            SmartDashboard.putNumberArray("Right"+side, new double[]{right.getTranslation().getX(), right.getTranslation().getY(), right.getRotation().getDegrees()});
+        }
     }
 
     private void configureBindings() {

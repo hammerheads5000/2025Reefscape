@@ -38,7 +38,7 @@ public class AlignToReefCommands {
      * @param relativePos The relative position on the reef (-1 for right branch, 0 for center, 1 for left branch).
      * @return The calculated Pose2d for scoring.
      */
-    private static Pose2d getReefPose(int side, int relativePos) {
+    public static Pose2d getReefPose(int side, int relativePos) {
         // robot position centered on left reef side
         Translation2d centered = REEF_CENTER.plus(new Translation2d(REEF_APOTHEM.unaryMinus(), Meters.of(0)));
         // rotate to correct side
