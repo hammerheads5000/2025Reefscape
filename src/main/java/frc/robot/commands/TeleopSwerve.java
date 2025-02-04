@@ -11,6 +11,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
@@ -53,6 +54,14 @@ public class TeleopSwerve extends Command {
   public void setDefaultSpeed() {
     driveSpeed = SwerveConstants.DEFAULT_DRIVE_SPEED;
     rotSpeed = SwerveConstants.DEFAULT_ROT_SPEED;
+  }
+
+  public Command fastSpeedCommand() {
+    return Commands.runEnd(this::setFastSpeed, this::setDefaultSpeed);
+  }
+
+  public Command slowSpeedCommand() {
+    return Commands.runEnd(this::setSlowSpeed, this::setDefaultSpeed);
   }
 
   @Override
