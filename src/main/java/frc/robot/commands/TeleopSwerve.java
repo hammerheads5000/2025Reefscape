@@ -10,8 +10,8 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.Swerve;
@@ -25,10 +25,10 @@ public class TeleopSwerve extends Command {
   SlewRateLimiter slewRateLimiterY = new SlewRateLimiter(SwerveConstants.MAX_TELEOP_ACCEL.in(MetersPerSecondPerSecond));
 
   private Swerve swerve;
-  private XboxController controller;
+  private CommandXboxController controller;
 
   /** Creates a new TeleopSwerve. */
-  public TeleopSwerve(Swerve swerve, XboxController controller) {
+  public TeleopSwerve(Swerve swerve, CommandXboxController controller) {
     this.swerve = swerve;
     this.controller = controller;
 
@@ -65,7 +65,7 @@ public class TeleopSwerve extends Command {
     speedX = driveSpeed.times(speedX).in(MetersPerSecond);
     speedY = driveSpeed.times(speedY).in(MetersPerSecond);
 
-    // accel limited in mpx
+    // accel limited by slew rate limiter
     speedX = slewRateLimiterX.calculate(speedX);
     speedY = slewRateLimiterY.calculate(speedY);
 
