@@ -14,12 +14,19 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -36,6 +43,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     Follower followerControl;
 
     boolean enabled = true;
+
+    DCMotor elevatorGearbox = DCMotor.getKrakenX60(2);
+    ElevatorSim elevatorSim = new ElevatorSim(elevatorGearbox,
+        4, 2, 0.05, 0, 
+        1.8, true, 0);
 
     /** Creates a new ElevatorSubsystem. */
     public ElevatorSubsystem() {
@@ -80,6 +92,24 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void periodic() {
         if (enabled)
             controlUpdate();
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        TalonFXSimState motor1sim = motor1.getSimState();
+        TalonFXSimState motor2sim = motor2.getSimState();
+
+        motor1sim.setSupplyVoltage(RobotController.getBatteryVoltage());
+        motor2sim.setSupplyVoltage(RobotController.getBatteryVoltage());
+
+        elevatorSim.setInput(motor1sim.getMotorVoltage() + motor2sim.getMotorVoltage());
+        elevatorSim.update(0.02);
+
+        motor1sim.setRawRotorPosition(-1);
+        motor1sim.setRotorVelocity(-1);
+
+        motor2sim.setRawRotorPosition(-1);
+        motor2sim.setRotorVelocity(-1);
     }
 
     public Command stopCommand() {

@@ -293,4 +293,9 @@ public class Swerve extends SubsystemBase {
     public void periodic() {
 
     }
+
+    @Override
+    public void simulationPeriodic() {
+        drivetrain.updateSimState(0.02, RobotController.getBatteryVoltage());
+    }
 }
