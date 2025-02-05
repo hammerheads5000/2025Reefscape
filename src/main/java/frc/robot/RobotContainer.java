@@ -5,14 +5,17 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.autos.TestPathCommands;
 import frc.robot.commands.AlignToReefCommands;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.autos.TestPathCommands;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.VisionSubsystem;
@@ -44,6 +47,10 @@ public class RobotContainer {
     public RobotContainer() {
         swerve.registerTelemetry(swerveTelemetry::telemeterize);
         swerve.setDefaultCommand(teleopSwerve);
+
+        DriverStation.getAlliance().ifPresent(alliance -> {
+            swerve.setOperatorPerspective(alliance == Alliance.Blue ? Rotation2d.kZero : Rotation2d.k180deg);
+        });
 
         elevatorSubsystem.disable();
         configureBindings();

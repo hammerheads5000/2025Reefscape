@@ -67,8 +67,8 @@ public class TeleopSwerve extends Command {
   @Override
   public void execute() {
     // joystick
-    double speedX = Math.abs(controller.getLeftX() >= Constants.CONTROLLER_DEADBAND ? -controller.getLeftX() : 0);
-    double speedY = Math.abs(controller.getLeftY() >= Constants.CONTROLLER_DEADBAND ? -controller.getLeftY() : 0);
+    double speedX = Math.abs(controller.getLeftX()) >= Constants.CONTROLLER_DEADBAND ? -controller.getLeftX() : 0;
+    double speedY = Math.abs(controller.getLeftY()) >= Constants.CONTROLLER_DEADBAND ? -controller.getLeftY() : 0;
 
     // raw speed
     speedX = driveSpeed.times(speedX).in(MetersPerSecond);
@@ -80,7 +80,7 @@ public class TeleopSwerve extends Command {
 
     swerve.driveFieldCentric(MetersPerSecond.of(speedX),
         MetersPerSecond.of(speedY),
-        rotSpeed.times(Math.abs(controller.getRightX() >= Constants.CONTROLLER_DEADBAND ? -controller.getRightX() : 0)));
+        rotSpeed.times(Math.abs(controller.getRightX()) >= Constants.CONTROLLER_DEADBAND ? -controller.getRightX() : 0));
   }
 
   // Called once the command ends or is interrupted.
