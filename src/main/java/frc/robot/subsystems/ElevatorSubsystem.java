@@ -5,9 +5,11 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Constants.ElevatorConstants.*;
 
 import com.ctre.phoenix6.controls.Follower;
@@ -16,9 +18,12 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.simulation.MockLaserCan;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -27,6 +32,10 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -44,10 +53,21 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     boolean enabled = true;
 
+    // To be implemented: LaserCan
+    // LaserCan laserCan = new LaserCan(0);
+
+    // MockLaserCan laserCanSim = new MockLaserCan();
+
     DCMotor elevatorGearbox = DCMotor.getKrakenX60(2);
     ElevatorSim elevatorSim = new ElevatorSim(elevatorGearbox,
-        4, 2, 0.05, 0, 
-        1.8, true, 0);
+        GEAR_RATIO, CARRIAGE_MASS.in(Kilograms), DRUM_RADIUS.in(Meters), 
+        MAX_HEIGHT.in(Meters), MIN_HEIGHT.in(Meters), true, MIN_HEIGHT.in(Meters));
+
+    Mechanism2d mech2d = new Mechanism2d(CANVAS_WIDTH.in(Meters), CANVAS_HEIGHT.in(Meters));
+    MechanismRoot2d mechRoot2d = mech2d.getRoot("Elevator Root", ROOT.getX(), ROOT.getY());
+    MechanismLigament2d ligament2d = mechRoot2d.append(
+        new MechanismLigament2d("Elevator", elevatorSim.getPositionMeters(), 90)
+    );
 
     /** Creates a new ElevatorSubsystem. */
     public ElevatorSubsystem() {
@@ -60,6 +80,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         followerControl = new Follower(motor1.getDeviceID(), MOTOR_OPPOSE_DIRECTION);
         motor2.setControl(followerControl);
+
+        SmartDashboard.putData("Eevator Sim", mech2d);
     }
 
     public void enable() {
@@ -78,6 +100,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         controller.setGoal(height.in(Meters));
     }
 
+    public Rotation2d heightToMotorRotations(Distance height) {
+        return Rotation2d.kZero;
+    }
+
     public void stop() {
         motor1.setControl(new NeutralOut());
     }
@@ -92,6 +118,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void periodic() {
         if (enabled)
             controlUpdate();
+
+        ligament2d.setLength(getHeight().in(Meters));
     }
 
     @Override
@@ -103,13 +131,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         motor2sim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
         elevatorSim.setInput(motor1sim.getMotorVoltage() + motor2sim.getMotorVoltage());
-        elevatorSim.update(0.02);
+        elevatorSim.update(Constants.SIM_LOOP_PERIOD.in(Seconds));
 
-        motor1sim.setRawRotorPosition(-1);
-        motor1sim.setRotorVelocity(-1);
+        double rotations = heightToMotorRotations(getHeight()).getRotations();
+        double angularVel = heightToMotorRotations(Meters.of(elevatorSim.getVelocityMetersPerSecond())).getRotations();
 
-        motor2sim.setRawRotorPosition(-1);
-        motor2sim.setRotorVelocity(-1);
+        motor1sim.setRawRotorPosition(rotations);
+        motor1sim.setRotorVelocity(angularVel);
+
+        motor2sim.setRawRotorPosition(rotations);
+        motor2sim.setRotorVelocity(angularVel);
     }
 
     public Command stopCommand() {

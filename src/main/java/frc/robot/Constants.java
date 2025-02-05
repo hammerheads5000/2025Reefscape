@@ -42,6 +42,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -56,6 +57,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Frequency;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
@@ -64,11 +66,12 @@ public class Constants {
     public static final CANBus CAN_FD_BUS = new CANBus("Bobby");
     public static final CANBus CAN_RIO_BUS = new CANBus("rio");
 
-    public static final Time SIM_LOOP_PERIOD = Milliseconds.of(5);
+    public static final Time SIM_LOOP_PERIOD = Milliseconds.of(20);
 
     public static final NetworkTableInstance INST = NetworkTableInstance.getDefault();
 
     public static final double CONTROLLER_DEADBAND = .225;
+    
 
     public static class SwerveConstants {
         public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(3);//define later
@@ -324,6 +327,18 @@ public class Constants {
         // Manual control (duty cycle)
         public static final double MANUAL_UP_SPEED = 0.3;
         public static final double MANUAL_DOWN_SPEED = -0.2;
+
+        // Simulation
+        public static final double GEAR_RATIO = 4;
+        public static final Mass CARRIAGE_MASS = Kilograms.of(2);
+        public static final Distance DRUM_RADIUS = Meters.of(0.05);
+        public static final Distance MIN_HEIGHT = Meters.zero();
+        public static final Distance MAX_HEIGHT = Meters.of(1.8);
+
+        public static final Distance CANVAS_WIDTH = Inches.of(2);
+        public static final Distance CANVAS_HEIGHT = Inches.of(42);
+        public static final Translation2d ROOT = new Translation2d(Inches.of(5), Inches.of(10));
+        
     }
 
     public static class EndEffectorConstants {
