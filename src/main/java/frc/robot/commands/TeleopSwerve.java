@@ -67,8 +67,8 @@ public class TeleopSwerve extends Command {
   @Override
   public void execute() {
     // joystick
-    double speedX = Math.abs(controller.getLeftX()) >= Constants.CONTROLLER_DEADBAND ? -controller.getLeftX() : 0;
-    double speedY = Math.abs(controller.getLeftY()) >= Constants.CONTROLLER_DEADBAND ? -controller.getLeftY() : 0;
+    double speedX = Math.abs(controller.getLeftY()) >= Constants.CONTROLLER_DEADBAND ? -controller.getLeftY() : 0;
+    double speedY = Math.abs(controller.getLeftX()) >= Constants.CONTROLLER_DEADBAND ? -controller.getLeftX() : 0;
 
     // raw speed
     speedX = driveSpeed.times(speedX).in(MetersPerSecond);

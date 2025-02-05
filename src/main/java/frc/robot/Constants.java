@@ -81,7 +81,7 @@ public class Constants {
         public static final AngularVelocity FAST_ROT_SPEED = RotationsPerSecond.of(4);
 
         public static final LinearVelocity SLOW_DRIVE_SPEED = MetersPerSecond.of(1);
-        public static final AngularVelocity SLOW_ROT_SPEED = RotationsPerSecond.of(1);
+        public static final AngularVelocity SLOW_ROT_SPEED = RotationsPerSecond.of(0.5);
 
         public static final LinearAcceleration MAX_TELEOP_ACCEL = MetersPerSecondPerSecond.of(15);
 
@@ -89,15 +89,15 @@ public class Constants {
         private static final Distance MODULE_DISTANCE = Inches.of(23.75);
 
         private static final Slot0Configs STEER_GAINS = new Slot0Configs()
-                .withKP(37.8).withKI(10).withKD(1.72)
-                .withKS(0.2).withKV(2.51).withKA(0.052)
+                .withKP(56).withKI(10).withKD(9)
+                .withKS(2.38).withKV(0.29).withKA(1.23)
                 .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
         private static final Slot0Configs DRIVE_GAINS = new Slot0Configs()
                 .withKP(0.133).withKI(0).withKD(0)
                 .withKS(0.182).withKV(0.124);
 
-        private static final ClosedLoopOutputType STEER_CLOSED_LOOP_OUTPUT = ClosedLoopOutputType.Voltage;
+        private static final ClosedLoopOutputType STEER_CLOSED_LOOP_OUTPUT = ClosedLoopOutputType.TorqueCurrentFOC;
         private static final ClosedLoopOutputType DRIVE_CLOSED_LOOP_OUTPUT = ClosedLoopOutputType.Voltage;
 
         private static final DriveMotorArrangement DRIVE_MOTOR_TYPE = DriveMotorArrangement.TalonFX_Integrated;
@@ -109,14 +109,14 @@ public class Constants {
 
         private static final TalonFXConfiguration DRIVE_CONFIGS = new TalonFXConfiguration()
                 .withCurrentLimits(new CurrentLimitsConfigs()
-                        .withStatorCurrentLimit(Amps.of(40))
+                        .withStatorCurrentLimit(Amps.of(120))
                         .withStatorCurrentLimitEnable(true))
                 .withMotorOutput(new MotorOutputConfigs()
                         .withNeutralMode(NeutralModeValue.Brake));
 
         private static final TalonFXConfiguration STEER_CONFIGS = new TalonFXConfiguration()
                 .withCurrentLimits(new CurrentLimitsConfigs()
-                        .withStatorCurrentLimit(Amps.of(20))
+                        .withStatorCurrentLimit(Amps.of(60))
                         .withStatorCurrentLimitEnable(true))
                 .withMotorOutput(new MotorOutputConfigs()
                         .withNeutralMode(NeutralModeValue.Brake));
@@ -196,7 +196,7 @@ public class Constants {
             private static final Angle ENCODER_OFFSET = Rotations.of(0.361083984375);
             private static final boolean STEER_INVERTED = true;
             private static final boolean ENCODER_INVERTED = false;
-            private static final boolean DRIVE_INVERTED = false;
+            private static final boolean DRIVE_INVERTED = true;
 
             private static final Distance X_POS = MODULE_DISTANCE.div(2);
             private static final Distance Y_POS = MODULE_DISTANCE.div(-2);
@@ -232,7 +232,7 @@ public class Constants {
             private static final Angle ENCODER_OFFSET = Rotations.of(0.268798828125);
             private static final boolean STEER_INVERTED = true;
             private static final boolean ENCODER_INVERTED = false;
-            private static final boolean DRIVE_INVERTED = false;
+            private static final boolean DRIVE_INVERTED = true;
 
             private static final Distance X_POS = MODULE_DISTANCE.div(-2);
             private static final Distance Y_POS = MODULE_DISTANCE.div(-2);
@@ -257,13 +257,13 @@ public class Constants {
 
         // output: m/s, measure: m
         public static final ControlConstants<DistanceUnit> SCORING_PID_X = new ControlConstants<DistanceUnit>(
-                1.0, 0.0, 0.0, Inches.of(2));
+                1.75, 0.0, 0.0, Inches.of(2));
         public static final ControlConstants<DistanceUnit> SCORING_PID_Y = new ControlConstants<DistanceUnit>(
-                1.0, 0.0, 0.0, Inches.of(4));
+                1.75, 0.0, 0.0, Inches.of(2));
 
         // output: deg/s, measure: deg
         public static final ControlConstants<AngleUnit> SCORING_PID_ANGLE = new ControlConstants<AngleUnit>(
-                1.0, 0.0, 0.0, Degrees.of(5));
+                2.5, 0.0, 0.0, Degrees.of(2));
 
     }
 

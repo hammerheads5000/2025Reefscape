@@ -7,6 +7,7 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.AngleUnit;
@@ -18,6 +19,7 @@ import frc.robot.ControlConstants;
 import frc.robot.subsystems.Swerve;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+@Logged
 public class AlignToPoseCommand extends Command {
     Pose2d targetPose;
     PIDController pidControllerX;
@@ -34,6 +36,7 @@ public class AlignToPoseCommand extends Command {
         pidControllerX = pidConstantsX.getPIDController();
         pidControllerY = pidConstantsY.getPIDController();
         pidControllerAngle = pidConstantsAngle.getPIDController();
+        pidControllerAngle.enableContinuousInput(-180, 180);
 
         pidControllerX.setSetpoint(0);
         pidControllerY.setSetpoint(0);
@@ -65,7 +68,7 @@ public class AlignToPoseCommand extends Command {
     }
 
     private Pose2d getPose() {
-        return new Pose2d();
+        return swerve.getPose();
     }
 
     // Returns true when the command should end.

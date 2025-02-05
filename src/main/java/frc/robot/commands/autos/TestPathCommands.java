@@ -38,11 +38,11 @@ public class TestPathCommands {
                 new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
                 new Pose2d(Meters.of(1), Meters.zero(), Rotation2d.fromDegrees(0)),
                 new Pose2d(0, 0, Rotation2d.fromDegrees(180)));
-
+        
         PathPlannerPath path = new PathPlannerPath(
                 waypoints, CONSTRAINTS, null,
                 new GoalEndState(MetersPerSecond.of(0), Rotation2d.fromDegrees(0)));
-
+        
         return AutoBuilder.followPath(path);
     }
 

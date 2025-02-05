@@ -136,6 +136,8 @@ public class Swerve extends SubsystemBase {
                 .withDriveRequestType(DRIVE_REQUEST_TYPE).withSteerRequestType(STEER_REQUEST_TYPE);
         pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds()
                 .withDriveRequestType(DRIVE_REQUEST_TYPE).withSteerRequestType(STEER_REQUEST_TYPE);
+    
+        configPathPlanner();
     }
 
     private void startSimThread() {
@@ -256,6 +258,10 @@ public class Swerve extends SubsystemBase {
         drivetrain.resetPose(pose);
     }
 
+    public void resetOdometry() {
+        drivetrain.resetPose(Pose2d.kZero);
+    }
+
     public void registerTelemetry(Consumer<SwerveDriveState> telemetryFunction) {
         drivetrain.registerTelemetry(telemetryFunction);
     }
@@ -279,8 +285,8 @@ public class Swerve extends SubsystemBase {
             this::getChassisSpeeds,
             (speeds, feedforwards) -> applyChassisSpeeds(speeds),
             new PPHolonomicDriveController(
-                new PIDConstants(0),
-                new PIDConstants(0)
+                new PIDConstants(0.2),
+                new PIDConstants(0.2)
             ),
             getPPConfig(),
             () -> DriverStation.getAlliance().isPresent() 
