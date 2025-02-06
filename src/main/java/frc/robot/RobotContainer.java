@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,6 +24,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.VisionSubsystem;
 
+@Logged
 public class RobotContainer {
     // #region Controllers
     CommandXboxController primaryController = new CommandXboxController(0);

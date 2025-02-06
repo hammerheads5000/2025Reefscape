@@ -21,6 +21,7 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.simulation.MockLaserCan;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -93,7 +94,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Distance getHeight() {
-        return Meters.of(0);
+        return Meters.of(elevatorSim.getPositionMeters());
     }
 
     public void setHeight(Distance height) {
@@ -119,7 +120,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (enabled)
             controlUpdate();
 
-        ligament2d.setLength(getHeight().in(Meters));
+        ligament2d.setLength(elevatorSim.getPositionMeters());
     }
 
     @Override
@@ -133,7 +134,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorSim.setInput(motor1sim.getMotorVoltage() + motor2sim.getMotorVoltage());
         elevatorSim.update(Constants.SIM_LOOP_PERIOD.in(Seconds));
 
-        double rotations = heightToMotorRotations(getHeight()).getRotations();
+        double rotations = heightToMotorRotations(Meters.of(elevatorSim.getPositionMeters())).getRotations();
         double angularVel = heightToMotorRotations(Meters.of(elevatorSim.getVelocityMetersPerSecond())).getRotations();
 
         motor1sim.setRawRotorPosition(rotations);
