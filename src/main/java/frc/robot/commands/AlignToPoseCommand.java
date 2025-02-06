@@ -10,6 +10,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -53,13 +55,14 @@ public class AlignToPoseCommand extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Pose2d relativePose = getPose().relativeTo(targetPose);
-        LinearVelocity xVel = MetersPerSecond.of(pidControllerX.calculate(relativePose.getTranslation().getX()));
-        LinearVelocity yVel = MetersPerSecond.of(pidControllerY.calculate(relativePose.getTranslation().getY()));
+        Translation2d relativeTranslation = targetPose.getTranslation().minus(getPose().getTranslation());
+        Rotation2d relativeRotation = targetPose.getRotation().minus(getPose().getRotation());
+        LinearVelocity xVel = MetersPerSecond.of(pidControllerX.calculate(relativeTranslation.getX()));
+        LinearVelocity yVel = MetersPerSecond.of(pidControllerY.calculate(relativeTranslation.getY()));
         AngularVelocity angleVel = DegreesPerSecond
-                .of(pidControllerAngle.calculate(relativePose.getRotation().getDegrees()));
+                .of(pidControllerAngle.calculate(relativeRotation.getDegrees()));
 
-        swerve.driveRobotCentric(xVel, yVel, angleVel);
+        swerve.driveFieldCentric(xVel, yVel, angleVel);
     }
 
     // Called once the command ends or is interrupted.
