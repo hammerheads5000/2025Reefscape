@@ -310,6 +310,8 @@ public class Constants {
                                                                    // motor 1
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Amps.of(20));
+                public static final MotorOutputConfigs BRAKE_CONFIGS = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake);
+                public static final MotorOutputConfigs COAST_CONFIGS = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast);
 
         // Control (amps, inches)
         public static final ControlConstants<DistanceUnit> CONTROL_CONSTANTS = new ControlConstants<DistanceUnit>(

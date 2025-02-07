@@ -9,9 +9,13 @@ import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Constants.ElevatorConstants.*;
 
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -28,6 +32,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
@@ -53,6 +58,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     Follower followerControl;
 
     boolean enabled = true;
+
+    Angle initMotorPos;
 
     // To be implemented: LaserCan
     // LaserCan laserCan = new LaserCan(0);
@@ -82,6 +89,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         followerControl = new Follower(motor1.getDeviceID(), MOTOR_OPPOSE_DIRECTION);
         motor2.setControl(followerControl);
 
+        initMotorPos = motor1.getPosition().getValue();
+
         SmartDashboard.putData("Eevator Sim", mech2d);
     }
 
@@ -91,6 +100,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     
     public void disable() {
         enabled = false;
+    }
+
+    public double getMotorRotations() {
+        return motor1.getPosition().getValue().minus(initMotorPos).in(Rotations);
+    }
+
+    public void setBrake(boolean shouldBrake) {
+        motor1.getConfigurator().apply(shouldBrake ? BRAKE_CONFIGS : COAST_CONFIGS);
     }
 
     public Distance getHeight() {
