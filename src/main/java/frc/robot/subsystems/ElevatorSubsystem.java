@@ -4,16 +4,19 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.ElevatorConstants.*;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -88,6 +91,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         motor1 = new TalonFX(MOTOR_1_ID, Constants.CAN_FD_BUS);
         motor2 = new TalonFX(MOTOR_2_ID, Constants.CAN_FD_BUS);
 
+        motorControl = new TorqueCurrentFOC(0).withDeadband(Amps.of(5));
         followerControl = new Follower(motor1.getDeviceID(), MOTOR_OPPOSE_DIRECTION);
         motor2.setControl(followerControl);
 
@@ -204,10 +208,12 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private final SysIdRoutine sysIdRoutine = new SysIdRoutine(
             new SysIdRoutine.Config(
-                    null,
-                    Volts.of(4),
-                    null),
-            new SysIdRoutine.Mechanism(output -> motor1.setControl(motorControl.withOutput(output.in(Volts))),
+                    Volts.of(2).per(Second),
+                    Volts.of(15), null,
+                    state -> SignalLogger.writeString("SysId_Elevator_State", state.toString())),
+            new SysIdRoutine.Mechanism(output -> {
+                motor1.setControl(motorControl.withOutput(output.in(Volts)));
+                System.out.println(output.in(Volts));},
                     null, 
                     this));
 

@@ -6,13 +6,11 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
-import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
@@ -27,7 +25,6 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.ClosedLoopOutputType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
-import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.path.PathConstraints;
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -38,7 +35,6 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -48,8 +44,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.units.AngleUnit;
-import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -256,14 +250,14 @@ public class Constants {
         // Aligning to the reef to score coral
 
         // output: m/s, measure: m
-        public static final ControlConstants<DistanceUnit> SCORING_PID_X = new ControlConstants<DistanceUnit>(
-                1.75, 0.0, 0.0, Inches.of(2));
-        public static final ControlConstants<DistanceUnit> SCORING_PID_Y = new ControlConstants<DistanceUnit>(
-                1.75, 0.0, 0.0, Inches.of(2));
+        public static final ControlConstants SCORING_PID_X = new ControlConstants()
+                .withPID(1.75, 0.0, 0.0).withTolerance(2);
+        public static final ControlConstants SCORING_PID_Y = new ControlConstants()
+                .withPID(1.75, 0.0, 0.0).withTolerance(2);
 
         // output: deg/s, measure: deg
-        public static final ControlConstants<AngleUnit> SCORING_PID_ANGLE = new ControlConstants<AngleUnit>(
-                2.5, 0.0, 0.0, Degrees.of(2));
+        public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
+                .withPID(2.5, 0.0, 0.0).withTolerance(2);
 
     }
 
@@ -309,15 +303,14 @@ public class Constants {
         public static final boolean MOTOR_OPPOSE_DIRECTION = true; // whether motor 2 rotates the same direction as
                                                                    // motor 1
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(Amps.of(20));
-                public static final MotorOutputConfigs BRAKE_CONFIGS = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake);
-                public static final MotorOutputConfigs COAST_CONFIGS = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast);
+                .withStatorCurrentLimit(Amps.of(40));
+        public static final MotorOutputConfigs BRAKE_CONFIGS = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake);
+        public static final MotorOutputConfigs COAST_CONFIGS = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast);
 
-        // Control (amps, inches)
-        public static final ControlConstants<DistanceUnit> CONTROL_CONSTANTS = new ControlConstants<DistanceUnit>(
-                1.0, 0.0, 0.0, Inches.of(1),
-                0, 0, 0, 0,
-                InchesPerSecond.ofNative(72), InchesPerSecond.ofNative(72).per(Second));
+        // Control (amps, rotations)
+        public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
+                .withPID(45, 0.0, 2.9).withTolerance(1)
+                .withFeedforward(0, 0.1).withPhysical(2.72, 5.75);
 
         // Setpoints
         public static final Distance L1_HEIGHT = Inches.of(0);

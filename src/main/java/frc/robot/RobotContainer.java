@@ -58,7 +58,7 @@ public class RobotContainer {
     Trigger elevatorSysIdQuasistatic = primaryController.start(); // on the right
     Trigger elevatorSysIdDynamic = primaryController.back(); // on the left
     Trigger elevatorSysIdForward = primaryController.a();
-    Trigger elevatorSysIdBack = primaryController.a();
+    Trigger elevatorSysIdBack = primaryController.b();
     // #endregion
 
     public RobotContainer() {

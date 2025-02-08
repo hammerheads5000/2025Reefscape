@@ -12,8 +12,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.AngleUnit;
-import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -31,8 +29,8 @@ public class AlignToPoseCommand extends Command {
     private Swerve swerve;
 
     /** Creates a new AlignToPoseCommand. */
-    public AlignToPoseCommand(Pose2d targetPose, ControlConstants<DistanceUnit> pidConstantsX,
-            ControlConstants<DistanceUnit> pidConstantsY, ControlConstants<AngleUnit> pidConstantsAngle, Swerve swerve) {
+    public AlignToPoseCommand(Pose2d targetPose, ControlConstants pidConstantsX,
+            ControlConstants pidConstantsY, ControlConstants pidConstantsAngle, Swerve swerve) {
         this.targetPose = targetPose;
 
         pidControllerX = pidConstantsX.getPIDController();

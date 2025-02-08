@@ -8,17 +8,11 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.units.Measure;
-import edu.wpi.first.units.PerUnit;
-import edu.wpi.first.units.TimeUnit;
-import edu.wpi.first.units.Unit;
-import edu.wpi.first.units.measure.Per;
-import edu.wpi.first.units.measure.Velocity;
 
-public class ControlConstants<U extends Unit> {
+public class ControlConstants {
     // PID gains
     double kP, kI, kD;
-    Measure<U> tolerance;
+    double tolerance;
 
     // feedforward gains
     double kV, kA;
@@ -27,54 +21,46 @@ public class ControlConstants<U extends Unit> {
     double kS, kG;
 
     // trapezoid profile
-    Per<U, TimeUnit> maxVel;
-    Velocity<PerUnit<U, TimeUnit>> maxAcc;
+    double maxVel;
+    double maxAcc;
 
-    public ControlConstants(double kP, double kI, double kD, Measure<U> tolerance) {
+    public ControlConstants() {
+    }
+
+    public ControlConstants withPID(double kP, double kI, double kD) {
         this.kP = kP;
         this.kI = kI;
         this.kD = kD;
+        return this;
+    }
+
+    public ControlConstants withFeedforward(double kV, double kA) {
+        this.kV = kV;
+        this.kA = kA;
+        return this;
+    }
+    
+    public ControlConstants withPhysical(double kS, double kG) {
+        this.kS = kS;
+        this.kG = kG;
+        return this;
+    }
+
+    public ControlConstants withProfile(double maxVel, double maxAcc) {
+        this.maxVel = maxVel;
+        this.maxAcc = maxAcc;
+        return this;
+    }
+
+
+    public ControlConstants withTolerance(double tolerance) {
         this.tolerance = tolerance;
-    }
-
-    public ControlConstants(double kV, double kA, double kS, double kG) {
-        this.kV = kV;
-        this.kA = kA;
-        this.kS = kS;
-        this.kG = kG;
-    }
-
-    public ControlConstants(double kV, double kA) {
-        this(kV, kA, 0, 0);
-    }
-
-    public ControlConstants(double kP, double kI, double kD, Measure<U> tolerance,
-        Per<U, TimeUnit> maxVel, Velocity<PerUnit<U, TimeUnit>> maxAcc) {
-        this(kP, kI, kD, tolerance);
-        this.maxVel = maxVel;
-        this.maxAcc = maxAcc;
-    }
-
-    public ControlConstants(double kV, double kA, double kS, double kG,
-        Per<U, TimeUnit> maxVel, Velocity<PerUnit<U, TimeUnit>> maxAcc) {
-        this(kV, kA, kS, kG);
-        this.maxVel = maxVel;
-        this.maxAcc = maxAcc;
-    }
-
-    public ControlConstants(double kP, double kI, double kD, Measure<U> tolerance,
-            double kV, double kA, double kS, double kG,
-            Per<U, TimeUnit> maxVel, Velocity<PerUnit<U, TimeUnit>> maxAcc) {
-        this(kP, kI, kD, tolerance, maxVel, maxAcc);
-        this.kV = kV;
-        this.kA = kA;
-        this.kS = kS;
-        this.kG = kG;
+        return this;
     }
 
     public PIDController getPIDController() {
         PIDController controller = new PIDController(kP, kI, kD);
-        controller.setTolerance(tolerance.baseUnitMagnitude());
+        controller.setTolerance(tolerance);
 
         return controller;
     }
@@ -82,9 +68,9 @@ public class ControlConstants<U extends Unit> {
     public ProfiledPIDController getProfiledPIDController() {
         ProfiledPIDController controller = new ProfiledPIDController(
                 kP, kI, kD,
-                new TrapezoidProfile.Constraints(maxVel.baseUnitMagnitude(), maxAcc.baseUnitMagnitude())
+                new TrapezoidProfile.Constraints(maxVel, maxAcc)
         );
-        controller.setTolerance(tolerance.baseUnitMagnitude());
+        controller.setTolerance(tolerance);
 
         return controller;
     }
