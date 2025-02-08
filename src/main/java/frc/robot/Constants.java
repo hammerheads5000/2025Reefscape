@@ -43,6 +43,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.DoubleArrayTopic;
+import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -308,9 +309,17 @@ public class Constants {
         public static final MotorOutputConfigs COAST_CONFIGS = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast);
 
         // Control (amps, rotations)
-        public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
+        public static final ControlConstants CONTROL_CONSTANTS0 = new ControlConstants()
                 .withPID(45, 0.0, 2.9).withTolerance(1)
-                .withFeedforward(0, 0.1).withPhysical(2.72, 5.75);
+                .withFeedforward(0, 0.1).withPhysical(2.72, 5.75)
+                .withProfile(20, 15);
+
+        public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
+                .withPID(0, 0.0, 0).withTolerance(1)
+                .withFeedforward(0.123, 0.002).withPhysical(0.11, 0.214)
+                .withProfile(15, 15);
+
+        public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
 
         // Setpoints
         public static final Distance L1_HEIGHT = Inches.of(0);

@@ -5,43 +5,37 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.INST;
 import static frc.robot.Constants.ElevatorConstants.*;
 
+import java.util.EnumSet;
+
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import au.grapplerobotics.LaserCan;
-import au.grapplerobotics.simulation.MockLaserCan;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.networktables.DoubleEntry;
+import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.networktables.NetworkTableListener;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -59,12 +53,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     TalonFX motor1;
     TalonFX motor2;
 
-    TorqueCurrentFOC motorControl;
+    VoltageOut motorControl;
     Follower followerControl;
 
     boolean enabled = true;
 
     Angle initMotorPos;
+
+    DoubleEntry setpointEntry;
+    int setpointListener;
 
     // To be implemented: LaserCan
     // LaserCan laserCan = new LaserCan(0);
@@ -91,13 +88,24 @@ public class ElevatorSubsystem extends SubsystemBase {
         motor1 = new TalonFX(MOTOR_1_ID, Constants.CAN_FD_BUS);
         motor2 = new TalonFX(MOTOR_2_ID, Constants.CAN_FD_BUS);
 
-        motorControl = new TorqueCurrentFOC(0).withDeadband(Amps.of(5));
+        motorControl = new VoltageOut(0);
         followerControl = new Follower(motor1.getDeviceID(), MOTOR_OPPOSE_DIRECTION);
         motor2.setControl(followerControl);
 
         initMotorPos = motor1.getPosition().getValue();
 
-        SmartDashboard.putData("Eevator Sim", mech2d);
+        SmartDashboard.putData("Elevator Sim", mech2d);
+        
+        setpointEntry = SETPOINT_TOPIC.getEntry(0);
+        NetworkTableListener.createListener(
+            setpointEntry,
+            EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+            event -> {
+                System.out.println("hi");
+                controller.setGoal(event.valueData.value.getDouble());
+            });
+        setpointEntry.set(0);
+
     }
 
     public void enable() {
@@ -124,7 +132,12 @@ public class ElevatorSubsystem extends SubsystemBase {
         controller.setGoal(height.in(Meters));
     }
 
-    public Rotation2d heightToMotorRotations(Distance height) {
+    public void setRotations(double rotations) {
+        controller.setGoal(rotations);
+        //setpointEntry.set(rotations);
+    }
+
+    private Rotation2d heightToMotorRotations(Distance height) {
         return Rotation2d.kZero;
     }
 
@@ -133,7 +146,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     private void controlUpdate() {
-        double output = controller.calculate(getHeight().in(Inches));
+        double output = controller.calculate(getMotorRotations());
         output += elevatorFeedforward.calculate(controller.getSetpoint().velocity);
         motor1.setControl(motorControl.withOutput(output));
     }
@@ -142,7 +155,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void periodic() {
         if (enabled)
             controlUpdate();
-
+        //System.out.println(setpointEntry.get());
         ligament2d.setLength(elevatorSim.getPositionMeters());
     }
 
@@ -208,12 +221,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private final SysIdRoutine sysIdRoutine = new SysIdRoutine(
             new SysIdRoutine.Config(
-                    Volts.of(2).per(Second),
-                    Volts.of(15), null,
+                    Volts.of(1).per(Second),
+                    Volts.of(4), null,
                     state -> SignalLogger.writeString("SysId_Elevator_State", state.toString())),
-            new SysIdRoutine.Mechanism(output -> {
-                motor1.setControl(motorControl.withOutput(output.in(Volts)));
-                System.out.println(output.in(Volts));},
+            new SysIdRoutine.Mechanism(output -> 
+                motor1.setControl(motorControl.withOutput(output.in(Volts))),
                     null, 
                     this));
 

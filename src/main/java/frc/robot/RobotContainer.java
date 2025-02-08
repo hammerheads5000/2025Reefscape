@@ -69,7 +69,7 @@ public class RobotContainer {
             swerve.setOperatorPerspective(alliance == Alliance.Blue ? Rotation2d.kZero : Rotation2d.k180deg);
         });
 
-        elevatorSubsystem.disable();
+        //elevatorSubsystem.disable();
         configureBindings();
 
     }
@@ -80,8 +80,8 @@ public class RobotContainer {
 
         resetFieldRelative.onTrue(new InstantCommand(swerve::resetOdometry));
 
-        elevatorUpTrigger.whileTrue(elevatorSubsystem.moveUpManualCommand());
-        elevatorDownTrigger.whileTrue(elevatorSubsystem.moveDownManualCommand());
+        elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations()+10)));
+        elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations()-10)));
     
         moveToZeroTrigger.whileTrue(moveToZero);
 
