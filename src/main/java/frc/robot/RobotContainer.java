@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.AlignToPoseCommand;
 import frc.robot.commands.AlignToReefCommands;
@@ -53,6 +54,11 @@ public class RobotContainer {
     Trigger elevatorDownTrigger = primaryController.povDown();
 
     Trigger moveToZeroTrigger = primaryController.x();
+
+    Trigger elevatorSysIdQuasistatic = primaryController.start(); // on the right
+    Trigger elevatorSysIdDynamic = primaryController.back(); // on the left
+    Trigger elevatorSysIdForward = primaryController.a();
+    Trigger elevatorSysIdBack = primaryController.a();
     // #endregion
 
     public RobotContainer() {
@@ -78,6 +84,11 @@ public class RobotContainer {
         elevatorDownTrigger.whileTrue(elevatorSubsystem.moveDownManualCommand());
     
         moveToZeroTrigger.whileTrue(moveToZero);
+
+        elevatorSysIdQuasistatic.and(elevatorSysIdForward).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kForward));
+        elevatorSysIdQuasistatic.and(elevatorSysIdBack).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kReverse));
+        elevatorSysIdDynamic.and(elevatorSysIdForward).whileTrue(elevatorSubsystem.sysIdDynamic(Direction.kForward));
+        elevatorSysIdDynamic.and(elevatorSysIdBack).whileTrue(elevatorSubsystem.sysIdDynamic(Direction.kReverse));
     }
 
     public Command getAutonomousCommand() {

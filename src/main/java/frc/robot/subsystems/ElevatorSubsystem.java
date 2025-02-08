@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.ElevatorConstants.*;
 
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
@@ -44,6 +45,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 
 @Logged
@@ -200,4 +202,20 @@ public class ElevatorSubsystem extends SubsystemBase {
         return goToHeightCommand(instant, INTAKE_HEIGHT);
     }
 
+    private final SysIdRoutine sysIdRoutine = new SysIdRoutine(
+            new SysIdRoutine.Config(
+                    null,
+                    Volts.of(4),
+                    null),
+            new SysIdRoutine.Mechanism(output -> motor1.setControl(motorControl.withOutput(output.in(Volts))),
+                    null, 
+                    this));
+
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return sysIdRoutine.quasistatic(direction);
+    }
+
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+        return sysIdRoutine.dynamic(direction);
+    }
 }
