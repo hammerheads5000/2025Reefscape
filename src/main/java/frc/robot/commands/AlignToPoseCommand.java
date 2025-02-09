@@ -38,9 +38,9 @@ public class AlignToPoseCommand extends Command {
         pidControllerAngle = pidConstantsAngle.getPIDController();
         pidControllerAngle.enableContinuousInput(-180, 180);
 
-        pidControllerX.setSetpoint(0);
-        pidControllerY.setSetpoint(0);
-        pidControllerAngle.setSetpoint(0);
+        pidControllerX.setSetpoint(targetPose.getX());
+        pidControllerY.setSetpoint(targetPose.getY());
+        pidControllerAngle.setSetpoint(targetPose.getRotation().getDegrees());
 
         this.swerve = swerve;
     }
@@ -53,12 +53,11 @@ public class AlignToPoseCommand extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Translation2d relativeTranslation = targetPose.getTranslation().minus(getPose().getTranslation());
-        Rotation2d relativeRotation = targetPose.getRotation().minus(getPose().getRotation());
-        LinearVelocity xVel = MetersPerSecond.of(pidControllerX.calculate(relativeTranslation.getX()));
-        LinearVelocity yVel = MetersPerSecond.of(pidControllerY.calculate(relativeTranslation.getY()));
+        Pose2d pose = getPose();
+        LinearVelocity xVel = MetersPerSecond.of(pidControllerX.calculate(pose.getX()));
+        LinearVelocity yVel = MetersPerSecond.of(pidControllerY.calculate(pose.getY()));
         AngularVelocity angleVel = DegreesPerSecond
-                .of(pidControllerAngle.calculate(relativeRotation.getDegrees()));
+                .of(pidControllerAngle.calculate(pose.getRotation().getDegrees()));
 
         swerve.driveFieldCentric(xVel, yVel, angleVel);
     }
