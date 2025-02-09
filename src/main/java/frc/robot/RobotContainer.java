@@ -44,6 +44,7 @@ public class RobotContainer {
     TeleopSwerve teleopSwerve = new TeleopSwerve(swerve, primaryController);
 
     AlignToPoseCommand moveToZero = new AlignToPoseCommand(Pose2d.kZero, SwerveConstants.SCORING_PID_X, SwerveConstants.SCORING_PID_Y, SwerveConstants.SCORING_PID_ANGLE, swerve);
+    AlignToPoseCommand reefAlign = AlignToReefCommands.alignToReef(0, 1, swerve);
     // #endregion
 
     // #region Triggers
@@ -66,6 +67,7 @@ public class RobotContainer {
     public RobotContainer() {
         swerve.registerTelemetry(swerveTelemetry::telemeterize);
         swerve.setDefaultCommand(teleopSwerve);
+        AlignToReefCommands.testReefPoses(); // publishes all reef target poses to networktables
 
         DriverStation.getAlliance().ifPresent(alliance -> {
             swerve.setOperatorPerspective(alliance == Alliance.Blue ? Rotation2d.kZero : Rotation2d.k180deg);
@@ -85,7 +87,7 @@ public class RobotContainer {
         elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setHeight(elevatorSubsystem.getHeight().plus(Inches.of(10)))));
         elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setHeight(elevatorSubsystem.getHeight().minus(Inches.of(10)))));
     
-        moveToZeroTrigger.whileTrue(moveToZero);
+        moveToZeroTrigger.whileTrue(reefAlign);
 
         elevatorSysIdQuasistatic.and(elevatorSysIdForward).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kForward));
         elevatorSysIdQuasistatic.and(elevatorSysIdBack).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kReverse));

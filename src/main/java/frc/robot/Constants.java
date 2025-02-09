@@ -255,9 +255,9 @@ public class Constants {
 
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
-                .withPID(1.75, 0.0, 0.0).withTolerance(2);
+                .withPID(1.75, 0.0, 0.0).withTolerance(Inches.of(2).in(Meters));
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(1.75, 0.0, 0.0).withTolerance(2);
+                .withPID(1.75, 0.0, 0.0).withTolerance(Inches.of(2).in(Meters));
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
