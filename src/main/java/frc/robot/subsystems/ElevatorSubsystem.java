@@ -60,18 +60,15 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     Angle initMotorPos;
 
-    DoubleEntry setpointEntry;
-    int setpointListener;
-
     // To be implemented: LaserCan
     // LaserCan laserCan = new LaserCan(0);
 
     // MockLaserCan laserCanSim = new MockLaserCan();
 
-    DCMotor elevatorGearbox = DCMotor.getKrakenX60(2);
+    DCMotor elevatorGearbox = DCMotor.getKrakenX60(1);
     ElevatorSim elevatorSim = new ElevatorSim(elevatorGearbox,
         GEAR_RATIO, CARRIAGE_MASS.in(Kilograms), DRUM_RADIUS.in(Meters), 
-        MAX_HEIGHT.in(Meters), MIN_HEIGHT.in(Meters), true, MIN_HEIGHT.in(Meters));
+        MIN_HEIGHT.in(Meters), MAX_HEIGHT.in(Meters), true, MIN_HEIGHT.in(Meters));
 
     Mechanism2d mech2d = new Mechanism2d(CANVAS_WIDTH.in(Meters), CANVAS_HEIGHT.in(Meters));
     MechanismRoot2d mechRoot2d = mech2d.getRoot("Elevator Root", ROOT.getX(), ROOT.getY());
@@ -94,18 +91,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         initMotorPos = motor1.getPosition().getValue();
 
-        SmartDashboard.putData("Elevator Sim", mech2d);
-        
-        setpointEntry = SETPOINT_TOPIC.getEntry(0);
-        NetworkTableListener.createListener(
-            setpointEntry,
-            EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-            event -> {
-                System.out.println("hi");
-                controller.setGoal(event.valueData.value.getDouble());
-            });
-        setpointEntry.set(0);
-
+        SmartDashboard.putData("Elevator Sim", mech2d);        
     }
 
     public void enable() {
@@ -129,16 +115,36 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setHeight(Distance height) {
-        controller.setGoal(height.in(Meters));
+        setRotations(heightToMotorRotations(height));
     }
 
     public void setRotations(double rotations) {
         controller.setGoal(rotations);
-        //setpointEntry.set(rotations);
     }
 
-    private Rotation2d heightToMotorRotations(Distance height) {
-        return Rotation2d.kZero;
+    public void setRotations(Angle rotations) {
+        controller.setGoal(rotations.in(Rotations));
+    }
+
+    private Distance laserCANtoHeight(Distance measured) {
+        Distance yIntercept = MAX_HEIGHT.minus(MIN_LASERCAN_DISTANCE.times(HEIGHT_CHANGE_PER_LASERCAN_DISTANCE));
+        return measured.times(HEIGHT_CHANGE_PER_LASERCAN_DISTANCE).plus(yIntercept);
+    }
+
+    private Distance motorRotationsToHeight(Angle rotations) {
+        return Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(rotations).in(Meters));
+    }
+    
+    private Angle heightToMotorRotations(Distance height) {
+        return Rotations.of(height.divideRatio(HEIGHT_PER_MOTOR_ROTATIONS).in(Rotations));
+    }
+
+    public double getOutputVolts() {
+        return motor1.getMotorVoltage().getValueAsDouble();
+    }
+
+    public Distance getSetpoint() {
+        return motorRotationsToHeight(Rotations.of(controller.getGoal().position));
     }
 
     public void stop() {
@@ -167,11 +173,12 @@ public class ElevatorSubsystem extends SubsystemBase {
         motor1sim.setSupplyVoltage(RobotController.getBatteryVoltage());
         motor2sim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-        elevatorSim.setInput(motor1sim.getMotorVoltage() + motor2sim.getMotorVoltage());
+        elevatorSim.setInput(motor1sim.getMotorVoltage());
         elevatorSim.update(Constants.SIM_LOOP_PERIOD.in(Seconds));
-
-        double rotations = heightToMotorRotations(Meters.of(elevatorSim.getPositionMeters())).getRotations();
-        double angularVel = heightToMotorRotations(Meters.of(elevatorSim.getVelocityMetersPerSecond())).getRotations();
+        
+        double rotations = heightToMotorRotations(Meters.of(elevatorSim.getPositionMeters())).in(Rotations);
+        double angularVel = heightToMotorRotations(Meters.of(elevatorSim.getVelocityMetersPerSecond())).in(Rotations);
+        SmartDashboard.putNumber("idk", elevatorSim.getPositionMeters());
 
         motor1sim.setRawRotorPosition(rotations);
         motor1sim.setRotorVelocity(angularVel);

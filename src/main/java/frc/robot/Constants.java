@@ -45,6 +45,8 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -54,6 +56,7 @@ import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mass;
 import edu.wpi.first.units.measure.MomentOfInertia;
+import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 
@@ -334,15 +337,18 @@ public class Constants {
 
         // Simulation
         public static final double GEAR_RATIO = 4;
-        public static final Mass CARRIAGE_MASS = Kilograms.of(2);
-        public static final Distance DRUM_RADIUS = Meters.of(0.05);
+        public static final Mass CARRIAGE_MASS = Ounces.of(50.884);
+        public static final Distance DRUM_RADIUS = Inches.of(1.888);
         public static final Distance MIN_HEIGHT = Meters.zero();
-        public static final Distance MAX_HEIGHT = Meters.of(1.8);
+        public static final Distance MAX_HEIGHT = Inches.of(72.154); // from base plate
+        public static final Distance MIN_LASERCAN_DISTANCE = Inches.of(0.5);
+        public static final double HEIGHT_CHANGE_PER_LASERCAN_DISTANCE = -3;
+        public static final Per<DistanceUnit, AngleUnit> HEIGHT_PER_MOTOR_ROTATIONS = Inches.of(0.79).div(Rotations.of(1));
 
         public static final Distance CANVAS_WIDTH = Inches.of(2);
         public static final Distance CANVAS_HEIGHT = Inches.of(42);
-        public static final Translation2d ROOT = new Translation2d(Inches.of(5), Inches.of(10));
-        
+        public static final Translation2d ROOT = new Translation2d(Inches.of(7), Inches.of(3.875));
+
     }
 
     public static class EndEffectorConstants {
