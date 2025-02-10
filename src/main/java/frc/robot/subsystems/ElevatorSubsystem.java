@@ -51,10 +51,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     ElevatorFeedforward elevatorFeedforward;
 
     TalonFX motor1;
-    TalonFX motor2;
 
     VoltageOut motorControl;
-    Follower followerControl;
 
     boolean enabled = true;
 
@@ -83,12 +81,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorFeedforward = CONTROL_CONSTANTS.getElevatorFeedforward();
 
         motor1 = new TalonFX(MOTOR_1_ID, Constants.CAN_FD_BUS);
-        motor2 = new TalonFX(MOTOR_2_ID, Constants.CAN_FD_BUS);
 
         motorControl = new VoltageOut(0);
-        followerControl = new Follower(motor1.getDeviceID(), MOTOR_OPPOSE_DIRECTION);
-        motor2.setControl(followerControl);
 
+        motor1.setPosition(0);
         initMotorPos = motor1.getPosition().getValue();
 
         SmartDashboard.putData("Elevator Sim", mech2d);        
@@ -103,7 +99,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public double getMotorRotations() {
-        return motor1.getPosition().getValue().minus(initMotorPos).in(Rotations);
+        return motor1.getPosition().getValue().in(Rotations);
     }
 
     public void setBrake(boolean shouldBrake) {
@@ -111,7 +107,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Distance getHeight() {
-        return Meters.of(elevatorSim.getPositionMeters());
+        return motorRotationsToHeight(Rotations.of(getMotorRotations()));
     }
 
     public void setHeight(Distance height) {
@@ -168,10 +164,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         TalonFXSimState motor1sim = motor1.getSimState();
-        TalonFXSimState motor2sim = motor2.getSimState();
 
         motor1sim.setSupplyVoltage(RobotController.getBatteryVoltage());
-        motor2sim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
         elevatorSim.setInput(motor1sim.getMotorVoltage());
         elevatorSim.update(Constants.SIM_LOOP_PERIOD.in(Seconds));
@@ -182,9 +176,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         motor1sim.setRawRotorPosition(rotations);
         motor1sim.setRotorVelocity(angularVel);
-
-        motor2sim.setRawRotorPosition(rotations);
-        motor2sim.setRotorVelocity(angularVel);
     }
 
     public Command stopCommand() {
@@ -229,7 +220,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final SysIdRoutine sysIdRoutine = new SysIdRoutine(
             new SysIdRoutine.Config(
                     Volts.of(1).per(Second),
-                    Volts.of(4), null,
+                    Volts.of(5), null,
                     state -> SignalLogger.writeString("SysId_Elevator_State", state.toString())),
             new SysIdRoutine.Mechanism(output -> 
                 motor1.setControl(motorControl.withOutput(output.in(Volts))),

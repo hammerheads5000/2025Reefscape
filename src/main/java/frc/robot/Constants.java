@@ -303,24 +303,17 @@ public class Constants {
     public static class ElevatorConstants {
         // Motors
         public static final int MOTOR_1_ID = 12;
-        public static final int MOTOR_2_ID = 13;
-        public static final boolean MOTOR_OPPOSE_DIRECTION = true; // whether motor 2 rotates the same direction as
-                                                                   // motor 1
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Amps.of(40));
-        public static final MotorOutputConfigs BRAKE_CONFIGS = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake);
-        public static final MotorOutputConfigs COAST_CONFIGS = new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast);
+        public static final MotorOutputConfigs OUTPUT_CONFIGS = new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive);
+        public static final MotorOutputConfigs BRAKE_CONFIGS = OUTPUT_CONFIGS.withNeutralMode(NeutralModeValue.Brake);
+        public static final MotorOutputConfigs COAST_CONFIGS = OUTPUT_CONFIGS.withNeutralMode(NeutralModeValue.Coast);
 
-        // Control (amps, rotations)
-        public static final ControlConstants CONTROL_CONSTANTS0 = new ControlConstants()
-                .withPID(45, 0.0, 2.9).withTolerance(1)
-                .withFeedforward(0, 0.1).withPhysical(2.72, 5.75)
-                .withProfile(20, 15);
-
+        // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0, 0.0, 0).withTolerance(1)
-                .withFeedforward(0.123, 0.002).withPhysical(0.11, 0.214)
-                .withProfile(15, 15);
+                .withPID(0.5, 1.0, 0).withTolerance(0.5)
+                .withFeedforward(0.1252, 0.003).withPhysical(0.327, 0.6)
+                .withProfile(300, 300);
 
         public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
 

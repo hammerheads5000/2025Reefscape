@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Rotations;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -84,8 +85,8 @@ public class RobotContainer {
 
         resetFieldRelative.onTrue(new InstantCommand(swerve::resetOdometry));
 
-        elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setHeight(elevatorSubsystem.getHeight().plus(Inches.of(10)))));
-        elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setHeight(elevatorSubsystem.getHeight().minus(Inches.of(10)))));
+        elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).plus(Rotations.of(20)))));
+        elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).minus(Rotations.of(20)))));
     
         moveToZeroTrigger.whileTrue(reefAlign);
 
