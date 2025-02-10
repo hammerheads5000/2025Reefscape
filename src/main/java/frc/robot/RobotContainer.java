@@ -87,7 +87,9 @@ public class RobotContainer {
 
         elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).plus(Rotations.of(20)))));
         elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).minus(Rotations.of(20)))));
-    
+        // elevatorUpTrigger.whileTrue(elevatorSubsystem.moveUpManualCommand());
+        // elevatorDownTrigger.whileTrue(elevatorSubsystem.moveDownManualCommand());
+
         moveToZeroTrigger.whileTrue(reefAlign);
 
         elevatorSysIdQuasistatic.and(elevatorSysIdForward).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kForward));

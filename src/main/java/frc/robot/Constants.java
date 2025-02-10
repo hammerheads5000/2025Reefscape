@@ -312,7 +312,7 @@ public class Constants {
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
                 .withPID(0.5, 1.0, 0).withTolerance(0.5)
-                .withFeedforward(0.1252, 0.003).withPhysical(0.327, 0.6)
+                .withFeedforward(0.1252, 0.003).withPhysical(0.327, 0.5)
                 .withProfile(300, 300);
 
         public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
@@ -336,7 +336,7 @@ public class Constants {
         public static final Distance MAX_HEIGHT = Inches.of(72.154); // from base plate
         public static final Distance MIN_LASERCAN_DISTANCE = Inches.of(0.5);
         public static final double HEIGHT_CHANGE_PER_LASERCAN_DISTANCE = -3;
-        public static final Per<DistanceUnit, AngleUnit> HEIGHT_PER_MOTOR_ROTATIONS = Inches.of(0.79).div(Rotations.of(1));
+        public static final Per<DistanceUnit, AngleUnit> HEIGHT_PER_MOTOR_ROTATIONS = Inches.of(0.82).div(Rotations.of(1));
 
         public static final Distance CANVAS_WIDTH = Inches.of(2);
         public static final Distance CANVAS_HEIGHT = Inches.of(42);

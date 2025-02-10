@@ -22,6 +22,7 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.epilogue.Logged;
@@ -103,7 +104,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setBrake(boolean shouldBrake) {
-        motor1.getConfigurator().apply(shouldBrake ? BRAKE_CONFIGS : COAST_CONFIGS);
+        motor1.setNeutralMode(shouldBrake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
     }
 
     public Distance getHeight() {
@@ -144,7 +145,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void stop() {
-        motor1.setControl(new NeutralOut());
+        motor1.setVoltage(elevatorFeedforward.getKg());
     }
 
     private void controlUpdate() {
