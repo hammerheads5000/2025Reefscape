@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Rotations;
+import static frc.robot.Constants.EndEffectorConstants.INTAKE_SPEED;
+import static frc.robot.Constants.EndEffectorConstants.SCORE_SPEED;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -25,6 +27,7 @@ import frc.robot.commands.AlignToReefCommands;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.autos.TestPathCommands;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.EndEffectorSubsystem;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -39,6 +42,7 @@ public class RobotContainer {
     //VisionSubsystem visionSubsystem = new VisionSubsystem(swerve);
     ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     SwerveTelemetry swerveTelemetry = new SwerveTelemetry();
+    EndEffectorSubsystem endEffectorSubsystem = new EndEffectorSubsystem();
     // #endregion
 
     // #region Commands
@@ -58,6 +62,9 @@ public class RobotContainer {
     Trigger elevatorDownTrigger = primaryController.povDown();
 
     Trigger moveToZeroTrigger = primaryController.x();
+
+    Trigger intakeTrigger = primaryController.rightBumper();
+    Trigger reverseIntakeTrigger = primaryController.leftBumper();
 
     Trigger elevatorSysIdQuasistatic = primaryController.start(); // on the right
     Trigger elevatorSysIdDynamic = primaryController.back(); // on the left
@@ -85,12 +92,15 @@ public class RobotContainer {
 
         resetFieldRelative.onTrue(new InstantCommand(swerve::resetOdometry));
 
-        elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).plus(Rotations.of(20)))));
-        elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).minus(Rotations.of(20)))));
+        elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).plus(Rotations.of(5)))));
+        elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).minus(Rotations.of(5)))));
         // elevatorUpTrigger.whileTrue(elevatorSubsystem.moveUpManualCommand());
         // elevatorDownTrigger.whileTrue(elevatorSubsystem.moveDownManualCommand());
 
         moveToZeroTrigger.whileTrue(reefAlign);
+
+        intakeTrigger.whileTrue(endEffectorSubsystem.forwardCommand(INTAKE_SPEED));
+        reverseIntakeTrigger.whileTrue(endEffectorSubsystem.forwardCommand(SCORE_SPEED));
 
         elevatorSysIdQuasistatic.and(elevatorSysIdForward).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kForward));
         elevatorSysIdQuasistatic.and(elevatorSysIdBack).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kReverse));

@@ -19,6 +19,7 @@ import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.subsystems.Swerve;
 
 /** Add your docs here. */
@@ -34,7 +35,7 @@ public class AlignToReefCommands {
     // distance from center of robot to center of reef
     private static final Distance REEF_APOTHEM = Meters.of(
             APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation().getDistance(REEF_CENTER_BLUE))
-            .plus(DISTANCE_TO_REEF);
+            .plus(AutoConstants.DISTANCE_TO_REEF);
 
     // translation to move from centered on a side to scoring position for the left branch
     private static final Translation2d CENTERED_TO_LEFT_BRANCH = new Translation2d(Meters.of(0),
@@ -49,7 +50,7 @@ public class AlignToReefCommands {
      */
     public static Pose2d getReefPose(int side, int relativePos) {
         flipToRed = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
-        System.out.println(flipToRed);
+
         Translation2d reefCenter = REEF_CENTER_BLUE;
 
         // robot position centered on close reef side

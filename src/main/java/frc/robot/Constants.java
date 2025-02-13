@@ -70,6 +70,7 @@ public class Constants {
 
     public static final double CONTROLLER_DEADBAND = .225;
     
+    public static final Distance BUMPER_THICKNESS = Inches.of(3.5);
 
     public static class SwerveConstants {
         public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(3);//define later
@@ -272,6 +273,9 @@ public class Constants {
                 SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
                 SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1)));
+    
+        public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
+        public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching  
     }
 
     public static class VisionConstants {
@@ -346,13 +350,13 @@ public class Constants {
 
     public static class EndEffectorConstants {
         // Motors
-        public static final int MOTOR_LEFT_ID = 0;
-        public static final int MOTOR_RIGHT_ID = 0;
+        public static final int MOTOR_LEFT_ID = 31;
+        public static final int MOTOR_RIGHT_ID = 30;
 
         public static final MotorOutputConfigs MOTOR_LEFT_CONFIGS = new MotorOutputConfigs()
                 .withInverted(InvertedValue.Clockwise_Positive);
         public static final MotorOutputConfigs MOTOR_RIGHT_CONFIGS = new MotorOutputConfigs()
-                .withInverted(InvertedValue.Clockwise_Positive);
+                .withInverted(InvertedValue.CounterClockwise_Positive);
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Amps.of(10));
 
@@ -362,7 +366,7 @@ public class Constants {
 
         // Speed (duty cycle)
         public static final double INTAKE_SPEED = 1;
-        public static final double SCORE_SPEED = 1;
+        public static final double SCORE_SPEED = 0.1;
         public static final double FAST_TROUGH_SPEED = 0.5;
         public static final double SLOW_TROUGH_SPEED = 0.25;
     }
@@ -379,6 +383,9 @@ public class Constants {
                 Meters.of(1.16), Meters.of(1.02),
                 Rotation2d.fromDegrees(-125));
 
-        public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2);
+        public static final Pose2d STATION_0 = APRIL_TAGS.getTagPose(12).get().toPose2d();
+        public static final Pose2d STATION_1 = APRIL_TAGS.getTagPose(13).get().toPose2d();
+        
+        public static final Distance SIDE_STATION_OFFSET = Inches.of(29).plus(BUMPER_THICKNESS).div(2);
     }
 }

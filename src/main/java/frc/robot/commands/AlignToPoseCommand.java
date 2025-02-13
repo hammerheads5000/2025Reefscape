@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.epilogue.Logged;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.ControlConstants;
@@ -21,7 +23,7 @@ import frc.robot.subsystems.Swerve;
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 @Logged
 public class AlignToPoseCommand extends Command {
-    Pose2d targetPose;
+    public Pose2d targetPose;
     PIDController pidControllerX;
     PIDController pidControllerY;
     PIDController pidControllerAngle;
@@ -69,6 +71,14 @@ public class AlignToPoseCommand extends Command {
 
     private Pose2d getPose() {
         return swerve.getPose();
+    }
+
+    public LinearVelocity calculateXPID(Distance error) {
+        return MetersPerSecond.of(pidControllerX.calculate(error.in(Meters)));
+    }
+
+    public LinearVelocity calculateYPID(Distance error) {
+        return MetersPerSecond.of(pidControllerY.calculate(error.in(Meters)));
     }
 
     // Returns true when the command should end.
