@@ -45,7 +45,7 @@ public class VisionSubsystem extends SubsystemBase {
         poseEstimatorB = new PhotonPoseEstimator(fieldLayout, POSE_STRATEGY, BACK_CAM_POS);
     }
 
-    public EstimatedRobotPose estimatedPoseFromResult(PhotonPipelineResult result, PhotonPoseEstimator poseEstimator) {
+    private EstimatedRobotPose estimatedPoseFromResult(PhotonPipelineResult result, PhotonPoseEstimator poseEstimator) {
         Optional<EstimatedRobotPose> optionalPose = poseEstimator.update(result);
 
         if (optionalPose.isEmpty()) {
@@ -56,7 +56,7 @@ public class VisionSubsystem extends SubsystemBase {
         return estimatedRobotPose;
     }
 
-    public boolean updatePoseEstimator(PhotonPoseEstimator poseEstimator, PhotonCamera cam) {
+    private boolean updatePoseEstimator(PhotonPoseEstimator poseEstimator, PhotonCamera cam) {
         List<PhotonPipelineResult> results = cam.getAllUnreadResults();
         hasTarget = false;
 
