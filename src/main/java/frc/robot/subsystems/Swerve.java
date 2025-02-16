@@ -19,6 +19,9 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
@@ -49,6 +52,9 @@ public class Swerve extends SubsystemBase {
     private SwerveRequest.FieldCentric fieldCentricRequest;
     private SwerveRequest.RobotCentric robotCentricRequest;
     private SwerveRequest.ApplyRobotSpeeds pathApplyRobotSpeeds;
+
+    private SwerveSetpointGenerator swerveSetpointGenerator;
+    private SwerveSetpoint previouSetpoint;
 
     // #region SysId Setup
     /* Swerve requests to apply during SysId characterization */
@@ -202,7 +208,8 @@ public class Swerve extends SubsystemBase {
     }
 
     public void applyChassisSpeeds(ChassisSpeeds chassisSpeeds) {
-        drivetrain.setControl(pathApplyRobotSpeeds.withSpeeds(chassisSpeeds));
+        previouSetpoint = swerveSetpointGenerator.generateSetpoint(previouSetpoint, chassisSpeeds, 0.02);
+        drivetrain.setControl(pathApplyRobotSpeeds.withSpeeds(previouSetpoint.robotRelativeSpeeds()));
     }
 
     public Pose2d getPose() {
@@ -293,6 +300,9 @@ public class Swerve extends SubsystemBase {
                 && DriverStation.getAlliance().get() == Alliance.Red,
             this
         );
+
+        swerveSetpointGenerator = new SwerveSetpointGenerator(getPPConfig(), MAX_MODULE_ROT_SPEED.in(RadiansPerSecond));
+        previouSetpoint = new SwerveSetpoint(getChassisSpeeds(), drivetrain.getState().ModuleStates, DriveFeedforwards.zeros(4));
     }
 
     @Override

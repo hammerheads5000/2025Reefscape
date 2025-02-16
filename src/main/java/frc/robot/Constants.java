@@ -83,6 +83,7 @@ public class Constants {
         public static final AngularVelocity SLOW_ROT_SPEED = RotationsPerSecond.of(0.5);
 
         public static final LinearAcceleration MAX_TELEOP_ACCEL = MetersPerSecondPerSecond.of(15);
+        public static final AngularVelocity MAX_MODULE_ROT_SPEED = RotationsPerSecond.of(5);
 
         // distance between modules on same side (front to back or left to right)
         private static final Distance MODULE_DISTANCE = Inches.of(23.75);
