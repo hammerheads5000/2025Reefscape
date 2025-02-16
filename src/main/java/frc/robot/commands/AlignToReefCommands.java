@@ -22,17 +22,19 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.subsystems.Swerve;
 
-/** Add your docs here. */
 public class AlignToReefCommands {
+    // Pose at midpoint between tags 18 and 21 (which are opposite on blue reef)
     private static final Translation2d REEF_CENTER_BLUE = APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation()
-        .plus(APRIL_TAGS.getTagPose(21).get().toPose2d().getTranslation()).div(2); // pos between opposite tags
+        .plus(APRIL_TAGS.getTagPose(21).get().toPose2d().getTranslation()).div(2);
 
+    // Pose at midpoint between tags 10 and 7 (which are opposite on red reef)
     private static final Translation2d REEF_CENTER_RED = APRIL_TAGS.getTagPose(10).get().toPose2d().getTranslation()
-        .plus(APRIL_TAGS.getTagPose(7).get().toPose2d().getTranslation()).div(2); // pos between opposite tags
+        .plus(APRIL_TAGS.getTagPose(7).get().toPose2d().getTranslation()).div(2);
 
-    private static boolean flipToRed;
+    private static boolean flipToRed; // whether to use red reef (otherwise blue)
 
-    // distance from center of robot to center of reef
+    // Distance from center of robot to center of reef
+    // Found by taking distance from tag 18 to center and adding offset from reef
     private static final Distance REEF_APOTHEM = Meters.of(
             APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation().getDistance(REEF_CENTER_BLUE))
             .plus(AutoConstants.DISTANCE_TO_REEF);
@@ -49,17 +51,20 @@ public class AlignToReefCommands {
      * @return The calculated Pose2d for scoring.
      */
     public static Pose2d getReefPose(int side, int relativePos) {
+        // determine whether to use red or blue reef position
         flipToRed = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
 
+        // initially do all calculations from blue, then flip later
         Translation2d reefCenter = REEF_CENTER_BLUE;
 
         // robot position centered on close reef side
-        Translation2d translation = reefCenter.plus(new Translation2d(REEF_APOTHEM.unaryMinus(), Meters.of(0)));
+        Translation2d translation = reefCenter.plus(new Translation2d(REEF_APOTHEM.unaryMinus(), Meters.zero()));
         // translate to correct branch (left, right, center)
         translation = translation.plus(CENTERED_TO_LEFT_BRANCH.times(relativePos));
         // rotate to correct side
         translation = translation.rotateAround(reefCenter, Rotation2d.fromDegrees(-60 * side));
 
+        // make pose from translation and correct rotation
         Pose2d reefPose = new Pose2d(translation,
                 Rotation2d.fromDegrees(-60 * side));
 
