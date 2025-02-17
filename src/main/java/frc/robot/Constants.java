@@ -374,7 +374,7 @@ public class Constants {
 
     public static class FieldConstants {
         public static final AprilTagFieldLayout APRIL_TAGS = AprilTagFieldLayout
-                .loadField(AprilTagFields.kDefaultField);
+                .loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
         public static final Pose2d LEFT_CORAL_STATION = new Pose2d(
                 Meters.of(1.16), Meters.of(7.013),
