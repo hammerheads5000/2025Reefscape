@@ -24,7 +24,7 @@ public class TestPathCommands {
     public static Command moveForwardTest() {
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
                 new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
-                new Pose2d(Meters.of(1), Meters.zero(), Rotation2d.fromDegrees(0)));
+                new Pose2d(SIDE_DISTANCE, Meters.zero(), Rotation2d.fromDegrees(0)));
 
         PathPlannerPath path = new PathPlannerPath(
                 waypoints, CONSTRAINTS, null,
@@ -36,7 +36,7 @@ public class TestPathCommands {
     public static Command moveForwardBackTest() {
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
                 new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
-                new Pose2d(Meters.of(1), Meters.zero(), Rotation2d.fromDegrees(0)),
+                new Pose2d(SIDE_DISTANCE, Meters.zero(), Rotation2d.fromDegrees(0)),
                 new Pose2d(0, 0, Rotation2d.fromDegrees(180)));
         
         PathPlannerPath path = new PathPlannerPath(
@@ -49,10 +49,10 @@ public class TestPathCommands {
     public static Command moveSquareTest() {
         List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
                 new Pose2d(0, 0, Rotation2d.fromDegrees(0)),
-                new Pose2d(Meters.of(1), Meters.zero(), Rotation2d.fromDegrees(0)),
-                new Pose2d(Meters.of(1), Meters.of(1), Rotation2d.fromDegrees(90)),
-                new Pose2d(Meters.zero(), Meters.of(1), Rotation2d.fromDegrees(180)),
-                new Pose2d(0, 0, Rotation2d.fromDegrees(-90)));
+                new Pose2d(SIDE_DISTANCE, Meters.zero(), Rotation2d.fromDegrees(45)),
+                new Pose2d(SIDE_DISTANCE, SIDE_DISTANCE, Rotation2d.fromDegrees(135)),
+                new Pose2d(Meters.zero(), SIDE_DISTANCE, Rotation2d.fromDegrees(225)),
+                new Pose2d(0, 0, Rotation2d.fromDegrees(-45)));
 
         PathPlannerPath path = new PathPlannerPath(
                 waypoints, CONSTRAINTS, null,

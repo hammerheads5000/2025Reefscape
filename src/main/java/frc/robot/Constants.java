@@ -270,10 +270,12 @@ public class Constants {
     public static class AutoConstants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
-                SwerveConstants.DEFAULT_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1)),
-                SwerveConstants.DEFAULT_ROT_SPEED,
-                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1)));
+                SwerveConstants.FAST_DRIVE_SPEED,
+                SwerveConstants.FAST_DRIVE_SPEED.div(Seconds.of(1)),
+                SwerveConstants.FAST_ROT_SPEED,
+                SwerveConstants.FAST_ROT_SPEED.div(Seconds.of(0.7)));
+
+        public static final Distance SIDE_DISTANCE = Meters.of(3);
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
         public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching  

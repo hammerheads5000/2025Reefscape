@@ -36,6 +36,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -52,9 +53,12 @@ public class Swerve extends SubsystemBase {
     private SwerveRequest.FieldCentric fieldCentricRequest;
     private SwerveRequest.RobotCentric robotCentricRequest;
     private SwerveRequest.ApplyRobotSpeeds pathApplyRobotSpeeds;
+    private SwerveRequest.SwerveDriveBrake brakeRequest;
 
     private SwerveSetpointGenerator swerveSetpointGenerator;
     private SwerveSetpoint previouSetpoint;
+    @Logged
+    private ChassisSpeeds ppChassisSpeeds;
 
     // #region SysId Setup
     /* Swerve requests to apply during SysId characterization */
@@ -197,6 +201,10 @@ public class Swerve extends SubsystemBase {
         drivetrain.setOperatorPerspectiveForward(perspective);
     }
 
+    public void stop() {
+        drivetrain.setControl(brakeRequest);
+    }
+
     public void driveFieldCentric(LinearVelocity xVel, LinearVelocity yVel, AngularVelocity rotVel) {
         drivetrain.setControl(fieldCentricRequest
                 .withVelocityX(xVel).withVelocityY(yVel).withRotationalRate(rotVel));
@@ -209,6 +217,7 @@ public class Swerve extends SubsystemBase {
 
     public void applyChassisSpeeds(ChassisSpeeds chassisSpeeds) {
         previouSetpoint = swerveSetpointGenerator.generateSetpoint(previouSetpoint, chassisSpeeds, 0.02);
+        ppChassisSpeeds = previouSetpoint.robotRelativeSpeeds();
         drivetrain.setControl(pathApplyRobotSpeeds.withSpeeds(previouSetpoint.robotRelativeSpeeds()));
     }
 
@@ -292,8 +301,8 @@ public class Swerve extends SubsystemBase {
             this::getChassisSpeeds,
             (speeds, feedforwards) -> applyChassisSpeeds(speeds),
             new PPHolonomicDriveController(
-                new PIDConstants(0.2),
-                new PIDConstants(0.2)
+                new PIDConstants(5, 0, 0),
+                new PIDConstants(2, 0, 0)
             ),
             getPPConfig(),
             () -> DriverStation.getAlliance().isPresent() 

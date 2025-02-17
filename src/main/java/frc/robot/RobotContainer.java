@@ -109,6 +109,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return TestPathCommands.moveForwardBackTest().beforeStarting(new InstantCommand(swerve::resetOdometry));
+        return TestPathCommands.moveSquareTest().beforeStarting(new InstantCommand(swerve::resetOdometry)).andThen(new InstantCommand(swerve::stop));
     }
 }
