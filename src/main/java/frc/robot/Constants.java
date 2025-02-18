@@ -271,10 +271,12 @@ public class Constants {
     public static class AutoConstants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
-                SwerveConstants.DEFAULT_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1)),
-                SwerveConstants.DEFAULT_ROT_SPEED,
-                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1)));
+                SwerveConstants.FAST_DRIVE_SPEED,
+                SwerveConstants.FAST_DRIVE_SPEED.div(Seconds.of(1)),
+                SwerveConstants.FAST_ROT_SPEED,
+                SwerveConstants.FAST_ROT_SPEED.div(Seconds.of(0.7)));
+
+        public static final Distance SIDE_DISTANCE = Meters.of(3);
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
         public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching  
@@ -375,7 +377,7 @@ public class Constants {
 
     public static class FieldConstants {
         public static final AprilTagFieldLayout APRIL_TAGS = AprilTagFieldLayout
-                .loadField(AprilTagFields.kDefaultField);
+                .loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
         public static final Pose2d LEFT_CORAL_STATION = new Pose2d(
                 Meters.of(1.16), Meters.of(7.013),
@@ -385,8 +387,8 @@ public class Constants {
                 Meters.of(1.16), Meters.of(1.02),
                 Rotation2d.fromDegrees(-125));
 
-        public static final Pose2d STATION_0 = APRIL_TAGS.getTagPose(12).get().toPose2d();
-        public static final Pose2d STATION_1 = APRIL_TAGS.getTagPose(13).get().toPose2d();
+        public static final Pose2d STATION_0 = APRIL_TAGS.getTagPose(12).get().toPose2d().rotateBy(Rotation2d.k180deg);
+        public static final Pose2d STATION_1 = APRIL_TAGS.getTagPose(13).get().toPose2d().rotateBy(Rotation2d.k180deg);
         
         public static final Distance SIDE_STATION_OFFSET = Inches.of(29).plus(BUMPER_THICKNESS).div(2);
     }

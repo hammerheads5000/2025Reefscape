@@ -52,7 +52,21 @@ public class AlignToReefCommands {
      */
     public static Pose2d getReefPose(int side, int relativePos) {
         // determine whether to use red or blue reef position
-        flipToRed = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+        boolean isRed = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+
+        return getReefPose(side, relativePos, isRed);
+    }
+
+    /**
+     * Calculates the pose of the robot for scoring on a branch or trough.
+     *
+     * @param side The side of the reef (0 for left, increases clockwise).
+     * @param relativePos The relative position on the reef (-1 for right branch, 0 for center, 1 for left branch).
+     * @return The calculated Pose2d for scoring.
+     */
+    public static Pose2d getReefPose(int side, int relativePos, boolean isRed) {
+        // determine whether to use red or blue reef position
+        flipToRed = isRed;
 
         // initially do all calculations from blue, then flip later
         Translation2d reefCenter = REEF_CENTER_BLUE;
@@ -87,18 +101,34 @@ public class AlignToReefCommands {
     }
 
     public static void testReefPoses() {
-        StructArrayPublisher<Pose2d> publisher = NetworkTableInstance.getDefault().getStructArrayTopic("Pts", Pose2d.struct).publish();
-        Pose2d[] poses = new Pose2d[20];
-        for (int side = 0; side < 6; side++) {
-            Pose2d left = AlignToReefCommands.getReefPose(side, -1);
-            Pose2d center = AlignToReefCommands.getReefPose(side, 0);
-            Pose2d right = AlignToReefCommands.getReefPose(side, 1);
-            poses[side*3] = left;
-            poses[side*3+1] = center;
-            poses[side*3+2] = right;
+        testReefPoses(false, -1);
+        testReefPoses(false, 0);
+        testReefPoses(false, 1);
+        testReefPoses(true, -1);
+        testReefPoses(true, 0);
+        testReefPoses(true, 1);
+    }
+
+    public static void testReefPoses(boolean isRed, int relativePos) {
+        String topicName = "Reef Alignment Poses/";
+        topicName += isRed ? "Red " : "Blue ";
+        if (relativePos == -1) {
+            topicName += "Right ";
         }
-        poses[18] = new Pose2d(REEF_CENTER_BLUE, Rotation2d.kZero);
-        poses[19] = new Pose2d(REEF_CENTER_RED, Rotation2d.kZero);
+        else if (relativePos == 1) {
+            topicName += "Left ";
+        }
+        else {
+            topicName += "Center ";
+        }
+        
+        StructArrayPublisher<Pose2d> publisher = NetworkTableInstance.getDefault().getStructArrayTopic(topicName, Pose2d.struct).publish();
+        
+        Pose2d[] poses = new Pose2d[6];
+        for (int side = 0; side < 6; side++) {
+            poses[side] = getReefPose(side, relativePos, isRed);
+        }
+
         publisher.set(poses);
     }
 }
