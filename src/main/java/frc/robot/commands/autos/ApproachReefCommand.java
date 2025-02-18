@@ -35,8 +35,7 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         Pose2d approachTarget = AlignToReefCommands.getReefPose(side, relativePos);
         
         Translation2d shiftApproachTransform = new Translation2d(APPROACH_DISTANCE.unaryMinus(), Meters.zero());
-        shiftApproachTransform = shiftApproachTransform.rotateBy(approachTarget.getRotation());
-        approachTarget = approachTarget.transformBy(new Transform2d(shiftApproachTransform, Rotation2d.kZero));
+        approachTarget = approachTarget.plus(new Transform2d(shiftApproachTransform, Rotation2d.kZero));
 
         double relativeApproachX = approachTarget.minus(alignToReefCommand.targetPose).getX();
         double relativeApproachY = approachTarget.minus(alignToReefCommand.targetPose).getY();
@@ -45,7 +44,6 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         double initialPIDSpeed = initialPIDVelocity.projection(VecBuilder.fill(direction.getX(), direction.getY())).norm();
 
         Command pathFindingCommand = AutoBuilder.pathfindToPose(approachTarget, CONSTRAINTS, initialPIDSpeed);
-
         addCommands(
             pathFindingCommand,
             alignToReefCommand

@@ -386,8 +386,8 @@ public class Constants {
                 Meters.of(1.16), Meters.of(1.02),
                 Rotation2d.fromDegrees(-125));
 
-        public static final Pose2d STATION_0 = APRIL_TAGS.getTagPose(12).get().toPose2d();
-        public static final Pose2d STATION_1 = APRIL_TAGS.getTagPose(13).get().toPose2d();
+        public static final Pose2d STATION_0 = APRIL_TAGS.getTagPose(12).get().toPose2d().rotateBy(Rotation2d.k180deg);
+        public static final Pose2d STATION_1 = APRIL_TAGS.getTagPose(13).get().toPose2d().rotateBy(Rotation2d.k180deg);
         
         public static final Distance SIDE_STATION_OFFSET = Inches.of(29).plus(BUMPER_THICKNESS).div(2);
     }
