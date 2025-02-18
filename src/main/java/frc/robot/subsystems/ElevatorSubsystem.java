@@ -123,16 +123,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         controller.setGoal(rotations.in(Rotations));
     }
 
-    private Distance laserCANtoHeight(Distance measured) {
+    public static Distance laserCANtoHeight(Distance measured) {
         Distance yIntercept = MAX_HEIGHT.minus(MIN_LASERCAN_DISTANCE.times(HEIGHT_CHANGE_PER_LASERCAN_DISTANCE));
         return measured.times(HEIGHT_CHANGE_PER_LASERCAN_DISTANCE).plus(yIntercept);
     }
 
-    private Distance motorRotationsToHeight(Angle rotations) {
+    public static Distance motorRotationsToHeight(Angle rotations) {
         return Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(rotations).in(Meters));
     }
     
-    private Angle heightToMotorRotations(Distance height) {
+    public static Angle heightToMotorRotations(Distance height) {
         return Rotations.of(height.divideRatio(HEIGHT_PER_MOTOR_ROTATIONS).in(Rotations));
     }
 

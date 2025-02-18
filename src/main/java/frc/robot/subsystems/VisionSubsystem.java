@@ -31,11 +31,11 @@ public class VisionSubsystem extends SubsystemBase {
 
     private PhotonPoseEstimator poseEstimatorFL; // front left
     private PhotonPoseEstimator poseEstimatorFR; // front right
-    private PhotonPoseEstimator poseEstimatorB; // back
+    //private PhotonPoseEstimator poseEstimatorB; // back
 
     private PhotonCamera camFL = new PhotonCamera(FRONT_LEFT_CAM_NAME); // front left
     private PhotonCamera camFR = new PhotonCamera(FRONT_RIGHT_CAM_NAME); // front right
-    private PhotonCamera camB = new PhotonCamera(BACK_CAM_NAME); // back
+    //private PhotonCamera camB = new PhotonCamera(BACK_CAM_NAME); // back
     
     private boolean hasTarget = false;
 
@@ -46,7 +46,7 @@ public class VisionSubsystem extends SubsystemBase {
     SimCameraProperties camProperties = new SimCameraProperties();
     PhotonCameraSim camFLSim = new PhotonCameraSim(camFL, camProperties);
     PhotonCameraSim camFRSim = new PhotonCameraSim(camFR, camProperties);
-    PhotonCameraSim camBSim = new PhotonCameraSim(camB, camProperties);
+    //PhotonCameraSim camBSim = new PhotonCameraSim(camB, camProperties);
 
     /** Creates a new AprilTagSubsystem. */
     public VisionSubsystem(Swerve swerve) {
@@ -55,7 +55,7 @@ public class VisionSubsystem extends SubsystemBase {
         fieldLayout = FieldConstants.APRIL_TAGS;
         poseEstimatorFL = new PhotonPoseEstimator(fieldLayout, POSE_STRATEGY, FRONT_LEFT_CAM_POS);
         poseEstimatorFR = new PhotonPoseEstimator(fieldLayout, POSE_STRATEGY, FRONT_RIGHT_CAM_POS);
-        poseEstimatorB = new PhotonPoseEstimator(fieldLayout, POSE_STRATEGY, BACK_CAM_POS);
+        //poseEstimatorB = new PhotonPoseEstimator(fieldLayout, POSE_STRATEGY, BACK_CAM_POS);
     
         visionSim.addAprilTags(fieldLayout);
         camProperties.setCalibration(800, 600, Rotation2d.fromDegrees(82.4));
@@ -65,16 +65,15 @@ public class VisionSubsystem extends SubsystemBase {
         camProperties.setLatencyStdDevMs(5);
         visionSim.addCamera(camFLSim, FRONT_LEFT_CAM_POS);
         visionSim.addCamera(camFRSim, FRONT_RIGHT_CAM_POS);
-        visionSim.addCamera(camBSim, BACK_CAM_POS);
+        //visionSim.addCamera(camBSim, BACK_CAM_POS);
         
         camFLSim.enableDrawWireframe(true);
         camFRSim.enableDrawWireframe(true);
-        camBSim.enableDrawWireframe(true);
+        //camBSim.enableDrawWireframe(true);
     }
 
     private EstimatedRobotPose estimatedPoseFromResult(PhotonPipelineResult result, PhotonPoseEstimator poseEstimator) {
         Optional<EstimatedRobotPose> optionalPose = poseEstimator.update(result);
-
         if (optionalPose.isEmpty()) {
             return null;
         }
@@ -97,7 +96,7 @@ public class VisionSubsystem extends SubsystemBase {
             swerve.addVisionMeasurement(estimatedRobotPose);
         }
 
-        return !hasTarget;
+        return hasTarget;
     }
 
     public boolean hasAprilTag() {
@@ -109,8 +108,8 @@ public class VisionSubsystem extends SubsystemBase {
         if(Utils.isSimulation()) return;
         
         hasTarget = updatePoseEstimator(poseEstimatorFL, camFL) ||
-                updatePoseEstimator(poseEstimatorFR, camFR) ||
-                updatePoseEstimator(poseEstimatorB, camB);
+                updatePoseEstimator(poseEstimatorFR, camFR);// ||
+                //updatePoseEstimator(poseEstimatorB, camB);
     }
 
     @Override

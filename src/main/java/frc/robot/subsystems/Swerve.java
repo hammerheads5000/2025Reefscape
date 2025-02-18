@@ -230,7 +230,7 @@ public class Swerve extends SubsystemBase {
      */
     public void addVisionMeasurement(EstimatedRobotPose estimatedRobotPose) {
         drivetrain.addVisionMeasurement(estimatedRobotPose.estimatedPose.toPose2d(),
-                estimatedRobotPose.timestampSeconds);
+                Utils.fpgaToCurrentTime(estimatedRobotPose.timestampSeconds));
     }
 
     /**
@@ -244,7 +244,7 @@ public class Swerve extends SubsystemBase {
      */
     public void addVisionMeasurement(EstimatedRobotPose estimatedRobotPose, Matrix<N3, N1> stdDevs) {
         drivetrain.addVisionMeasurement(estimatedRobotPose.estimatedPose.toPose2d(),
-                estimatedRobotPose.timestampSeconds, stdDevs);
+                Utils.fpgaToCurrentTime(estimatedRobotPose.timestampSeconds), stdDevs);
     }
 
     /**
@@ -252,12 +252,13 @@ public class Swerve extends SubsystemBase {
      * 
      * @param poseArray double array storing the data of a Pose2d of format {x
      *                  (meters), y (meters), rotation (radians)}
-     * @param timestamp timestamp in microseconds
+     * @param timestamp FPGA timestamp in microseconds
      */
     public void addVisionMeasurement(double[] poseArray, long timestamp) {
         // converts array of format {x (m), y (m), rotation (rad)} to Pose2d
         Pose2d pose = new Pose2d(poseArray[0], poseArray[1], new Rotation2d(poseArray[2]));
         double timestampSeconds = Microseconds.of(timestamp).in(Seconds);
+        timestampSeconds = Utils.fpgaToCurrentTime(timestampSeconds);
         drivetrain.addVisionMeasurement(pose, timestampSeconds);
     }
 

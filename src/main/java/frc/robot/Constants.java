@@ -59,6 +59,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
+import frc.robot.subsystems.ElevatorSubsystem;
 
 public class Constants {
     public static final CANBus CAN_FD_BUS = new CANBus("Bobby");
@@ -257,13 +258,13 @@ public class Constants {
 
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
-                .withPID(1.75, 0.0, 0.0).withTolerance(Inches.of(2).in(Meters));
+                .withPID(1.75, 0.1, 0.0).withTolerance(Inches.of(2).in(Meters));
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(1.75, 0.0, 0.0).withTolerance(Inches.of(2).in(Meters));
+                .withPID(1.75, 0.1, 0.0).withTolerance(Inches.of(2).in(Meters));
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
-                .withPID(2.5, 0.0, 0.0).withTolerance(2);
+                .withPID(2.5, 0.1, 0.0).withTolerance(1);
 
     }
 
@@ -280,19 +281,19 @@ public class Constants {
     }
 
     public static class VisionConstants {
-        public static final String FRONT_LEFT_CAM_NAME = "Front Left Cam";
-        public static final String FRONT_RIGHT_CAM_NAME = "Front Right Cam";
+        public static final String FRONT_LEFT_CAM_NAME = "Arducam_OV9281_FL01";
+        public static final String FRONT_RIGHT_CAM_NAME = "Arducam_OV9281_FR01";
         public static final String BACK_CAM_NAME = "Back Cam";
 
         // Transforms from robot to cameras, (x forward, y left, z up), (roll, pitch, yaw)
         public static final Transform3d FRONT_LEFT_CAM_POS = new Transform3d(
-            new Translation3d(SwerveConstants.MODULE_DISTANCE.div(2), SwerveConstants.MODULE_DISTANCE.div(-2), Inches.of(5)),
-            new Rotation3d(Degrees.zero(), Degrees.zero(), Degrees.zero())
+            new Translation3d(SwerveConstants.MODULE_DISTANCE.div(2), SwerveConstants.MODULE_DISTANCE.div(2), Inches.of(10)),
+            new Rotation3d(Degrees.zero(), Degrees.of(38), Degrees.of(-45))
         );
 
         public static final Transform3d FRONT_RIGHT_CAM_POS = new Transform3d(
-            new Translation3d(SwerveConstants.MODULE_DISTANCE.div(2), SwerveConstants.MODULE_DISTANCE.div(2), Inches.of(5)),
-            new Rotation3d(Degrees.zero(), Degrees.zero(), Degrees.zero())
+            new Translation3d(SwerveConstants.MODULE_DISTANCE.div(2), SwerveConstants.MODULE_DISTANCE.div(-2), Inches.of(10)),
+            new Rotation3d(Degrees.zero(), Degrees.of(20), Degrees.of(45))
         );
 
         public static final Transform3d BACK_CAM_POS = new Transform3d(
@@ -300,7 +301,7 @@ public class Constants {
             new Rotation3d(Degrees.zero(), Degrees.zero(), Degrees.zero())
         );
 
-        public static final PoseStrategy POSE_STRATEGY = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
+        public static final PoseStrategy POSE_STRATEGY = PoseStrategy.AVERAGE_BEST_TARGETS;
 
         public static final DoubleArrayTopic POSE_TOPIC = INST.getDoubleArrayTopic("/Vision/Estimated Pose");
     }
@@ -322,17 +323,11 @@ public class Constants {
 
         public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
 
-        // Setpoints
-        public static final Distance L1_HEIGHT = Inches.of(0);
-        public static final Distance L2_HEIGHT = Inches.of(0);
-        public static final Distance L3_HEIGHT = Inches.of(0);
-        public static final Distance L4_HEIGHT = Inches.of(0);
-        public static final Distance INTAKE_HEIGHT = Inches.of(0);
-
+        
         // Manual control (duty cycle)
         public static final double MANUAL_UP_SPEED = 0.3;
         public static final double MANUAL_DOWN_SPEED = -0.2;
-
+        
         // Simulation
         public static final double GEAR_RATIO = 4;
         public static final Mass CARRIAGE_MASS = Ounces.of(50.884);
@@ -342,11 +337,17 @@ public class Constants {
         public static final Distance MIN_LASERCAN_DISTANCE = Inches.of(0.5);
         public static final double HEIGHT_CHANGE_PER_LASERCAN_DISTANCE = -3;
         public static final Per<DistanceUnit, AngleUnit> HEIGHT_PER_MOTOR_ROTATIONS = Inches.of(0.82).div(Rotations.of(1));
-
+        
         public static final Distance CANVAS_WIDTH = Inches.of(2);
         public static final Distance CANVAS_HEIGHT = Inches.of(42);
         public static final Translation2d ROOT = new Translation2d(Inches.of(7), Inches.of(3.875));
-
+        
+        // Setpoints
+        public static final Distance L1_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(28)).in(Meters));
+        public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(40)).in(Meters));
+        public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(64)).in(Meters));
+        public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(80)).in(Meters));
+        public static final Distance INTAKE_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(19)).in(Meters));
     }
 
     public static class EndEffectorConstants {

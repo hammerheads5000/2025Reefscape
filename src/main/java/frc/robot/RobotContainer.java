@@ -39,7 +39,7 @@ public class RobotContainer {
 
     // #region Subsystems
     Swerve swerve = new Swerve();
-    //VisionSubsystem visionSubsystem = new VisionSubsystem(swerve);
+    VisionSubsystem visionSubsystem = new VisionSubsystem(swerve);
     ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     SwerveTelemetry swerveTelemetry = new SwerveTelemetry();
     EndEffectorSubsystem endEffectorSubsystem = new EndEffectorSubsystem();
@@ -49,7 +49,7 @@ public class RobotContainer {
     TeleopSwerve teleopSwerve = new TeleopSwerve(swerve, primaryController);
 
     AlignToPoseCommand moveToZero = new AlignToPoseCommand(Pose2d.kZero, SwerveConstants.SCORING_PID_X, SwerveConstants.SCORING_PID_Y, SwerveConstants.SCORING_PID_ANGLE, swerve);
-    AlignToPoseCommand reefAlign = AlignToReefCommands.alignToReef(0, 1, swerve);
+    AlignToPoseCommand reefAlign = AlignToReefCommands.alignToReef(5, -1, swerve);
     // #endregion
 
     // #region Triggers
@@ -60,6 +60,8 @@ public class RobotContainer {
 
     Trigger elevatorUpTrigger = primaryController.povUp();
     Trigger elevatorDownTrigger = primaryController.povDown();
+    Trigger elevatorIntakeTrigger = primaryController.povLeft();
+    Trigger elevatorL2Trigger = primaryController.povRight();
 
     Trigger moveToZeroTrigger = primaryController.x();
 
@@ -92,10 +94,12 @@ public class RobotContainer {
 
         resetFieldRelative.onTrue(new InstantCommand(swerve::resetOdometry));
 
-        elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).plus(Rotations.of(5)))));
-        elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).minus(Rotations.of(5)))));
+        elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).plus(Rotations.of(3)))));
+        elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).minus(Rotations.of(3)))));
         // elevatorUpTrigger.whileTrue(elevatorSubsystem.moveUpManualCommand());
         // elevatorDownTrigger.whileTrue(elevatorSubsystem.moveDownManualCommand());
+        elevatorIntakeTrigger.whileTrue(elevatorSubsystem.goToIntakePosCommand(false));
+        elevatorL2Trigger.whileTrue(elevatorSubsystem.goToL2Command(false));
 
         moveToZeroTrigger.whileTrue(reefAlign);
 
