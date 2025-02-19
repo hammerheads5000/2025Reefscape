@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import java.util.Map;
+
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
 import com.ctre.phoenix6.CANBus;
@@ -33,6 +35,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -45,6 +48,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringTopic;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
@@ -279,7 +283,24 @@ public class Constants {
         public static final Distance SIDE_DISTANCE = Meters.of(3);
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
-        public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching  
+        public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching
+
+        public static final Map<Character, Pair<Integer, Integer>> LETTER_TO_SIDE_AND_RELATIVE = Map.ofEntries(
+                Map.entry(Character.valueOf('A'), new Pair<Integer, Integer>(0, -1)),
+                Map.entry(Character.valueOf('B'), new Pair<Integer, Integer>(0, 1)),
+                Map.entry(Character.valueOf('C'), new Pair<Integer, Integer>(1, -1)),
+                Map.entry(Character.valueOf('D'), new Pair<Integer, Integer>(1, 1)),
+                Map.entry(Character.valueOf('E'), new Pair<Integer, Integer>(2, -1)),
+                Map.entry(Character.valueOf('F'), new Pair<Integer, Integer>(2, 1)),
+                Map.entry(Character.valueOf('G'), new Pair<Integer, Integer>(3, -1)),
+                Map.entry(Character.valueOf('H'), new Pair<Integer, Integer>(3, 1)),
+                Map.entry(Character.valueOf('I'), new Pair<Integer, Integer>(4, -1)),
+                Map.entry(Character.valueOf('J'), new Pair<Integer, Integer>(4, 1)),
+                Map.entry(Character.valueOf('K'), new Pair<Integer, Integer>(5, -1)),
+                Map.entry(Character.valueOf('L'), new Pair<Integer, Integer>(5, 1))
+        );
+
+        public static final StringTopic AUTO_DESCRIPTOR_TOPIC = INST.getStringTopic("Auto Descriptor");
     }
 
     public static class VisionConstants {

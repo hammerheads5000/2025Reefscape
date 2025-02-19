@@ -6,12 +6,17 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Rotations;
+import static frc.robot.Constants.AutoConstants.AUTO_DESCRIPTOR_TOPIC;
+import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
 import static frc.robot.Constants.EndEffectorConstants.INTAKE_SPEED;
 import static frc.robot.Constants.EndEffectorConstants.SCORE_SPEED;
+
+import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.StringEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,6 +30,7 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.AlignToPoseCommand;
 import frc.robot.commands.AlignToReefCommands;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.autos.FullAutoCommand;
 import frc.robot.commands.autos.TestPathCommands;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.EndEffectorSubsystem;
@@ -74,6 +80,8 @@ public class RobotContainer {
     Trigger elevatorSysIdBack = primaryController.b();
     // #endregion
 
+    StringEntry autoDescriptorSubscriber = AUTO_DESCRIPTOR_TOPIC.getEntry("");
+
     public RobotContainer() {
         swerve.registerTelemetry(swerveTelemetry::telemeterize);
         swerve.setDefaultCommand(teleopSwerve);
@@ -82,6 +90,8 @@ public class RobotContainer {
         DriverStation.getAlliance().ifPresent(alliance -> {
             swerve.setOperatorPerspective(alliance == Alliance.Blue ? Rotation2d.kZero : Rotation2d.k180deg);
         });
+
+        autoDescriptorSubscriber.set("");
 
         //elevatorSubsystem.disable();
         configureBindings();
@@ -113,6 +123,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return TestPathCommands.moveSquareTest().beforeStarting(new InstantCommand(swerve::resetOdometry)).andThen(new InstantCommand(swerve::stop));
+        return new FullAutoCommand(autoDescriptorSubscriber.get(), swerve);
     }
 }
