@@ -311,12 +311,12 @@ public class Constants {
         // Transforms from robot to cameras, (x forward, y left, z up), (roll, pitch, yaw)
         public static final Transform3d FRONT_LEFT_CAM_POS = new Transform3d(
             new Translation3d(SwerveConstants.MODULE_DISTANCE.div(2), SwerveConstants.MODULE_DISTANCE.div(2), Inches.of(10)),
-            new Rotation3d(Degrees.zero(), Degrees.of(38), Degrees.of(-45))
+            new Rotation3d(Degrees.of(0), Degrees.of(20), Degrees.of(-41.6))
         );
 
         public static final Transform3d FRONT_RIGHT_CAM_POS = new Transform3d(
             new Translation3d(SwerveConstants.MODULE_DISTANCE.div(2), SwerveConstants.MODULE_DISTANCE.div(-2), Inches.of(10)),
-            new Rotation3d(Degrees.zero(), Degrees.of(20), Degrees.of(45))
+            new Rotation3d(Degrees.zero(), Degrees.of(20), Degrees.of(41.6))
         );
 
         public static final Transform3d BACK_CAM_POS = new Transform3d(
@@ -340,7 +340,7 @@ public class Constants {
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0.5, 1.0, 0).withTolerance(0.5)
+                .withPID(0.2, 0.5, 0).withTolerance(0.5)
                 .withFeedforward(0.1252, 0.003).withPhysical(0.327, 0.5)
                 .withProfile(300, 300);
 

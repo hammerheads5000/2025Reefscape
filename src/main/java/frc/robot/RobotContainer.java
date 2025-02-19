@@ -93,9 +93,8 @@ public class RobotContainer {
 
         autoDescriptorSubscriber.set("");
 
-        //elevatorSubsystem.disable();
+        elevatorSubsystem.disable();
         configureBindings();
-
     }
 
     private void configureBindings() {
@@ -123,6 +122,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new FullAutoCommand(autoDescriptorSubscriber.get(), swerve);
+        return new FullAutoCommand(autoDescriptorSubscriber.get(), swerve, elevatorSubsystem);
     }
 }

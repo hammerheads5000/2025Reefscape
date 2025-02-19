@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.commands.PathfindingCommand;
+
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.Logged.Importance;
@@ -28,6 +30,9 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
     Epilogue.bind(this);
+
+    
+    PathfindingCommand.warmupCommand().schedule();
   }
 
   @Override
@@ -47,6 +52,8 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledExit() {
     m_robotContainer.elevatorSubsystem.setBrake(true);
+    m_robotContainer.elevatorSubsystem.setRotations(m_robotContainer.elevatorSubsystem.getMotorRotations());
+    m_robotContainer.elevatorSubsystem.resetPID();
   }
 
   @Override

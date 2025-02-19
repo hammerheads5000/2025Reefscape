@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import java.util.List;
 import java.util.Optional;
 
+import static frc.robot.Constants.INST;
 import static frc.robot.Constants.VisionConstants.*;
 
 import org.photonvision.EstimatedRobotPose;
@@ -21,7 +22,11 @@ import com.ctre.phoenix6.Utils;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
 
@@ -38,6 +43,9 @@ public class VisionSubsystem extends SubsystemBase {
     //private PhotonCamera camB = new PhotonCamera(BACK_CAM_NAME); // back
     
     private boolean hasTarget = false;
+
+    private StructPublisher<Pose2d> fieldFL = INST.getStructTopic("FL Pose", Pose2d.struct).publish();
+    private StructPublisher<Pose2d> fieldFR = INST.getStructTopic("FR Pose", Pose2d.struct).publish();
 
     private Swerve swerve;
 
@@ -93,6 +101,8 @@ public class VisionSubsystem extends SubsystemBase {
             }
             
             hasTarget = true;
+            if (poseEstimator == poseEstimatorFL) fieldFL.set(estimatedRobotPose.estimatedPose.toPose2d());
+            if (poseEstimator == poseEstimatorFR) fieldFR.set(estimatedRobotPose.estimatedPose.toPose2d());
             swerve.addVisionMeasurement(estimatedRobotPose);
         }
 

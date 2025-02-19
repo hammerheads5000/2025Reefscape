@@ -9,6 +9,7 @@ import static frc.robot.Constants.AutoConstants.*;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.Swerve;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -22,20 +23,41 @@ public class FullAutoCommand extends SequentialCommandGroup {
      *                         separated
      * @param swerve
      */
-    public FullAutoCommand(String descriptorString, Swerve swerve) {
+    public FullAutoCommand(String descriptorString, Swerve swerve, ElevatorSubsystem elevatorSubsystem) {
         String[] tokens = descriptorString.split(" ");
 
         for (String token : tokens) {
             Command commandToAdd;
             if (token.charAt(0) == 'S') {
                 int station = token.charAt(1) == '0' ? 0 : 1;
-                commandToAdd = ApproachCoralStationCommands.pathfindCommand(station, 0, swerve);
+                commandToAdd = ApproachCoralStationCommands.pathfindCommand(station, 0, swerve)
+                    .alongWith(elevatorSubsystem.goToIntakePosCommand(false));
             }
             else {
                 Pair<Integer, Integer> sidePosPair = LETTER_TO_SIDE_AND_RELATIVE.get(token.charAt(0));
                 int side = sidePosPair.getFirst();
                 int relativePos = sidePosPair.getSecond();
-                commandToAdd = new ApproachReefCommand(side, relativePos, swerve);
+
+                Command elevatorPosCommand;
+                switch (token.charAt(1)) {
+                    case '1':
+                        elevatorPosCommand = elevatorSubsystem.goToL1Command(false);
+                        break;
+                    case '2':
+                        elevatorPosCommand = elevatorSubsystem.goToL2Command(false);
+                        break;
+                    case '3':
+                        elevatorPosCommand = elevatorSubsystem.goToL3Command(false);
+                        break;
+                    case '4':
+                        elevatorPosCommand = elevatorSubsystem.goToL4Command(false);
+                        break;
+                    default:
+                        elevatorPosCommand = elevatorSubsystem.goToL4Command(false);
+                        break;
+                }
+
+                commandToAdd = new ApproachReefCommand(side, relativePos, swerve).alongWith(elevatorPosCommand);
             }
 
             addCommands(commandToAdd);

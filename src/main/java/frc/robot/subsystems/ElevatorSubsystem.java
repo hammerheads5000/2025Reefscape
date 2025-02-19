@@ -115,6 +115,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         setRotations(heightToMotorRotations(height));
     }
 
+    public void resetPID() {
+        controller.reset(getMotorRotations());
+    }
+
     public void setRotations(double rotations) {
         controller.setGoal(rotations);
     }
@@ -142,6 +146,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public Distance getSetpoint() {
         return motorRotationsToHeight(Rotations.of(controller.getGoal().position));
+    }
+
+    public boolean atSetpoint() {
+        return controller.atGoal();
     }
 
     public void stop() {
