@@ -11,6 +11,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -32,8 +33,20 @@ public class EndEffectorSubsystem extends SubsystemBase {
     motorLeft.getConfigurator().apply(MOTOR_LEFT_CONFIGS);
     motorRight.getConfigurator().apply(MOTOR_RIGHT_CONFIGS);
 
-    //frontLidar = new DigitalInput(FRONT_LIDAR_ID);
-    //backLidar = new DigitalInput(BACK_LIDAR_ID);
+    frontLidar = new DigitalInput(FRONT_LIDAR_ID);
+    backLidar = new DigitalInput(BACK_LIDAR_ID);
+    SmartDashboard.putData("End Effector Intake", forwardCommand(INTAKE_SPEED));
+    SmartDashboard.putData("End Effector Shoot", forwardCommand(SCORE_SPEED));
+    SmartDashboard.putData("End Effector Trough Left", troughLeftCommand());
+    SmartDashboard.putData("End Effector Trough Right", troughRightCommand());
+  }
+
+  public boolean getFrontLidar() {
+    return frontLidar.get();
+  }
+
+  public boolean getBackLidar() {
+    return backLidar.get();
   }
 
   public void forward(double speedDutyCycle) {

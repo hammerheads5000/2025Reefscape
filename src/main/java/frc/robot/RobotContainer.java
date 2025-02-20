@@ -30,6 +30,7 @@ import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.AlignToPoseCommand;
 import frc.robot.commands.AlignToReefCommands;
 import frc.robot.commands.TeleopSwerve;
+import frc.robot.commands.autos.ApproachCoralStationCommands;
 import frc.robot.commands.autos.FullAutoCommand;
 import frc.robot.commands.autos.TestPathCommands;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -86,6 +87,7 @@ public class RobotContainer {
         swerve.registerTelemetry(swerveTelemetry::telemeterize);
         swerve.setDefaultCommand(teleopSwerve);
         AlignToReefCommands.testReefPoses(); // publishes all reef target poses to networktables
+        ApproachCoralStationCommands.testStationPoses();
 
         DriverStation.getAlliance().ifPresent(alliance -> {
             swerve.setOperatorPerspective(alliance == Alliance.Blue ? Rotation2d.kZero : Rotation2d.k180deg);
