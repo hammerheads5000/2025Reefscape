@@ -10,6 +10,7 @@ import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.EndEffectorSubsystem;
 import frc.robot.subsystems.Swerve;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -23,7 +24,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
      *                         separated
      * @param swerve
      */
-    public FullAutoCommand(String descriptorString, Swerve swerve, ElevatorSubsystem elevatorSubsystem) {
+    public FullAutoCommand(String descriptorString, Swerve swerve, ElevatorSubsystem elevatorSubsystem, EndEffectorSubsystem endEffectorSubsystem) {
         String[] tokens = descriptorString.split(" ");
 
         for (String token : tokens) {
@@ -31,7 +32,8 @@ public class FullAutoCommand extends SequentialCommandGroup {
             if (token.charAt(0) == 'S') {
                 int station = token.charAt(1) == '0' ? 0 : 1;
                 commandToAdd = ApproachCoralStationCommands.pathfindCommand(station, 0, swerve)
-                    .alongWith(elevatorSubsystem.goToIntakePosCommand(false));
+                    .alongWith(elevatorSubsystem.goToIntakePosCommand(false))
+                    .andThen(endEffectorSubsystem.intakeCommand());
             }
             else {
                 Pair<Integer, Integer> sidePosPair = LETTER_TO_SIDE_AND_RELATIVE.get(token.charAt(0));
@@ -57,7 +59,9 @@ public class FullAutoCommand extends SequentialCommandGroup {
                         break;
                 }
 
-                commandToAdd = new ApproachReefCommand(side, relativePos, swerve).alongWith(elevatorPosCommand);
+                commandToAdd = new ApproachReefCommand(side, relativePos, swerve)
+                    .alongWith(elevatorPosCommand)
+                    .andThen(endEffectorSubsystem.scoreCommand());
             }
 
             addCommands(commandToAdd);
