@@ -340,9 +340,9 @@ public class Constants {
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0.2, 0.5, 0).withTolerance(0.5)
+                .withPID(0.05, 0.1, 0).withTolerance(0.5)
                 .withFeedforward(0.1252, 0.003).withPhysical(0.327, 0.5)
-                .withProfile(300, 300);
+                .withProfile(300, 200);
 
         public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
 
@@ -366,11 +366,11 @@ public class Constants {
         public static final Translation2d ROOT = new Translation2d(Inches.of(7), Inches.of(3.875));
         
         // Setpoints
-        public static final Distance L1_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(28)).in(Meters));
-        public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(40)).in(Meters));
-        public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(64)).in(Meters));
-        public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(80)).in(Meters));
-        public static final Distance INTAKE_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(19)).in(Meters));
+        public static final Distance L1_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(26)).in(Meters));
+        public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(38.8)).in(Meters));
+        public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(57.1)).in(Meters));
+        public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(88)).in(Meters));
+        public static final Distance INTAKE_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(17.8)).in(Meters));
     }
 
     public static class EndEffectorConstants {
@@ -386,14 +386,14 @@ public class Constants {
                 .withStatorCurrentLimit(Amps.of(10));
 
         // Lidar
-        public static final int FRONT_LIDAR_ID = 0;
-        public static final int BACK_LIDAR_ID = 0;
+        public static final int FRONT_LIDAR_ID = 8;
+        public static final int BACK_LIDAR_ID = 9;
 
         // Speed (duty cycle)
-        public static final double INTAKE_SPEED = 1;
-        public static final double SCORE_SPEED = 0.1;
+        public static final double INTAKE_SPEED = 0.3;
+        public static final double SCORE_SPEED = 0.6;
         public static final double FAST_TROUGH_SPEED = 0.5;
-        public static final double SLOW_TROUGH_SPEED = 0.25;
+        public static final double SLOW_TROUGH_SPEED = 0.1;
     }
 
     public static class FieldConstants {
@@ -408,9 +408,10 @@ public class Constants {
                 Meters.of(1.16), Meters.of(1.02),
                 Rotation2d.fromDegrees(-125));
 
-        public static final Pose2d STATION_0 = APRIL_TAGS.getTagPose(12).get().toPose2d().rotateBy(Rotation2d.k180deg);
-        public static final Pose2d STATION_1 = APRIL_TAGS.getTagPose(13).get().toPose2d().rotateBy(Rotation2d.k180deg);
+        public static final Pose2d STATION_0 = APRIL_TAGS.getTagPose(12).get().toPose2d();
+        public static final Pose2d STATION_1 = APRIL_TAGS.getTagPose(13).get().toPose2d();
         
+        public static final Distance STATION_APPROACH_DISTANCE = Inches.of(18);
         public static final Distance SIDE_STATION_OFFSET = Inches.of(29).plus(BUMPER_THICKNESS).div(2);
     }
 }

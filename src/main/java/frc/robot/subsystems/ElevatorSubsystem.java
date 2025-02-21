@@ -88,7 +88,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         motor1.setPosition(0);
         initMotorPos = motor1.getPosition().getValue();
 
-        SmartDashboard.putData("Elevator Sim", mech2d);        
+        SmartDashboard.putData("Elevator Sim", mech2d);
+
+        SmartDashboard.putData("Reset Elevator Position", resetPositionCommand());
+        SmartDashboard.putData("L1", goToL1Command(true));
+        SmartDashboard.putData("L2", goToL2Command(true));
+        SmartDashboard.putData("L3", goToL3Command(true));
+        SmartDashboard.putData("L4", goToL4Command(true));
+        SmartDashboard.putData("Intake", goToIntakePosCommand(true));
     }
 
     public void enable() {
@@ -97,6 +104,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     
     public void disable() {
         enabled = false;
+    }
+
+    public void resetPosition() {
+        motor1.setPosition(0);
+        resetPID();
     }
 
     public double getMotorRotations() {
@@ -166,7 +178,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void periodic() {
         if (enabled)
             controlUpdate();
-        //System.out.println(setpointEntry.get());
+
         ligament2d.setLength(elevatorSim.getPositionMeters());
     }
 
@@ -181,10 +193,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         
         double rotations = heightToMotorRotations(Meters.of(elevatorSim.getPositionMeters())).in(Rotations);
         double angularVel = heightToMotorRotations(Meters.of(elevatorSim.getVelocityMetersPerSecond())).in(Rotations);
-        SmartDashboard.putNumber("idk", elevatorSim.getPositionMeters());
 
         motor1sim.setRawRotorPosition(rotations);
         motor1sim.setRotorVelocity(angularVel);
+    }
+
+    public Command resetPositionCommand() {
+        return this.runOnce(this::resetPosition).ignoringDisable(true);
     }
 
     public Command stopCommand() {
