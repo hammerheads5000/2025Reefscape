@@ -10,6 +10,8 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -28,6 +30,8 @@ public class TeleopSwerve extends Command {
   private Swerve swerve;
   private CommandXboxController controller;
 
+  private boolean isRed;
+
   /** Creates a new TeleopSwerve. */
   public TeleopSwerve(Swerve swerve, CommandXboxController controller) {
     this.swerve = swerve;
@@ -39,6 +43,7 @@ public class TeleopSwerve extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    isRed = DriverStation.getAlliance().get() == Alliance.Red;
   }
 
   public void setFastSpeed() {
@@ -69,6 +74,9 @@ public class TeleopSwerve extends Command {
     // joystick
     double speedX = Math.abs(controller.getLeftY()) >= Constants.CONTROLLER_DEADBAND ? -controller.getLeftY() : 0;
     double speedY = Math.abs(controller.getLeftX()) >= Constants.CONTROLLER_DEADBAND ? -controller.getLeftX() : 0;
+
+    speedX *= isRed ? -1 : 1;
+    speedY *= isRed ? -1 : 1;
 
     // raw speed
     speedX = driveSpeed.times(speedX).in(MetersPerSecond);

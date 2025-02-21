@@ -95,7 +95,7 @@ public class RobotContainer {
 
         autoDescriptorSubscriber.set("");
 
-        elevatorSubsystem.disable();
+        //elevatorSubsystem.disable();
         configureBindings();
     }
 

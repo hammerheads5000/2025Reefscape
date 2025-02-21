@@ -28,8 +28,7 @@ public class ApproachCoralStationCommands {
      */
     public static Pose2d getStationPose(int station, int relativePos) {
         Pose2d pose = station == 1 ? STATION_1 : STATION_0;
-        pose = pose.rotateAround(pose.getTranslation(), Rotation2d.k180deg);
-        Translation2d translation = new Translation2d(STATION_APPROACH_DISTANCE.unaryMinus(), SIDE_STATION_OFFSET.times(relativePos));
+        Translation2d translation = new Translation2d(STATION_APPROACH_DISTANCE, SIDE_STATION_OFFSET.times(relativePos));
 
         pose = pose.transformBy(new Transform2d(translation, Rotation2d.kZero));
 
@@ -57,7 +56,7 @@ public class ApproachCoralStationCommands {
      */
     public static Command pathfindCommand(int station, int relativePos, Swerve swerve) {
         Pose2d target = getStationPose(station, relativePos);
-        System.out.println(target);
-        return AutoBuilder.pathfindToPose(target, CONSTRAINTS, 0);
+        
+        return AutoBuilder.pathfindToPoseFlipped(target, CONSTRAINTS, 0);
     }
 }
