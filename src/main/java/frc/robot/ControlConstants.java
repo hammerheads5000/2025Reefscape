@@ -13,7 +13,8 @@ public class ControlConstants {
     // PID gains
     double kP, kI, kD;
     double tolerance;
-    double iZone = Double.POSITIVE_INFINITY;
+    double iMin = Double.NEGATIVE_INFINITY;
+    double iMax = Double.POSITIVE_INFINITY;
 
     // feedforward gains
     double kV, kA;
@@ -59,15 +60,16 @@ public class ControlConstants {
         return this;
     }
 
-    public ControlConstants withIZone(double iZone) {
-        this.iZone = iZone;
+    public ControlConstants withIRange(double iMin, double iMax) {
+        this.iMin = iMin;
+        this.iMax = iMax;
         return this;
     }
 
     public PIDController getPIDController() {
         PIDController controller = new PIDController(kP, kI, kD);
         controller.setTolerance(tolerance);
-        controller.setIZone(iZone);
+        controller.setIntegratorRange(iMin, iMax);
 
         return controller;
     }
@@ -78,7 +80,7 @@ public class ControlConstants {
                 new TrapezoidProfile.Constraints(maxVel, maxAcc)
         );
         controller.setTolerance(tolerance);
-        controller.setIZone(iZone);
+        controller.setIntegratorRange(iMin, iMax);
 
         return controller;
     }
