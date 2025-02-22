@@ -5,13 +5,16 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Millimeters;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.INST;
+import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
 import static frc.robot.Constants.ElevatorConstants.*;
 
 import java.util.EnumSet;
@@ -25,6 +28,11 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
+import au.grapplerobotics.ConfigurationFailedException;
+import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
+import au.grapplerobotics.interfaces.LaserCanInterface.RegionOfInterest;
+import au.grapplerobotics.interfaces.LaserCanInterface.TimingBudget;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -60,7 +68,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     Angle initMotorPos;
 
     // To be implemented: LaserCan
-    // LaserCan laserCan = new LaserCan(0);
+    LaserCan laserCan = new LaserCan(0);
 
     // MockLaserCan laserCanSim = new MockLaserCan();
 
@@ -87,6 +95,13 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         motor1.setPosition(0);
         initMotorPos = motor1.getPosition().getValue();
+        
+        try {
+            laserCan.setRangingMode(LASERCAN_RANGING_MODE);
+            laserCan.setRegionOfInterest(REGION_OF_INTEREST);
+        } catch(ConfigurationFailedException e) {
+            System.err.println(e);
+        }
 
         SmartDashboard.putData("Elevator Sim", mech2d);
 
@@ -111,8 +126,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         resetPID();
     }
 
-    public double getMotorRotations() {
-        return motor1.getPosition().getValue().in(Rotations);
+    public Angle getMotorRotations() {
+        return motor1.getPosition().getValue();
     }
 
     public void setBrake(boolean shouldBrake) {
@@ -120,7 +135,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Distance getHeight() {
-        return motorRotationsToHeight(Rotations.of(getMotorRotations()));
+        return motorRotationsToHeight(getMotorRotations());
+    }
+
+    public Distance getLaserCan() {
+        return Millimeters.of(laserCan.getMeasurement().distance_mm);
     }
 
     public void setHeight(Distance height) {
@@ -128,20 +147,29 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void resetPID() {
-        controller.reset(getMotorRotations());
+        controller.reset(getMotorRotations().in(Rotations));
     }
 
     public void setRotations(double rotations) {
         controller.setGoal(rotations);
+        controller.setIntegratorRange(rotations, rotations);
     }
 
     public void setRotations(Angle rotations) {
-        controller.setGoal(rotations.in(Rotations));
+        setRotations(rotations.in(Rotations));
     }
 
     public static Distance laserCANtoHeight(Distance measured) {
         Distance yIntercept = MAX_HEIGHT.minus(MIN_LASERCAN_DISTANCE.times(HEIGHT_CHANGE_PER_LASERCAN_DISTANCE));
         return measured.times(HEIGHT_CHANGE_PER_LASERCAN_DISTANCE).plus(yIntercept);
+    }
+
+    public static Angle laserCANtoRotations(Distance measured) {
+        return Rotations.of(measured.timesConversionFactor(MOTOR_ROTATIONS_PER_LASERCAN).plus(MOTOR_ROTATIONS_AT_LASERCAN_0).in(Rotations));
+    }
+    
+    public static Distance rotationsToLaserCAN(Angle measured) {
+        return Meters.of(measured.minus(MOTOR_ROTATIONS_AT_LASERCAN_0).divideRatio(MOTOR_ROTATIONS_PER_LASERCAN).in(Meters));
     }
 
     public static Distance motorRotationsToHeight(Angle rotations) {
@@ -156,12 +184,20 @@ public class ElevatorSubsystem extends SubsystemBase {
         return motor1.getMotorVoltage().getValueAsDouble();
     }
 
-    public Distance getSetpoint() {
-        return motorRotationsToHeight(Rotations.of(controller.getGoal().position));
+    public Angle getSetpoint() {
+        return Rotations.of(controller.getGoal().position);
     }
 
     public boolean atSetpoint() {
         return controller.atGoal();
+    }
+
+    public Angle getProfileSetpoint() {
+        return Rotations.of(controller.getSetpoint().position);
+    }
+
+    public Angle getAccumulatedError() {
+        return Rotations.of(controller.getAccumulatedError());
     }
 
     public void stop() {
@@ -169,7 +205,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     private void controlUpdate() {
-        double output = controller.calculate(getMotorRotations());
+        Angle measured;
+        if (getLaserCan().lte(LASERCAN_RELIABILITY_MIN)) {
+            measured = laserCANtoRotations(getLaserCan());
+        } else {
+            measured = getMotorRotations();
+        }
+        double output = controller.calculate(measured.in(Rotations));
         output += elevatorFeedforward.calculate(controller.getSetpoint().velocity);
         motor1.setControl(motorControl.withOutput(output));
     }
@@ -178,6 +220,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void periodic() {
         if (enabled)
             controlUpdate();
+
+        SmartDashboard.putNumber("KDJFSL", rotationsToLaserCAN(getMotorRotations()).minus(getLaserCan()).in(Inches));
 
         ligament2d.setLength(elevatorSim.getPositionMeters());
     }

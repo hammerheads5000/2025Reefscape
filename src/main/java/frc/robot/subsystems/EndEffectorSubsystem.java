@@ -39,6 +39,7 @@ public class EndEffectorSubsystem extends SubsystemBase {
     SmartDashboard.putData("End Effector Shoot", forwardCommand(SCORE_SPEED));
     SmartDashboard.putData("End Effector Trough Left", troughLeftCommand());
     SmartDashboard.putData("End Effector Trough Right", troughRightCommand());
+    SmartDashboard.putData("End Effector Reverse", forwardCommand(-INTAKE_SPEED));
   }
 
   public boolean getFrontLidar() {
@@ -69,11 +70,12 @@ public class EndEffectorSubsystem extends SubsystemBase {
   }
 
   public Command intakeCommand() {
-    return this.forwardCommand(INTAKE_SPEED).until(() -> !backLidar.get());
+    return this.forwardCommand(INTAKE_SPEED).until(() -> !backLidar.get())
+        .andThen(this.forwardCommand(SLOW_INTAKE_SPEED).until(() -> backLidar.get() && !frontLidar.get()));
   }
 
   public Command scoreCommand() {
-    return this.forwardCommand(SCORE_SPEED).until(() -> !frontLidar.get());
+    return this.forwardCommand(SCORE_SPEED).until(() -> frontLidar.get());
   }
 
   public Command troughLeftCommand() {

@@ -105,8 +105,8 @@ public class RobotContainer {
 
         resetFieldRelative.onTrue(new InstantCommand(swerve::resetOdometry));
 
-        elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).plus(Rotations.of(3)))));
-        elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(Rotations.of(elevatorSubsystem.getMotorRotations()).minus(Rotations.of(3)))));
+        elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations().plus(Rotations.of(3)))));
+        elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations().minus(Rotations.of(3)))));
         // elevatorUpTrigger.whileTrue(elevatorSubsystem.moveUpManualCommand());
         // elevatorDownTrigger.whileTrue(elevatorSubsystem.moveDownManualCommand());
         elevatorIntakeTrigger.whileTrue(elevatorSubsystem.goToIntakePosCommand(false));
@@ -114,8 +114,8 @@ public class RobotContainer {
 
         moveToZeroTrigger.whileTrue(reefAlign);
 
-        intakeTrigger.whileTrue(endEffectorSubsystem.forwardCommand(INTAKE_SPEED));
-        reverseIntakeTrigger.whileTrue(endEffectorSubsystem.forwardCommand(SCORE_SPEED));
+        intakeTrigger.whileTrue(endEffectorSubsystem.intakeCommand());
+        reverseIntakeTrigger.whileTrue(endEffectorSubsystem.scoreCommand());
 
         elevatorSysIdQuasistatic.and(elevatorSysIdForward).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kForward));
         elevatorSysIdQuasistatic.and(elevatorSysIdBack).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kReverse));

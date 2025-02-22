@@ -28,6 +28,10 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
 import com.pathplanner.lib.path.PathConstraints;
+
+import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
+import au.grapplerobotics.interfaces.LaserCanInterface.RegionOfInterest;
+
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveModule.SteerRequestType;
@@ -275,10 +279,10 @@ public class Constants {
     public static class AutoConstants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
-                SwerveConstants.FAST_DRIVE_SPEED,
-                SwerveConstants.FAST_DRIVE_SPEED.div(Seconds.of(1)),
-                SwerveConstants.FAST_ROT_SPEED,
-                SwerveConstants.FAST_ROT_SPEED.div(Seconds.of(0.7)));
+                SwerveConstants.DEFAULT_DRIVE_SPEED,
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1)),
+                SwerveConstants.DEFAULT_ROT_SPEED,
+                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1)));
 
         public static final Distance SIDE_DISTANCE = Meters.of(3);
     
@@ -340,8 +344,8 @@ public class Constants {
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0.05, 0.1, 0).withTolerance(0.5)
-                .withFeedforward(0.1252, 0.003).withPhysical(0.327, 0.5)
+                .withPID(0.1, 0.05, 0.01).withTolerance(1).withIZone(50).withIRange(-0.5, 2)
+                .withFeedforward(0.126, 0.004).withPhysical(0.06, 0.4)
                 .withProfile(300, 200);
 
         public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
@@ -351,7 +355,6 @@ public class Constants {
         public static final double MANUAL_UP_SPEED = 0.3;
         public static final double MANUAL_DOWN_SPEED = -0.2;
         
-        // Simulation
         public static final double GEAR_RATIO = 4;
         public static final Mass CARRIAGE_MASS = Ounces.of(50.884);
         public static final Distance DRUM_RADIUS = Inches.of(1.888);
@@ -359,12 +362,18 @@ public class Constants {
         public static final Distance MAX_HEIGHT = Inches.of(72.154); // from base plate
         public static final Distance MIN_LASERCAN_DISTANCE = Inches.of(0.5);
         public static final double HEIGHT_CHANGE_PER_LASERCAN_DISTANCE = -3;
+        public static final Per<AngleUnit, DistanceUnit> MOTOR_ROTATIONS_PER_LASERCAN = Rotations.of(-152).div(Meters.of(1));
+        public static final Angle MOTOR_ROTATIONS_AT_LASERCAN_0 = Rotations.of(91);
         public static final Per<DistanceUnit, AngleUnit> HEIGHT_PER_MOTOR_ROTATIONS = Inches.of(0.82).div(Rotations.of(1));
-        
+        public static final Distance LASERCAN_RELIABILITY_MIN = Meters.of(0.45);
+
         public static final Distance CANVAS_WIDTH = Inches.of(2);
         public static final Distance CANVAS_HEIGHT = Inches.of(42);
         public static final Translation2d ROOT = new Translation2d(Inches.of(7), Inches.of(3.875));
         
+        public static final RangingMode LASERCAN_RANGING_MODE = RangingMode.SHORT;
+        public static final RegionOfInterest REGION_OF_INTEREST = new RegionOfInterest(8, 3, 6, 6);
+
         // Setpoints
         public static final Distance L1_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(26)).in(Meters));
         public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(38.8)).in(Meters));
@@ -386,11 +395,12 @@ public class Constants {
                 .withStatorCurrentLimit(Amps.of(10));
 
         // Lidar
-        public static final int FRONT_LIDAR_ID = 8;
-        public static final int BACK_LIDAR_ID = 9;
+        public static final int FRONT_LIDAR_ID = 9;
+        public static final int BACK_LIDAR_ID = 8;
 
         // Speed (duty cycle)
         public static final double INTAKE_SPEED = 0.3;
+        public static final double SLOW_INTAKE_SPEED = 0.15;
         public static final double SCORE_SPEED = 0.6;
         public static final double FAST_TROUGH_SPEED = 0.5;
         public static final double SLOW_TROUGH_SPEED = 0.1;
