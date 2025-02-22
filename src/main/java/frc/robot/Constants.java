@@ -79,7 +79,7 @@ public class Constants {
 
     public static final double CONTROLLER_DEADBAND = .225;
     
-    public static final Distance BUMPER_THICKNESS = Inches.of(3.5);
+    public static final Distance BUMPER_THICKNESS = Inches.of(2);
 
     public static class SwerveConstants {
         public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(3);//define later
@@ -135,7 +135,7 @@ public class Constants {
         private static final Pigeon2Configuration PIGEON_CONFIGS = new Pigeon2Configuration().withMountPose(
                 new MountPoseConfigs().withMountPoseYaw(Degrees.of(-90)).withMountPosePitch(Degrees.of(180)));
 
-        public static final LinearVelocity SPEED_AT_12V = MetersPerSecond.of(4.73); // NEEDS TUNING
+        public static final LinearVelocity SPEED_AT_12V = MetersPerSecond.of(10); // maybe needs tuning
 
         // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
         private static final double COUPLE_RATIO = 3.5714285714285716;
@@ -266,13 +266,13 @@ public class Constants {
 
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
-                .withPID(1.75, 0.1, 0.0).withTolerance(Inches.of(2).in(Meters));
+                .withPID(2, 0.2, 0.0).withTolerance(Inches.of(2).in(Meters));
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(1.75, 0.1, 0.0).withTolerance(Inches.of(2).in(Meters));
+                .withPID(2, 0.2, 0.0).withTolerance(Inches.of(2).in(Meters));
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
-                .withPID(2.5, 0.1, 0.0).withTolerance(1);
+                .withPID(5, 0.4, 0.0).withTolerance(1);
 
     }
 
@@ -280,14 +280,15 @@ public class Constants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
                 SwerveConstants.DEFAULT_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1)),
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(2)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
-                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1)));
+                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(2)));
 
         public static final Distance SIDE_DISTANCE = Meters.of(3);
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
-        public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching
+        public static final Distance APPROACH_DISTANCE = Inches.of(10); // *extra* distance to reef when approaching
+        public static final Distance APPROACH_AMOUNT = Inches.of(30); // distance to move directly towards reef when approaching
 
         public static final Map<Character, Pair<Integer, Integer>> LETTER_TO_SIDE_AND_RELATIVE = Map.ofEntries(
                 Map.entry(Character.valueOf('A'), new Pair<Integer, Integer>(0, -1)),
@@ -344,9 +345,9 @@ public class Constants {
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0.1, 0.05, 0.01).withTolerance(1).withIZone(50).withIRange(-0.5, 2)
-                .withFeedforward(0.126, 0.004).withPhysical(0.06, 0.4)
-                .withProfile(300, 200);
+                .withPID(0.3, 0.05, 0.01).withTolerance(1).withIZone(30).withIRange(-1, 2)
+                .withFeedforward(0.1257, 0.004).withPhysical(0.05, 0.375)
+                .withProfile(350, 200);
 
         public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
 
@@ -377,8 +378,8 @@ public class Constants {
         // Setpoints
         public static final Distance L1_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(26)).in(Meters));
         public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(38.8)).in(Meters));
-        public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(57.1)).in(Meters));
-        public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(88)).in(Meters));
+        public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(56.1)).in(Meters));
+        public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(86.5)).in(Meters));
         public static final Distance INTAKE_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(17.8)).in(Meters));
     }
 
@@ -401,7 +402,7 @@ public class Constants {
         // Speed (duty cycle)
         public static final double INTAKE_SPEED = 0.3;
         public static final double SLOW_INTAKE_SPEED = 0.15;
-        public static final double SCORE_SPEED = 0.6;
+        public static final double SCORE_SPEED = 0.3;
         public static final double FAST_TROUGH_SPEED = 0.5;
         public static final double SLOW_TROUGH_SPEED = 0.1;
     }
