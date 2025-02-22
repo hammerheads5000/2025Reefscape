@@ -13,6 +13,7 @@ public class ControlConstants {
     // PID gains
     double kP, kI, kD;
     double tolerance;
+    double iZone = Double.POSITIVE_INFINITY;
     double iMin = Double.NEGATIVE_INFINITY;
     double iMax = Double.POSITIVE_INFINITY;
 
@@ -60,6 +61,11 @@ public class ControlConstants {
         return this;
     }
 
+    public ControlConstants withIZone(double iZone) {
+        this.iZone = iZone;
+        return this;
+    }
+    
     public ControlConstants withIRange(double iMin, double iMax) {
         this.iMin = iMin;
         this.iMax = iMax;
@@ -70,6 +76,7 @@ public class ControlConstants {
         PIDController controller = new PIDController(kP, kI, kD);
         controller.setTolerance(tolerance);
         controller.setIntegratorRange(iMin, iMax);
+        controller.setIZone(iZone);
 
         return controller;
     }
@@ -81,6 +88,7 @@ public class ControlConstants {
         );
         controller.setTolerance(tolerance);
         controller.setIntegratorRange(iMin, iMax);
+        controller.setIZone(iZone);
 
         return controller;
     }
