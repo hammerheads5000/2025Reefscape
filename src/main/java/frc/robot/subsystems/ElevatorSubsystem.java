@@ -30,17 +30,10 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
-import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
-import au.grapplerobotics.interfaces.LaserCanInterface.RegionOfInterest;
-import au.grapplerobotics.interfaces.LaserCanInterface.TimingBudget;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.networktables.DoubleEntry;
-import edu.wpi.first.networktables.NetworkTableEvent;
-import edu.wpi.first.networktables.NetworkTableListener;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -151,8 +144,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setRotations(double rotations) {
-        controller.setGoal(rotations);
-        controller.setIntegratorRange(rotations, rotations);
+        controller.setGoal(Math.max(rotations, 0));
+        controller.reset(getMotorRotations().in(Rotations));
     }
 
     public void setRotations(Angle rotations) {
@@ -220,8 +213,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void periodic() {
         if (enabled)
             controlUpdate();
-
-        SmartDashboard.putNumber("KDJFSL", rotationsToLaserCAN(getMotorRotations()).minus(getLaserCan()).in(Inches));
 
         ligament2d.setLength(elevatorSim.getPositionMeters());
     }
