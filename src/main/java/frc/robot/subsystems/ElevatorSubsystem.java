@@ -198,12 +198,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     private void controlUpdate() {
-        Angle measured;
-        if (getLaserCan().lte(LASERCAN_RELIABILITY_MIN)) {
-            measured = laserCANtoRotations(getLaserCan());
-        } else {
-            measured = getMotorRotations();
-        }
+        Angle measured = getMotorRotations();
+
         double output = controller.calculate(measured.in(Rotations));
         output += elevatorFeedforward.calculate(controller.getSetpoint().velocity);
         motor1.setControl(motorControl.withOutput(output));
