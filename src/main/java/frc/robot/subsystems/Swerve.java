@@ -221,6 +221,14 @@ public class Swerve extends SubsystemBase {
         drivetrain.setControl(pathApplyRobotSpeeds.withSpeeds(previouSetpoint.robotRelativeSpeeds()));
     }
 
+    public void applyChassisSpeedsWithFeedforwards(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
+        previouSetpoint = swerveSetpointGenerator.generateSetpoint(previouSetpoint, chassisSpeeds, 0.02);
+        ppChassisSpeeds = previouSetpoint.robotRelativeSpeeds();
+        drivetrain.setControl(pathApplyRobotSpeeds.withSpeeds(previouSetpoint.robotRelativeSpeeds())
+                .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesX())
+                .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesY()));
+    }
+
     public Pose2d getPose() {
         return drivetrain.getState().Pose;
     }
@@ -300,14 +308,13 @@ public class Swerve extends SubsystemBase {
             this::getPose,
             this::resetOdometry,
             this::getChassisSpeeds,
-            (speeds, feedforwards) -> applyChassisSpeeds(speeds),
+            this::applyChassisSpeedsWithFeedforwards,
             new PPHolonomicDriveController(
-                new PIDConstants(5, 0, 0),
-                new PIDConstants(2, 0, 0)
+                PP_TRANSLATIONAL_PID,
+                PP_ROTATIONAL_PID
             ),
             getPPConfig(),
-            () -> DriverStation.getAlliance().isPresent() 
-                && DriverStation.getAlliance().get() == Alliance.Red,
+            () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
             this
         );
 
