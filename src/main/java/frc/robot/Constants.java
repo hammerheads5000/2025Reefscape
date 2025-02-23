@@ -277,7 +277,7 @@ public class Constants {
 
 
         // output: m/s, measure: m
-        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(5, 0, 0);
+        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(3, 0, 0);
         // output: rad/s, measure: rad
         public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(2, 0, 0);
         }

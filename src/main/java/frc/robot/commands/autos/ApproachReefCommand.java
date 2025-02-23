@@ -62,11 +62,16 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         return Math.min(diff, 6 - diff);
     }
 
+    private static Pose2d pointPoseTowards(Pose2d pose, Pose2d other) {
+        Translation2d translation = other.getTranslation().minus(pose.getTranslation());
+        return new Pose2d(pose.getTranslation(), translation.getAngle());
+    }
+
     private static int getNextSide(int currentSide, int targetSide) {
         int positiveDistance = distanceBetweenSides(currentSide + 1, targetSide);
         int negativeDistance = distanceBetweenSides(currentSide - 1, targetSide);
 
-        if (positiveDistance > negativeDistance) return (currentSide + 1 + 6) % 6;
+        if (positiveDistance < negativeDistance) return (currentSide + 1 + 6) % 6;
         return (currentSide - 1 + 6) % 6;
     }
 
@@ -78,12 +83,12 @@ public class ApproachReefCommand extends SequentialCommandGroup {
             int nextSide = getNextSide(currentSide, side);
             Pose2d sidePose = AlignToReefCommands.getReefPose(nextSide, 0);
             
-            sidePose.transformBy(new Transform2d(new Translation2d(TRAVERSE_DISTANCE.unaryMinus(), Meters.zero()), Rotation2d.kZero));
+            sidePose = sidePose.transformBy(new Transform2d(new Translation2d(TRAVERSE_DISTANCE.unaryMinus(), Meters.zero()), Rotation2d.kZero));
             
             if (nextSide == (currentSide + 1 + 6) % 6) {
-                sidePose.rotateAround(sidePose.getTranslation(), Rotation2d.kCCW_90deg);
+                sidePose = sidePose.rotateAround(sidePose.getTranslation(), Rotation2d.kCCW_90deg);
             } else {
-                sidePose.rotateAround(sidePose.getTranslation(), Rotation2d.kCW_90deg);
+                sidePose = sidePose.rotateAround(sidePose.getTranslation(), Rotation2d.kCW_90deg);
             }
 
             poses.add(sidePose);
@@ -91,6 +96,7 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         }
         Pose2d endPose = AlignToReefCommands.getReefPose(side, relativePos);
         poses.add(endPose);
+        poses.add(0, pointPoseTowards(currentPose, poses.get(0)));
 
         PathPlannerPath path = new PathPlannerPath(
                 PathPlannerPath.waypointsFromPoses(poses), 
@@ -98,7 +104,10 @@ public class ApproachReefCommand extends SequentialCommandGroup {
                 null,
                 new GoalEndState(endVelocity.in(MetersPerSecond), endPose.getRotation())
         );
-        path.preventFlipping = false;
+
+        if (AutoBuilder.shouldFlip()) {
+            path = path.flipPath();            
+        }
         return path;
     }
 
@@ -150,6 +159,7 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         double initialPIDSpeed = initialPIDVelocity.projection(VecBuilder.fill(direction.getX(), direction.getY())).norm();
 
         //Command pathFindingCommand = AutoBuilder.pathfindToPose(approachTarget, CONSTRAINTS, initialPIDSpeed);
+        
         Command followPathCommand = AutoBuilder.followPath(generatePath(swerve.getPose(), side, relativePos, MetersPerSecond.of(initialPIDSpeed)));
 
         // First follow generated path

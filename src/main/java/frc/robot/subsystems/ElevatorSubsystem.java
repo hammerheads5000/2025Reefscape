@@ -131,7 +131,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         return motorRotationsToHeight(getMotorRotations());
     }
 
-    public Distance getLaserCan() {
+    private Distance getLaserCan() {
         return Millimeters.of(laserCan.getMeasurement().distance_mm);
     }
 
