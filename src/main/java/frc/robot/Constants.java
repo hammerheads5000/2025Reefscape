@@ -27,6 +27,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants.ClosedLoopOutputType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.DriveMotorArrangement;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerFeedbackType;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.SteerMotorArrangement;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.path.PathConstraints;
 
 import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
@@ -274,7 +275,12 @@ public class Constants {
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
                 .withPID(5, 0.4, 0.0).withTolerance(1);
 
-    }
+
+        // output: m/s, measure: m
+        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(5, 0, 0);
+        // output: rad/s, measure: rad
+        public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(2, 0, 0);
+        }
 
     public static class AutoConstants {
         // Test Autos
@@ -291,18 +297,18 @@ public class Constants {
         public static final Distance APPROACH_AMOUNT = Inches.of(30); // distance to move directly towards reef when approaching
 
         public static final Map<Character, Pair<Integer, Integer>> LETTER_TO_SIDE_AND_RELATIVE = Map.ofEntries(
-                Map.entry(Character.valueOf('A'), new Pair<Integer, Integer>(0, -1)),
-                Map.entry(Character.valueOf('B'), new Pair<Integer, Integer>(0, 1)),
-                Map.entry(Character.valueOf('C'), new Pair<Integer, Integer>(1, -1)),
-                Map.entry(Character.valueOf('D'), new Pair<Integer, Integer>(1, 1)),
-                Map.entry(Character.valueOf('E'), new Pair<Integer, Integer>(2, -1)),
-                Map.entry(Character.valueOf('F'), new Pair<Integer, Integer>(2, 1)),
-                Map.entry(Character.valueOf('G'), new Pair<Integer, Integer>(3, -1)),
-                Map.entry(Character.valueOf('H'), new Pair<Integer, Integer>(3, 1)),
-                Map.entry(Character.valueOf('I'), new Pair<Integer, Integer>(4, -1)),
-                Map.entry(Character.valueOf('J'), new Pair<Integer, Integer>(4, 1)),
-                Map.entry(Character.valueOf('K'), new Pair<Integer, Integer>(5, -1)),
-                Map.entry(Character.valueOf('L'), new Pair<Integer, Integer>(5, 1))
+                Map.entry(Character.valueOf('A'), new Pair<Integer, Integer>(0, 1)),
+                Map.entry(Character.valueOf('B'), new Pair<Integer, Integer>(0, -1)),
+                Map.entry(Character.valueOf('C'), new Pair<Integer, Integer>(5, 1)),
+                Map.entry(Character.valueOf('D'), new Pair<Integer, Integer>(5, -1)),
+                Map.entry(Character.valueOf('E'), new Pair<Integer, Integer>(4, 1)),
+                Map.entry(Character.valueOf('F'), new Pair<Integer, Integer>(4, -1)),
+                Map.entry(Character.valueOf('G'), new Pair<Integer, Integer>(3, 1)),
+                Map.entry(Character.valueOf('H'), new Pair<Integer, Integer>(3, -1)),
+                Map.entry(Character.valueOf('I'), new Pair<Integer, Integer>(2, 1)),
+                Map.entry(Character.valueOf('J'), new Pair<Integer, Integer>(2, -1)),
+                Map.entry(Character.valueOf('K'), new Pair<Integer, Integer>(1, 1)),
+                Map.entry(Character.valueOf('L'), new Pair<Integer, Integer>(1, -1))
         );
 
         public static final StringTopic AUTO_DESCRIPTOR_TOPIC = INST.getStringTopic("Auto Descriptor");
