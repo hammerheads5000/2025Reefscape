@@ -31,7 +31,6 @@ public class SwerveTelemetry {
     
     public SwerveTelemetry() {
         SignalLogger.start();
-        SmartDashboard.putData(field2d);
     }
 
     /* What to publish over networktables for telemetry */
@@ -46,11 +45,10 @@ public class SwerveTelemetry {
     private final StructArrayPublisher<SwerveModulePosition> driveModulePositions = driveStateTable.getStructArrayTopic("ModulePositions", SwerveModulePosition.struct).publish();
     private final DoublePublisher driveTimestamp = driveStateTable.getDoubleTopic("Timestamp").publish();
     private final DoublePublisher driveOdometryFrequency = driveStateTable.getDoubleTopic("OdometryFrequency").publish();
-    private final Field2d field2d = new Field2d();
 
     /* Robot pose for field positioning */
     private final NetworkTable table = inst.getTable("Pose");
-    private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("robotPose").publish();
+    private final DoubleArrayPublisher fieldPub = table.getDoubleArrayTopic("Robot").publish();
     private final StringPublisher fieldTypePub = table.getStringTopic(".type").publish();
 
     /* Mechanisms to represent the swerve module states */
@@ -87,7 +85,6 @@ public class SwerveTelemetry {
     public void telemeterize(SwerveDriveState state) {
         /* Telemeterize the swerve drive state */
         drivePose.set(state.Pose);
-        field2d.setRobotPose(state.Pose);
         driveSpeeds.set(state.Speeds);
         driveModuleStates.set(state.ModuleStates);
         driveModuleTargets.set(state.ModuleTargets);

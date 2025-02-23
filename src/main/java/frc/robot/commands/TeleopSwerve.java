@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static frc.robot.Constants.CONTROLLER_DEADBAND;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -46,6 +47,14 @@ public class TeleopSwerve extends Command {
     isRed = DriverStation.getAlliance().get() == Alliance.Red;
   }
 
+  private double processJoystick(double input) {
+    if (Math.abs(input) < CONTROLLER_DEADBAND) return 0;
+    input -= Math.signum(input)*CONTROLLER_DEADBAND;
+    input *= 1 / (1 - CONTROLLER_DEADBAND);
+
+    return input;
+  }
+
   public void setFastSpeed() {
     driveSpeed = SwerveConstants.FAST_DRIVE_SPEED;
     rotSpeed = SwerveConstants.FAST_ROT_SPEED;
@@ -72,8 +81,8 @@ public class TeleopSwerve extends Command {
   @Override
   public void execute() {
     // joystick
-    double speedX = Math.abs(controller.getLeftY()) >= Constants.CONTROLLER_DEADBAND ? -controller.getLeftY() : 0;
-    double speedY = Math.abs(controller.getLeftX()) >= Constants.CONTROLLER_DEADBAND ? -controller.getLeftX() : 0;
+    double speedX = processJoystick(-controller.getLeftY());
+    double speedY = processJoystick(-controller.getLeftX());
 
     speedX *= isRed ? -1 : 1;
     speedY *= isRed ? -1 : 1;
@@ -88,7 +97,7 @@ public class TeleopSwerve extends Command {
 
     swerve.driveFieldCentric(MetersPerSecond.of(speedX),
         MetersPerSecond.of(speedY),
-        rotSpeed.times(Math.abs(controller.getRightX()) >= Constants.CONTROLLER_DEADBAND ? -controller.getRightX() : 0));
+        rotSpeed.times(processJoystick(-controller.getRightX())));
   }
 
   // Called once the command ends or is interrupted.

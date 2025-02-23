@@ -44,8 +44,8 @@ public class VisionSubsystem extends SubsystemBase {
     
     private boolean hasTarget = false;
 
-    private StructPublisher<Pose2d> fieldFL = INST.getStructTopic("FL Pose", Pose2d.struct).publish();
-    private StructPublisher<Pose2d> fieldFR = INST.getStructTopic("FR Pose", Pose2d.struct).publish();
+    private StructPublisher<Pose2d> fieldFL = INST.getStructTopic("Vision/FL Pose", Pose2d.struct).publish();
+    private StructPublisher<Pose2d> fieldFR = INST.getStructTopic("Vision/FR Pose", Pose2d.struct).publish();
 
     private Swerve swerve;
 
