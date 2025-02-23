@@ -293,8 +293,9 @@ public class Constants {
         public static final Distance SIDE_DISTANCE = Meters.of(3);
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
-        public static final Distance APPROACH_DISTANCE = Inches.of(10); // *extra* distance to reef when approaching
-        public static final Distance APPROACH_AMOUNT = Inches.of(30); // distance to move directly towards reef when approaching
+
+        public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching
+        public static final Distance TRAVERSE_DISTANCE = Inches.of(60); // *extra* distance to reef when moving around to other side
 
         public static final Map<Character, Pair<Integer, Integer>> LETTER_TO_SIDE_AND_RELATIVE = Map.ofEntries(
                 Map.entry(Character.valueOf('A'), new Pair<Integer, Integer>(0, 1)),

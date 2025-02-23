@@ -24,9 +24,9 @@ import frc.robot.subsystems.Swerve;
 @Logged
 public class AlignToPoseCommand extends Command {
     public Pose2d targetPose;
-    PIDController pidControllerX;
-    PIDController pidControllerY;
-    PIDController pidControllerAngle;
+    public PIDController pidControllerX;
+    public PIDController pidControllerY;
+    public PIDController pidControllerAngle;
 
     private Swerve swerve;
 
