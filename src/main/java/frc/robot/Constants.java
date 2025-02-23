@@ -91,7 +91,7 @@ public class Constants {
         public static final LinearVelocity SLOW_DRIVE_SPEED = MetersPerSecond.of(1);
         public static final AngularVelocity SLOW_ROT_SPEED = RotationsPerSecond.of(0.5);
 
-        public static final LinearAcceleration MAX_TELEOP_ACCEL = MetersPerSecondPerSecond.of(15);
+        public static final LinearAcceleration MAX_TELEOP_ACCEL = MetersPerSecondPerSecond.of(10);
         public static final AngularVelocity MAX_MODULE_ROT_SPEED = RotationsPerSecond.of(5);
 
         // distance between modules on same side (front to back or left to right)
@@ -279,10 +279,10 @@ public class Constants {
     public static class AutoConstants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
-                SwerveConstants.DEFAULT_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(2)),
+                SwerveConstants.FAST_DRIVE_SPEED,
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1.5)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
-                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(2)));
+                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
 
         public static final Distance SIDE_DISTANCE = Meters.of(3);
     
