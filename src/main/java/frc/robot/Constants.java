@@ -68,7 +68,6 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.ElevatorSubsystem;
 
 public class Constants {
     public static final CANBus CAN_FD_BUS = new CANBus("Bobby");

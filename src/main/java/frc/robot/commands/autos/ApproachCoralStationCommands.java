@@ -4,7 +4,6 @@
 
 package frc.robot.commands.autos;
 
-import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.Constants.INST;
 import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
 import static frc.robot.Constants.FieldConstants.*;
@@ -16,10 +15,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.Swerve;
 
-/** Add your docs here. */
+/** Container class for approaching/moving to coral station */
 public class ApproachCoralStationCommands {
     /**
      * @param station 0 for right station, 1 for left from operator perspective
@@ -35,6 +33,7 @@ public class ApproachCoralStationCommands {
         return pose;
     }
 
+    /** Publishes station poses to NetworkTables */
     public static void testStationPoses() {
         Pose2d[] poses = new Pose2d[]{
             getStationPose(0, -1),
@@ -48,7 +47,7 @@ public class ApproachCoralStationCommands {
     }
 
     /**
-     * Path find using PathPlanner to get to 
+     * Generate PathPlannerPath to the desired station, moving around the reef if necessary
      * @param station 0 for right station, 1 for left from operator perspective
      * @param relativePos -1 for right, 0 for center, 1 for left from operator perspective
      * @param swerve

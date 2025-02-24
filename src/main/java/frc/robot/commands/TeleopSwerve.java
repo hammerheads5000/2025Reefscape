@@ -16,15 +16,15 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.subsystems.Swerve;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+/* Controlling swerve drive in teleop */
 public class TeleopSwerve extends Command {
   LinearVelocity driveSpeed = SwerveConstants.DEFAULT_DRIVE_SPEED;
   AngularVelocity rotSpeed = SwerveConstants.DEFAULT_ROT_SPEED;
 
+  // limit how fast speeds can change
   SlewRateLimiter slewRateLimiterX = new SlewRateLimiter(SwerveConstants.MAX_TELEOP_ACCEL.in(MetersPerSecondPerSecond));
   SlewRateLimiter slewRateLimiterY = new SlewRateLimiter(SwerveConstants.MAX_TELEOP_ACCEL.in(MetersPerSecondPerSecond));
 
@@ -44,9 +44,10 @@ public class TeleopSwerve extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    isRed = DriverStation.getAlliance().get() == Alliance.Red;
+    isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
   }
 
+  // Applies deadband and normalizes input to [0,1] (not [deadband,1])
   private double processJoystick(double input) {
     if (Math.abs(input) < CONTROLLER_DEADBAND) return 0;
     input -= Math.signum(input)*CONTROLLER_DEADBAND;

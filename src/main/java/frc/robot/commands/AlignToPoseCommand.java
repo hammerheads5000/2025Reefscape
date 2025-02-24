@@ -11,8 +11,6 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -20,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.ControlConstants;
 import frc.robot.subsystems.Swerve;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+/* Aligns robot to given pose (translation + rotation)  */
 @Logged
 public class AlignToPoseCommand extends Command {
     public Pose2d targetPose;

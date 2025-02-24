@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Millimeters;
@@ -13,16 +11,9 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.Constants.INST;
-import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
 import static frc.robot.Constants.ElevatorConstants.*;
 
-import java.util.EnumSet;
-
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -106,10 +97,12 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putData("Intake", goToIntakePosCommand(true));
     }
 
+    // Enable PID/feedforward control
     public void enable() {
         enabled = true;
     }
     
+    // Disable PID/feedforward control
     public void disable() {
         enabled = false;
     }

@@ -7,14 +7,10 @@ package frc.robot.commands.autos;
 import static frc.robot.Constants.AutoConstants.*;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.Waypoint;
-
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -22,14 +18,11 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -38,10 +31,14 @@ import frc.robot.commands.AlignToPoseCommand;
 import frc.robot.commands.AlignToReefCommands;
 import frc.robot.subsystems.Swerve;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+/**
+ * Pathfind and align to reef
+ */
 public class ApproachReefCommand extends SequentialCommandGroup {
+    /**
+     * @param pose Robot pose to compare
+     * @return What side of the reef the robot is closest to (0 -> 5 CW starting at far left)
+     */
     private static int getClosestReefSide(Pose2d pose) {
         int closest = 0;
         double closestDistance = Double.POSITIVE_INFINITY;
@@ -62,6 +59,9 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         return Math.min(diff, 6 - diff);
     }
 
+    /**
+     * @return Side one step closer to targetSide from currentSide
+     */
     private static int getNextSide(int currentSide, int targetSide) {
         int positiveDistance = distanceBetweenSides(currentSide + 1, targetSide);
         int negativeDistance = distanceBetweenSides(currentSide - 1, targetSide);
@@ -70,6 +70,9 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         return (currentSide - 1 + 6) % 6;
     }
 
+    /**
+     * Generate PathPlannerPath to the desired branch, moving around the reef if necessary
+     */
     private static PathPlannerPath generatePath(Pose2d currentPose, int side, int relativePos, LinearVelocity endVelocity) {
         int currentSide = getClosestReefSide(currentPose);
         
