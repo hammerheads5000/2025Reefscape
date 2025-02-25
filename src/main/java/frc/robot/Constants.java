@@ -82,10 +82,10 @@ public class Constants {
     public static final Distance BUMPER_THICKNESS = Inches.of(2);
 
     public static class SwerveConstants {
-        public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(3);//define later
+        public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(2.5);//define later
         public static final AngularVelocity DEFAULT_ROT_SPEED = RotationsPerSecond.of(1.5);
 
-        public static final LinearVelocity FAST_DRIVE_SPEED = MetersPerSecond.of(8);//find values later
+        public static final LinearVelocity FAST_DRIVE_SPEED = MetersPerSecond.of(5);//find values later
         public static final AngularVelocity FAST_ROT_SPEED = RotationsPerSecond.of(4);
 
         public static final LinearVelocity SLOW_DRIVE_SPEED = MetersPerSecond.of(1);
