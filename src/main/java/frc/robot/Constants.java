@@ -386,13 +386,13 @@ public class Constants {
         public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(38.8)).in(Meters));
         public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(56.1)).in(Meters));
         public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(86.5)).in(Meters));
-        public static final Distance INTAKE_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(17.8)).in(Meters));
+        public static final Distance INTAKE_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(2.25)).in(Meters));
     }
 
     public static class EndEffectorConstants {
         // Motors
-        public static final int MOTOR_LEFT_ID = 31;
-        public static final int MOTOR_RIGHT_ID = 30;
+        public static final int MOTOR_LEFT_ID = 30;
+        public static final int MOTOR_RIGHT_ID = 31;
 
         public static final MotorOutputConfigs MOTOR_LEFT_CONFIGS = new MotorOutputConfigs()
                 .withInverted(InvertedValue.Clockwise_Positive);

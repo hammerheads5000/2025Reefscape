@@ -52,7 +52,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     Angle initMotorPos;
 
     // To be implemented: LaserCan
-    LaserCan laserCan = new LaserCan(0);
+    //LaserCan laserCan = new LaserCan(0);
 
     // MockLaserCan laserCanSim = new MockLaserCan();
 
@@ -80,12 +80,12 @@ public class ElevatorSubsystem extends SubsystemBase {
         motor1.setPosition(0);
         initMotorPos = motor1.getPosition().getValue();
         
-        try {
-            laserCan.setRangingMode(LASERCAN_RANGING_MODE);
-            laserCan.setRegionOfInterest(REGION_OF_INTEREST);
-        } catch(ConfigurationFailedException e) {
-            System.err.println(e);
-        }
+        // try {
+        //     laserCan.setRangingMode(LASERCAN_RANGING_MODE);
+        //     laserCan.setRegionOfInterest(REGION_OF_INTEREST);
+        // } catch(ConfigurationFailedException e) {
+        //     System.err.println(e);
+        // }
 
         SmartDashboard.putData("Elevator Sim", mech2d);
 
@@ -124,9 +124,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         return motorRotationsToHeight(getMotorRotations());
     }
 
-    public Distance getLaserCan() {
-        return Millimeters.of(laserCan.getMeasurement().distance_mm);
-    }
+    // public Distance getLaserCan() {
+    //     return Millimeters.of(laserCan.getMeasurement().distance_mm);
+    // }
 
     public void setHeight(Distance height) {
         setRotations(heightToMotorRotations(height));

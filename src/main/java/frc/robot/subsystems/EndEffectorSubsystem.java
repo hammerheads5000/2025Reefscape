@@ -35,8 +35,8 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
     frontLidar = new DigitalInput(FRONT_LIDAR_ID);
     backLidar = new DigitalInput(BACK_LIDAR_ID);
-    SmartDashboard.putData("End Effector Intake", forwardCommand(INTAKE_SPEED));
-    SmartDashboard.putData("End Effector Shoot", forwardCommand(SCORE_SPEED));
+    SmartDashboard.putData("End Effector Intake", intakeCommand());
+    SmartDashboard.putData("End Effector Shoot", scoreCommand());
     SmartDashboard.putData("End Effector Trough Left", troughLeftCommand());
     SmartDashboard.putData("End Effector Trough Right", troughRightCommand());
     SmartDashboard.putData("End Effector Reverse", forwardCommand(-INTAKE_SPEED));
