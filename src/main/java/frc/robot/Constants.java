@@ -351,7 +351,7 @@ public class Constants {
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0.3, 0.05, 0.01).withTolerance(1).withIZone(30).withIRange(-1, 2)
+                .withPID(0.4, 0.025, 0.05).withTolerance(1).withIZone(30).withIRange(-1, 2)
                 .withFeedforward(0.1257, 0.004).withPhysical(0.05, 0.375)
                 .withProfile(350, 200);
 
@@ -361,6 +361,8 @@ public class Constants {
         // Manual control (duty cycle)
         public static final double MANUAL_UP_SPEED = 0.3;
         public static final double MANUAL_DOWN_SPEED = -0.2;
+
+        public static final Current STALL_CURRENT = Amps.of(58);
         
         public static final double GEAR_RATIO = 4;
         public static final Mass CARRIAGE_MASS = Ounces.of(50.884);

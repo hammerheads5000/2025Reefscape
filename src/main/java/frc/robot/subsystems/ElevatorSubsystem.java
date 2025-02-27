@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Millimeters;
@@ -14,6 +15,7 @@ import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.ElevatorConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -34,6 +36,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -95,6 +98,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putData("L3", goToL3Command(true));
         SmartDashboard.putData("L4", goToL4Command(true));
         SmartDashboard.putData("Intake", goToIntakePosCommand(true));
+        SmartDashboard.putData("Zero", zeroCommand());
     }
 
     // Enable PID/feedforward control
@@ -133,7 +137,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void resetPID() {
-        controller.reset(getMotorRotations().in(Rotations));
+        controller.reset(getMotorRotations().in(Rotations), 0);
+        controller.setGoal(getMotorRotations().in(Rotations));
     }
 
     public void setRotations(double rotations) {
@@ -236,6 +241,18 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public Command moveDownManualCommand() {
         return this.runEnd(() -> motor1.set(MANUAL_DOWN_SPEED), this::stop);
+    }
+
+    public Command zeroCommand() {
+        return this.run(
+            () -> {motor1.set(MANUAL_DOWN_SPEED); disable();})
+            .until(() -> motor1.getTorqueCurrent().getValue().abs(Amps) > STALL_CURRENT.in(Amps))
+            .andThen(this.runOnce(() -> motor1.setControl(new NeutralOut())), 
+                Commands.waitSeconds(0.5), 
+                resetPositionCommand(),
+                Commands.waitSeconds(0.1),
+                resetPositionCommand(),
+                this.runOnce(this::enable));
     }
 
     public Command goToHeightCommand(boolean instant, Distance height) {
