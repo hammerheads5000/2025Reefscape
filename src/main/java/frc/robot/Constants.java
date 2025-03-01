@@ -351,9 +351,9 @@ public class Constants {
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0.4, 0.025, 0.05).withTolerance(1).withIZone(30).withIRange(-1, 2)
-                .withFeedforward(0.1257, 0.004).withPhysical(0.05, 0.375)
-                .withProfile(350, 200);
+                .withPID(0.4, 0.05, 0.05).withTolerance(1).withIZone(30).withIRange(-1, 2)
+                .withFeedforward(0.1265, 0.004).withPhysical(0.05, 0.375)
+                .withProfile(350, 250);
 
         public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
 
@@ -384,10 +384,10 @@ public class Constants {
         public static final RegionOfInterest REGION_OF_INTEREST = new RegionOfInterest(8, 3, 6, 6);
 
         // Setpoints
-        public static final Distance L1_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(26)).in(Meters));
-        public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(38.8)).in(Meters));
-        public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(56.1)).in(Meters));
-        public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(86.5)).in(Meters));
+        public static final Distance L1_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(26.5)).in(Meters));
+        public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(39.3)).in(Meters));
+        public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(56.6)).in(Meters));
+        public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(87)).in(Meters));
         public static final Distance INTAKE_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(2.25)).in(Meters));
     }
 
@@ -408,9 +408,9 @@ public class Constants {
         public static final int BACK_LIDAR_ID = 8;
 
         // Speed (duty cycle)
-        public static final double INTAKE_SPEED = 0.3;
+        public static final double INTAKE_SPEED = 0.25;
         public static final double SLOW_INTAKE_SPEED = 0.15;
-        public static final double SCORE_SPEED = 0.3;
+        public static final double SCORE_SPEED = 0.2;
         public static final double FAST_TROUGH_SPEED = 0.5;
         public static final double SLOW_TROUGH_SPEED = 0.1;
     }
