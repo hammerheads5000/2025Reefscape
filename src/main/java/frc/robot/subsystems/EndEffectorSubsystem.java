@@ -11,8 +11,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 @Logged
 public class EndEffectorSubsystem extends SubsystemBase {
@@ -25,13 +27,27 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
   /** Creates a new EndEffectorSubsystem. */
   public EndEffectorSubsystem() {
-    motorLeft = new TalonFX(MOTOR_LEFT_ID);
-    motorRight = new TalonFX(MOTOR_RIGHT_ID);
+    motorLeft = new TalonFX(MOTOR_LEFT_ID, Constants.CAN_RIO_BUS);
+    motorRight = new TalonFX(MOTOR_RIGHT_ID, Constants.CAN_RIO_BUS);
 
     motorLeft.getConfigurator().apply(MOTOR_LEFT_CONFIGS);
+    motorRight.getConfigurator().apply(MOTOR_RIGHT_CONFIGS);
 
     frontLidar = new DigitalInput(FRONT_LIDAR_ID);
     backLidar = new DigitalInput(BACK_LIDAR_ID);
+    SmartDashboard.putData("End Effector Intake", intakeCommand());
+    SmartDashboard.putData("End Effector Shoot", scoreCommand());
+    SmartDashboard.putData("End Effector Trough Left", troughLeftCommand());
+    SmartDashboard.putData("End Effector Trough Right", troughRightCommand());
+    SmartDashboard.putData("End Effector Reverse", forwardCommand(-INTAKE_SPEED));
+  }
+
+  public boolean getFrontLidar() {
+    return frontLidar.get();
+  }
+
+  public boolean getBackLidar() {
+    return backLidar.get();
   }
 
   public void forward(double speedDutyCycle) {
@@ -54,20 +70,21 @@ public class EndEffectorSubsystem extends SubsystemBase {
   }
 
   public Command intakeCommand() {
-    return this.forwardCommand(INTAKE_SPEED).until(() -> !backLidar.get());
+    return this.forwardCommand(INTAKE_SPEED).until(() -> !backLidar.get())
+        .andThen(this.forwardCommand(SLOW_INTAKE_SPEED).until(() -> backLidar.get() && !frontLidar.get()));
   }
 
   public Command scoreCommand() {
-    return this.forwardCommand(SCORE_SPEED).until(() -> !frontLidar.get());
+    return this.forwardCommand(SCORE_SPEED).until(() -> frontLidar.get());
   }
 
   public Command troughLeftCommand() {
-    return this.startEnd(() -> setMotors(FAST_TROUGH_SPEED, SLOW_TROUGH_SPEED), this::stop)
+    return this.startEnd(() -> setMotors(SLOW_TROUGH_SPEED, FAST_TROUGH_SPEED), this::stop)
         .until(() -> !frontLidar.get());
   }
 
   public Command troughRightCommand() {
-    return this.startEnd(() -> setMotors(SLOW_TROUGH_SPEED, FAST_TROUGH_SPEED), this::stop)
+    return this.startEnd(() -> setMotors(FAST_TROUGH_SPEED, SLOW_TROUGH_SPEED), this::stop)
         .until(() -> !frontLidar.get());
   }
 

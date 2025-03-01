@@ -5,39 +5,42 @@
 package frc.robot.commands;
 
 import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.units.AngleUnit;
-import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.ControlConstants;
 import frc.robot.subsystems.Swerve;
 
-/* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+/* Aligns robot to given pose (translation + rotation)  */
+@Logged
 public class AlignToPoseCommand extends Command {
-    Pose2d targetPose;
-    PIDController pidControllerX;
-    PIDController pidControllerY;
-    PIDController pidControllerAngle;
+    public Pose2d targetPose;
+    public PIDController pidControllerX;
+    public PIDController pidControllerY;
+    public PIDController pidControllerAngle;
 
     private Swerve swerve;
 
     /** Creates a new AlignToPoseCommand. */
-    public AlignToPoseCommand(Pose2d targetPose, ControlConstants<DistanceUnit> pidConstantsX,
-            ControlConstants<DistanceUnit> pidConstantsY, ControlConstants<AngleUnit> pidConstantsAngle, Swerve swerve) {
+    public AlignToPoseCommand(Pose2d targetPose, ControlConstants pidConstantsX,
+            ControlConstants pidConstantsY, ControlConstants pidConstantsAngle, Swerve swerve) {
         this.targetPose = targetPose;
 
         pidControllerX = pidConstantsX.getPIDController();
         pidControllerY = pidConstantsY.getPIDController();
         pidControllerAngle = pidConstantsAngle.getPIDController();
+        pidControllerAngle.enableContinuousInput(-180, 180);
 
-        pidControllerX.setSetpoint(0);
-        pidControllerY.setSetpoint(0);
-        pidControllerAngle.setSetpoint(0);
+        pidControllerX.setSetpoint(targetPose.getX());
+        pidControllerY.setSetpoint(targetPose.getY());
+        pidControllerAngle.setSetpoint(targetPose.getRotation().getDegrees());
 
         this.swerve = swerve;
     }
@@ -50,13 +53,13 @@ public class AlignToPoseCommand extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Pose2d relativePose = getPose().relativeTo(targetPose);
-        LinearVelocity xVel = MetersPerSecond.of(pidControllerX.calculate(relativePose.getTranslation().getX()));
-        LinearVelocity yVel = MetersPerSecond.of(pidControllerY.calculate(relativePose.getTranslation().getY()));
+        Pose2d pose = getPose();
+        LinearVelocity xVel = MetersPerSecond.of(pidControllerX.calculate(pose.getX()));
+        LinearVelocity yVel = MetersPerSecond.of(pidControllerY.calculate(pose.getY()));
         AngularVelocity angleVel = DegreesPerSecond
-                .of(pidControllerAngle.calculate(relativePose.getRotation().getDegrees()));
+                .of(pidControllerAngle.calculate(pose.getRotation().getDegrees()));
 
-        swerve.driveRobotCentric(xVel, yVel, angleVel);
+        swerve.driveFieldCentric(xVel, yVel, angleVel);
     }
 
     // Called once the command ends or is interrupted.
@@ -65,7 +68,15 @@ public class AlignToPoseCommand extends Command {
     }
 
     private Pose2d getPose() {
-        return new Pose2d();
+        return swerve.getPose();
+    }
+
+    public LinearVelocity calculateXPID(Distance error) {
+        return MetersPerSecond.of(pidControllerX.calculate(error.in(Meters)));
+    }
+
+    public LinearVelocity calculateYPID(Distance error) {
+        return MetersPerSecond.of(pidControllerY.calculate(error.in(Meters)));
     }
 
     // Returns true when the command should end.

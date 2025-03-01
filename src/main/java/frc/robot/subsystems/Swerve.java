@@ -15,6 +15,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.DriveFeedforwards;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
@@ -25,8 +31,10 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -43,6 +51,12 @@ public class Swerve extends SubsystemBase {
     private SwerveRequest.FieldCentric fieldCentricRequest;
     private SwerveRequest.RobotCentric robotCentricRequest;
     private SwerveRequest.ApplyRobotSpeeds pathApplyRobotSpeeds;
+    private SwerveRequest.SwerveDriveBrake brakeRequest;
+
+    private SwerveSetpointGenerator swerveSetpointGenerator;
+    private SwerveSetpoint previouSetpoint;
+    @Logged
+    private ChassisSpeeds ppChassisSpeeds;
 
     // #region SysId Setup
     /* Swerve requests to apply during SysId characterization */
@@ -130,6 +144,8 @@ public class Swerve extends SubsystemBase {
                 .withDriveRequestType(DRIVE_REQUEST_TYPE).withSteerRequestType(STEER_REQUEST_TYPE);
         pathApplyRobotSpeeds = new SwerveRequest.ApplyRobotSpeeds()
                 .withDriveRequestType(DRIVE_REQUEST_TYPE).withSteerRequestType(STEER_REQUEST_TYPE);
+    
+        configPathPlanner();
     }
 
     private void startSimThread() {
@@ -183,6 +199,10 @@ public class Swerve extends SubsystemBase {
         drivetrain.setOperatorPerspectiveForward(perspective);
     }
 
+    public void stop() {
+        drivetrain.setControl(brakeRequest);
+    }
+
     public void driveFieldCentric(LinearVelocity xVel, LinearVelocity yVel, AngularVelocity rotVel) {
         drivetrain.setControl(fieldCentricRequest
                 .withVelocityX(xVel).withVelocityY(yVel).withRotationalRate(rotVel));
@@ -194,12 +214,25 @@ public class Swerve extends SubsystemBase {
     }
 
     public void applyChassisSpeeds(ChassisSpeeds chassisSpeeds) {
-        drivetrain.setControl(pathApplyRobotSpeeds.withSpeeds(chassisSpeeds));
+        previouSetpoint = swerveSetpointGenerator.generateSetpoint(previouSetpoint, chassisSpeeds, 0.02);
+        ppChassisSpeeds = previouSetpoint.robotRelativeSpeeds();
+        drivetrain.setControl(pathApplyRobotSpeeds.withSpeeds(previouSetpoint.robotRelativeSpeeds()));
     }
 
-    @Logged
+    public void applyChassisSpeedsWithFeedforwards(ChassisSpeeds chassisSpeeds, DriveFeedforwards feedforwards) {
+        previouSetpoint = swerveSetpointGenerator.generateSetpoint(previouSetpoint, chassisSpeeds, 0.02);
+        ppChassisSpeeds = previouSetpoint.robotRelativeSpeeds();
+        drivetrain.setControl(pathApplyRobotSpeeds.withSpeeds(previouSetpoint.robotRelativeSpeeds())
+                .withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesX())
+                .withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesY()));
+    }
+
     public Pose2d getPose() {
         return drivetrain.getState().Pose;
+    }
+
+    public ChassisSpeeds getChassisSpeeds() {
+        return drivetrain.getState().Speeds;
     }
 
     /**
@@ -212,7 +245,7 @@ public class Swerve extends SubsystemBase {
      */
     public void addVisionMeasurement(EstimatedRobotPose estimatedRobotPose) {
         drivetrain.addVisionMeasurement(estimatedRobotPose.estimatedPose.toPose2d(),
-                estimatedRobotPose.timestampSeconds);
+                Utils.fpgaToCurrentTime(estimatedRobotPose.timestampSeconds));
     }
 
     /**
@@ -226,7 +259,7 @@ public class Swerve extends SubsystemBase {
      */
     public void addVisionMeasurement(EstimatedRobotPose estimatedRobotPose, Matrix<N3, N1> stdDevs) {
         drivetrain.addVisionMeasurement(estimatedRobotPose.estimatedPose.toPose2d(),
-                estimatedRobotPose.timestampSeconds, stdDevs);
+                Utils.fpgaToCurrentTime(estimatedRobotPose.timestampSeconds), stdDevs);
     }
 
     /**
@@ -234,12 +267,13 @@ public class Swerve extends SubsystemBase {
      * 
      * @param poseArray double array storing the data of a Pose2d of format {x
      *                  (meters), y (meters), rotation (radians)}
-     * @param timestamp timestamp in microseconds
+     * @param timestamp FPGA timestamp in microseconds
      */
     public void addVisionMeasurement(double[] poseArray, long timestamp) {
         // converts array of format {x (m), y (m), rotation (rad)} to Pose2d
         Pose2d pose = new Pose2d(poseArray[0], poseArray[1], new Rotation2d(poseArray[2]));
         double timestampSeconds = Microseconds.of(timestamp).in(Seconds);
+        timestampSeconds = Utils.fpgaToCurrentTime(timestampSeconds);
         drivetrain.addVisionMeasurement(pose, timestampSeconds);
     }
 
@@ -247,12 +281,52 @@ public class Swerve extends SubsystemBase {
         drivetrain.resetPose(pose);
     }
 
+    public void resetOdometry() {
+        drivetrain.resetPose(Pose2d.kZero);
+    }
+
     public void registerTelemetry(Consumer<SwerveDriveState> telemetryFunction) {
         drivetrain.registerTelemetry(telemetryFunction);
+    }
+
+    private RobotConfig getPPConfig() {
+        RobotConfig config = null;
+        try {
+            config = RobotConfig.fromGUISettings();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        return config;
+    }
+
+    private void configPathPlanner() {
+        AutoBuilder.configure(
+            this::getPose,
+            this::resetOdometry,
+            this::getChassisSpeeds,
+            this::applyChassisSpeedsWithFeedforwards,
+            new PPHolonomicDriveController(
+                PP_TRANSLATIONAL_PID,
+                PP_ROTATIONAL_PID
+            ),
+            getPPConfig(),
+            () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+            this
+        );
+
+        swerveSetpointGenerator = new SwerveSetpointGenerator(getPPConfig(), MAX_MODULE_ROT_SPEED.in(RadiansPerSecond));
+        previouSetpoint = new SwerveSetpoint(getChassisSpeeds(), drivetrain.getState().ModuleStates, DriveFeedforwards.zeros(4));
     }
 
     @Override
     public void periodic() {
 
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        drivetrain.updateSimState(0.02, RobotController.getBatteryVoltage());
     }
 }
