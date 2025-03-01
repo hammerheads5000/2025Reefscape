@@ -68,6 +68,7 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.LEDPattern;
 
 public class Constants {
     public static final CANBus CAN_FD_BUS = new CANBus("Bobby");
@@ -415,6 +416,16 @@ public class Constants {
         public static final double SLOW_TROUGH_SPEED = 0.1;
     }
 
+    public static class LightsConstants {
+        public static final int PWM_PORT_LEFT = 0; // TODO define
+        public static final int PWM_PORT_RIGHT = 1; // TODO define
+
+        public static final int LED_COUNT_LEFT = 60; // TODO define
+        public static final int LED_COUNT_RIGHT = 60; // TODO define
+
+        public static final LEDPattern RAINBOW = LEDPattern.rainbow(255, 128);
+
+    }
     public static class FieldConstants {
         public static final AprilTagFieldLayout APRIL_TAGS = AprilTagFieldLayout
                 .loadField(AprilTagFields.k2025ReefscapeAndyMark);

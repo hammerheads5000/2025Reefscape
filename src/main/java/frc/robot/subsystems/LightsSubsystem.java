@@ -4,54 +4,39 @@
 
 package frc.robot.subsystems;
 
-import java.util.Map;
+import static frc.robot.Constants.LightsConstants.*;
 
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.AddressableLEDBufferView;
-import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LEDStrip;
 
 public class LightsSubsystem extends SubsystemBase {
+  LEDStrip leftStrip = new LEDStrip(PWM_PORT_LEFT, LED_COUNT_LEFT);
+  LEDStrip rightStrip = new LEDStrip(PWM_PORT_LEFT, LED_COUNT_RIGHT);
+  
   /** Creates a new LightsSubsystem. */
-  AddressableLED ledStrip;
-  AddressableLEDBuffer m_ledBuffer;
-
-  private final LEDPattern m_rainbow = LEDPattern.rainbow(255, 128);//saturation out of 255, brightness out of 255
-
-
   public LightsSubsystem() {
-    ledStrip = new AddressableLED(0);//idk port define in constants
-    m_ledBuffer = new AddressableLEDBuffer(60);
 
-    ledStrip.setLength(m_ledBuffer.getLength());
-
-    ledStrip.setData(m_ledBuffer);
-    ledStrip.start();
   }
 
-  public void setSolidColor(Color color){//data type should be .kRed or something
-    LEDPattern pattern = LEDPattern.solid(color);
-    pattern.applyTo(m_ledBuffer);
-    ledStrip.setData(m_ledBuffer);
+  private void setSolidColor(Color color){
+    leftStrip.setSolidColor(color);
+    rightStrip.setSolidColor(color);
   }
 
-  public void setSteps(Color color1, Color color2, double percent){
-    LEDPattern steps = LEDPattern.steps(Map.of(0, color1, percent, color2));//sets first half to be color1, second half color2
-
-    steps.applyTo(m_ledBuffer);
-    ledStrip.setData(m_ledBuffer);
+  private void setSteps(Color color1, Color color2, double proportion){
+    leftStrip.setSteps(color1, color2, proportion);
+    rightStrip.setSteps(color1, color2, proportion);
   }
 
-  public void setRainbow(){
-    m_rainbow.applyTo(m_ledBuffer);
-    ledStrip.setData(m_ledBuffer);
+  private void setRainbow(){
+    leftStrip.setRainbow();
+    rightStrip.setRainbow();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
   }
-
 }

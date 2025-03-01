@@ -25,6 +25,7 @@ import frc.robot.commands.autos.ApproachCoralStationCommands;
 import frc.robot.commands.autos.FullAutoCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.EndEffectorSubsystem;
+import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -40,6 +41,7 @@ public class RobotContainer {
     ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     SwerveTelemetry swerveTelemetry = new SwerveTelemetry();
     EndEffectorSubsystem endEffectorSubsystem = new EndEffectorSubsystem();
+    LightsSubsystem lightsSubsystem = new LightsSubsystem();
     // #endregion
 
     // #region Commands
