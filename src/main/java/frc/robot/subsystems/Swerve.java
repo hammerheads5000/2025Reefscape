@@ -128,7 +128,7 @@ public class Swerve extends SubsystemBase {
 
     public Swerve() {
         drivetrain = new SwerveDrivetrain<TalonFX, TalonFX, CANcoder>(TalonFX::new, TalonFX::new, CANcoder::new,
-                DRIVETRAIN_CONSTANTS, ODOMETRY_UPDATE_FREQ.in(Hertz), ODOMETRY_STD_DEV, VISION_STD_DEV,
+                DRIVETRAIN_CONSTANTS, ODOMETRY_UPDATE_FREQ.in(Hertz), ODOMETRY_STD_DEV, VISION_STD_DEV_0M,
                 FrontLeft.MODULE_CONSTANTS, FrontRight.MODULE_CONSTANTS,
                 BackLeft.MODULE_CONSTANTS, BackRight.MODULE_CONSTANTS);
 

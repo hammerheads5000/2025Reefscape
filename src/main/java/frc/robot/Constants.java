@@ -254,7 +254,8 @@ public class Constants {
 
         public static final Frequency ODOMETRY_UPDATE_FREQ = Hertz.of(0); // 0 Hz = default 250 Hz for CAN FD
         public static final Matrix<N3, N1> ODOMETRY_STD_DEV = VecBuilder.fill(0.02, 0.02, 0.01);
-        public static final Matrix<N3, N1> VISION_STD_DEV = VecBuilder.fill(0.1, 0.1, 0.05);
+        public static final Matrix<N3, N1> VISION_STD_DEV_0M = VecBuilder.fill(0.06, 0.06, 0.03);
+        public static final Matrix<N3, N1> VISION_STD_DEV_5M = VecBuilder.fill(1.5, 1.5, 0.75);
 
         public static final DriveRequestType DRIVE_REQUEST_TYPE = DriveRequestType.Velocity;
         public static final SteerRequestType STEER_REQUEST_TYPE = SteerRequestType.MotionMagicExpo;
@@ -351,7 +352,7 @@ public class Constants {
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0.4, 0.05, 0.05).withTolerance(1).withIZone(30).withIRange(-1, 2)
+                .withPID(0.5, 0.1, 0.1).withTolerance(1).withIZone(30).withIRange(-1, 2)
                 .withFeedforward(0.1265, 0.004).withPhysical(0.05, 0.375)
                 .withProfile(350, 250);
 
