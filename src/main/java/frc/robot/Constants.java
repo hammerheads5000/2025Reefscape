@@ -68,7 +68,6 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
-import frc.robot.subsystems.ElevatorSubsystem;
 
 public class Constants {
     public static final CANBus CAN_FD_BUS = new CANBus("Bobby");
@@ -83,10 +82,10 @@ public class Constants {
     public static final Distance BUMPER_THICKNESS = Inches.of(2);
 
     public static class SwerveConstants {
-        public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(3);//define later
+        public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(2.5);//define later
         public static final AngularVelocity DEFAULT_ROT_SPEED = RotationsPerSecond.of(1.5);
 
-        public static final LinearVelocity FAST_DRIVE_SPEED = MetersPerSecond.of(8);//find values later
+        public static final LinearVelocity FAST_DRIVE_SPEED = MetersPerSecond.of(5);//find values later
         public static final AngularVelocity FAST_ROT_SPEED = RotationsPerSecond.of(4);
 
         public static final LinearVelocity SLOW_DRIVE_SPEED = MetersPerSecond.of(1);
@@ -255,7 +254,8 @@ public class Constants {
 
         public static final Frequency ODOMETRY_UPDATE_FREQ = Hertz.of(0); // 0 Hz = default 250 Hz for CAN FD
         public static final Matrix<N3, N1> ODOMETRY_STD_DEV = VecBuilder.fill(0.02, 0.02, 0.01);
-        public static final Matrix<N3, N1> VISION_STD_DEV = VecBuilder.fill(0.1, 0.1, 0.05);
+        public static final Matrix<N3, N1> VISION_STD_DEV_0M = VecBuilder.fill(0.06, 0.06, 0.03);
+        public static final Matrix<N3, N1> VISION_STD_DEV_5M = VecBuilder.fill(1.5, 1.5, 0.75);
 
         public static final DriveRequestType DRIVE_REQUEST_TYPE = DriveRequestType.Velocity;
         public static final SteerRequestType STEER_REQUEST_TYPE = SteerRequestType.MotionMagicExpo;
@@ -352,9 +352,9 @@ public class Constants {
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0.3, 0.05, 0.01).withTolerance(1).withIZone(30).withIRange(-1, 2)
-                .withFeedforward(0.1257, 0.004).withPhysical(0.05, 0.375)
-                .withProfile(350, 200);
+                .withPID(0.5, 0.1, 0.1).withTolerance(1).withIZone(30).withIRange(-1, 2)
+                .withFeedforward(0.1265, 0.004).withPhysical(0.05, 0.375)
+                .withProfile(350, 250);
 
         public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
 
@@ -362,6 +362,8 @@ public class Constants {
         // Manual control (duty cycle)
         public static final double MANUAL_UP_SPEED = 0.3;
         public static final double MANUAL_DOWN_SPEED = -0.2;
+
+        public static final Current STALL_CURRENT = Amps.of(58);
         
         public static final double GEAR_RATIO = 4;
         public static final Mass CARRIAGE_MASS = Ounces.of(50.884);
@@ -383,17 +385,17 @@ public class Constants {
         public static final RegionOfInterest REGION_OF_INTEREST = new RegionOfInterest(8, 3, 6, 6);
 
         // Setpoints
-        public static final Distance L1_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(26)).in(Meters));
-        public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(38.8)).in(Meters));
-        public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(56.1)).in(Meters));
-        public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(86.5)).in(Meters));
-        public static final Distance INTAKE_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(17.8)).in(Meters));
+        public static final Distance L1_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(26.5)).in(Meters));
+        public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(39.3)).in(Meters));
+        public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(56.6)).in(Meters));
+        public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(87)).in(Meters));
+        public static final Distance INTAKE_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(2.25)).in(Meters));
     }
 
     public static class EndEffectorConstants {
         // Motors
-        public static final int MOTOR_LEFT_ID = 31;
-        public static final int MOTOR_RIGHT_ID = 30;
+        public static final int MOTOR_LEFT_ID = 30;
+        public static final int MOTOR_RIGHT_ID = 31;
 
         public static final MotorOutputConfigs MOTOR_LEFT_CONFIGS = new MotorOutputConfigs()
                 .withInverted(InvertedValue.Clockwise_Positive);
@@ -407,9 +409,9 @@ public class Constants {
         public static final int BACK_LIDAR_ID = 8;
 
         // Speed (duty cycle)
-        public static final double INTAKE_SPEED = 0.3;
+        public static final double INTAKE_SPEED = 0.25;
         public static final double SLOW_INTAKE_SPEED = 0.15;
-        public static final double SCORE_SPEED = 0.3;
+        public static final double SCORE_SPEED = 0.2;
         public static final double FAST_TROUGH_SPEED = 0.5;
         public static final double SLOW_TROUGH_SPEED = 0.1;
     }

@@ -42,7 +42,7 @@ public class ControlConstants {
         this.kA = kA;
         return this;
     }
-    
+
     public ControlConstants withPhysical(double kS, double kG) {
         this.kS = kS;
         this.kG = kG;
@@ -55,7 +55,6 @@ public class ControlConstants {
         return this;
     }
 
-
     public ControlConstants withTolerance(double tolerance) {
         this.tolerance = tolerance;
         return this;
@@ -65,7 +64,7 @@ public class ControlConstants {
         this.iZone = iZone;
         return this;
     }
-    
+
     public ControlConstants withIRange(double iMin, double iMax) {
         this.iMin = iMin;
         this.iMax = iMax;
@@ -84,8 +83,7 @@ public class ControlConstants {
     public ProfiledPIDController getProfiledPIDController() {
         ProfiledPIDController controller = new ProfiledPIDController(
                 kP, kI, kD,
-                new TrapezoidProfile.Constraints(maxVel, maxAcc)
-        );
+                new TrapezoidProfile.Constraints(maxVel, maxAcc));
         controller.setTolerance(tolerance);
         controller.setIntegratorRange(iMin, iMax);
         controller.setIZone(iZone);

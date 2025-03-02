@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.Constants.FieldConstants.*;
 import static frc.robot.Constants.SwerveConstants.*;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -18,10 +17,12 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.subsystems.Swerve;
 
+/**
+ * Container class for aligning to reef     
+ */
 public class AlignToReefCommands {
     // Pose at midpoint between tags 18 and 21 (which are opposite on blue reef)
     private static final Translation2d REEF_CENTER_BLUE = APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation()

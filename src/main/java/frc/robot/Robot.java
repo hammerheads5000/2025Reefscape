@@ -4,12 +4,11 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.commands.PathfindingCommand;
+import com.pathplanner.lib.commands.FollowPathCommand;
 
 import au.grapplerobotics.CanBridge;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.epilogue.Logged.Importance;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -24,7 +23,7 @@ public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
 
   public Robot() {
-    CanBridge.runTCP();
+    CanBridge.runTCP(); // allows using GrappleHook
     m_robotContainer = new RobotContainer();
 
     // logging
@@ -32,9 +31,8 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
     Epilogue.bind(this);
-
     
-    PathfindingCommand.warmupCommand().schedule();
+    FollowPathCommand.warmupCommand().schedule();
   }
 
   @Override

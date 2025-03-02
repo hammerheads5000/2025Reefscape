@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Millimeters;
@@ -13,16 +12,10 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
-import static frc.robot.Constants.INST;
-import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
 import static frc.robot.Constants.ElevatorConstants.*;
 
-import java.util.EnumSet;
-
 import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -43,6 +36,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -61,7 +55,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     Angle initMotorPos;
 
     // To be implemented: LaserCan
-    LaserCan laserCan = new LaserCan(0);
+    //LaserCan laserCan = new LaserCan(0);
 
     // MockLaserCan laserCanSim = new MockLaserCan();
 
@@ -89,12 +83,12 @@ public class ElevatorSubsystem extends SubsystemBase {
         motor1.setPosition(0);
         initMotorPos = motor1.getPosition().getValue();
         
-        try {
-            laserCan.setRangingMode(LASERCAN_RANGING_MODE);
-            laserCan.setRegionOfInterest(REGION_OF_INTEREST);
-        } catch(ConfigurationFailedException e) {
-            System.err.println(e);
-        }
+        // try {
+        //     laserCan.setRangingMode(LASERCAN_RANGING_MODE);
+        //     laserCan.setRegionOfInterest(REGION_OF_INTEREST);
+        // } catch(ConfigurationFailedException e) {
+        //     System.err.println(e);
+        // }
 
         SmartDashboard.putData("Elevator Sim", mech2d);
 
@@ -104,12 +98,16 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putData("L3", goToL3Command(true));
         SmartDashboard.putData("L4", goToL4Command(true));
         SmartDashboard.putData("Intake", goToIntakePosCommand(true));
+        SmartDashboard.putData("Zero", zeroCommand());
+        SmartDashboard.putData("Elevator PID", controller);
     }
 
+    // Enable PID/feedforward control
     public void enable() {
         enabled = true;
     }
     
+    // Disable PID/feedforward control
     public void disable() {
         enabled = false;
     }
@@ -131,16 +129,17 @@ public class ElevatorSubsystem extends SubsystemBase {
         return motorRotationsToHeight(getMotorRotations());
     }
 
-    private Distance getLaserCan() {
-        return Millimeters.of(laserCan.getMeasurement().distance_mm);
-    }
+    // public Distance getLaserCan() {
+    //     return Millimeters.of(laserCan.getMeasurement().distance_mm);
+    // }
 
     public void setHeight(Distance height) {
         setRotations(heightToMotorRotations(height));
     }
 
     public void resetPID() {
-        controller.reset(getMotorRotations().in(Rotations));
+        controller.reset(getMotorRotations().in(Rotations), 0);
+        controller.setGoal(getMotorRotations().in(Rotations));
     }
 
     public void setRotations(double rotations) {
@@ -243,6 +242,18 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public Command moveDownManualCommand() {
         return this.runEnd(() -> motor1.set(MANUAL_DOWN_SPEED), this::stop);
+    }
+
+    public Command zeroCommand() {
+        return this.run(
+            () -> {motor1.set(MANUAL_DOWN_SPEED); disable();})
+            .until(() -> motor1.getTorqueCurrent().getValue().abs(Amps) > STALL_CURRENT.in(Amps))
+            .andThen(this.runOnce(() -> motor1.setVoltage(elevatorFeedforward.getKg())), 
+                Commands.waitSeconds(1), 
+                resetPositionCommand(),
+                Commands.waitSeconds(0.5),
+                resetPositionCommand(),
+                this.runOnce(this::enable));
     }
 
     public Command goToHeightCommand(boolean instant, Distance height) {

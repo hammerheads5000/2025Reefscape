@@ -4,24 +4,15 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.Constants.AutoConstants.AUTO_DESCRIPTOR_TOPIC;
-import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
-import static frc.robot.Constants.EndEffectorConstants.INTAKE_SPEED;
-import static frc.robot.Constants.EndEffectorConstants.SCORE_SPEED;
-
-import com.pathplanner.lib.auto.AutoBuilder;
-
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.StringEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -32,7 +23,6 @@ import frc.robot.commands.AlignToReefCommands;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.autos.ApproachCoralStationCommands;
 import frc.robot.commands.autos.FullAutoCommand;
-import frc.robot.commands.autos.TestPathCommands;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.EndEffectorSubsystem;
 import frc.robot.subsystems.Swerve;
