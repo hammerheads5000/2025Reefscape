@@ -344,11 +344,15 @@ public class Constants {
     public static class ElevatorConstants {
         // Motors
         public static final int MOTOR_1_ID = 12;
+        
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Amps.of(40));
-        public static final MotorOutputConfigs OUTPUT_CONFIGS = new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive);
-        public static final MotorOutputConfigs BRAKE_CONFIGS = OUTPUT_CONFIGS.withNeutralMode(NeutralModeValue.Brake);
-        public static final MotorOutputConfigs COAST_CONFIGS = OUTPUT_CONFIGS.withNeutralMode(NeutralModeValue.Coast);
+        public static final MotorOutputConfigs OUTPUT_CONFIGS = new MotorOutputConfigs()
+                .withInverted(InvertedValue.Clockwise_Positive)
+                .withNeutralMode(NeutralModeValue.Brake);
+        public static final TalonFXConfiguration MOTOR_CONFIGS = new TalonFXConfiguration()
+                .withCurrentLimits(CURRENT_LIMITS_CONFIGS)
+                .withMotorOutput(OUTPUT_CONFIGS);
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
@@ -414,6 +418,19 @@ public class Constants {
         public static final double SCORE_SPEED = 0.2;
         public static final double FAST_TROUGH_SPEED = 0.5;
         public static final double SLOW_TROUGH_SPEED = 0.1;
+    }
+
+    public static class ClimberConstants {
+        public static final int MOTOR_ID = 13;
+        public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(Amps.of(40));
+        
+        public static final MotorOutputConfigs OUTPUT_CONFIGS = new MotorOutputConfigs()
+                .withInverted(InvertedValue.Clockwise_Positive)
+                .withNeutralMode(NeutralModeValue.Brake);
+
+        public static final Voltage CLIMB_SPEED = Volts.of(10);
+        public static final Voltage RELEASE_SPEED = Volts.of(-6);
     }
 
     public static class FieldConstants {
