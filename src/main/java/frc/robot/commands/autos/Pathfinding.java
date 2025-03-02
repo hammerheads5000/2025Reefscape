@@ -6,6 +6,7 @@ package frc.robot.commands.autos;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static frc.robot.Constants.AutoConstants.APPROACH_DISTANCE;
 import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
 import static frc.robot.Constants.AutoConstants.TRAVERSE_DISTANCE;
 
@@ -14,6 +15,7 @@ import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -84,13 +86,16 @@ public class Pathfinding {
     public static PathPlannerPath generateReefPath(Pose2d currentPose, int side, int relativePos, LinearVelocity endVelocity) {
         ArrayList<Pose2d> poses = generateApproachPoses(currentPose, side);
         Pose2d endPose = AlignToReefCommands.getReefPose(side, relativePos);
+        Transform2d shiftApproachTransform = new Transform2d(new Translation2d(APPROACH_DISTANCE.unaryMinus(), Meters.zero()), Rotation2d.kZero);
+        endPose = endPose.transformBy(shiftApproachTransform);
+        
         poses.add(endPose);
         poses.add(0, pointPoseTowards(currentPose, poses.get(0)));
 
         PathPlannerPath path = new PathPlannerPath(
                 PathPlannerPath.waypointsFromPoses(poses), 
                 CONSTRAINTS,
-                null,
+                new IdealStartingState(MetersPerSecond.zero(), currentPose.getRotation()),
                 new GoalEndState(endVelocity.in(MetersPerSecond), endPose.getRotation())
         );
 
@@ -111,7 +116,7 @@ public class Pathfinding {
         PathPlannerPath path = new PathPlannerPath(
                 PathPlannerPath.waypointsFromPoses(poses), 
                 CONSTRAINTS,
-                null,
+                new IdealStartingState(MetersPerSecond.of(0), currentPose.getRotation()),
                 new GoalEndState(0, endPose.getRotation().rotateBy(Rotation2d.k180deg))
         );
 
