@@ -35,76 +35,6 @@ import frc.robot.subsystems.Swerve;
  * Pathfind and align to reef
  */
 public class ApproachReefCommand extends SequentialCommandGroup {
-    /**
-     * @param pose Robot pose to compare
-     * @return What side of the reef the robot is closest to (0 -> 5 CW starting at far left)
-     */
-    private static int getClosestReefSide(Pose2d pose) {
-        int closest = 0;
-        double closestDistance = Double.POSITIVE_INFINITY;
-        for (int side = 0; side < 6; side++) {
-            Pose2d reefPose = AlignToReefCommands.getReefPose(side, 0);
-            double distance = reefPose.getTranslation().getDistance(pose.getTranslation());
-            if (distance < closestDistance) {
-                closest = side;
-                closestDistance = distance;
-            }
-        }
-
-        return closest;
-    }
-
-    private static int distanceBetweenSides(int side1, int side2) {
-        int diff = Math.abs(side1 - side2);
-        return Math.min(diff, 6 - diff);
-    }
-
-    /**
-     * @return Side one step closer to targetSide from currentSide
-     */
-    private static int getNextSide(int currentSide, int targetSide) {
-        int positiveDistance = distanceBetweenSides(currentSide + 1, targetSide);
-        int negativeDistance = distanceBetweenSides(currentSide - 1, targetSide);
-
-        if (positiveDistance > negativeDistance) return (currentSide + 1 + 6) % 6;
-        return (currentSide - 1 + 6) % 6;
-    }
-
-    /**
-     * Generate PathPlannerPath to the desired branch, moving around the reef if necessary
-     */
-    private static PathPlannerPath generatePath(Pose2d currentPose, int side, int relativePos, LinearVelocity endVelocity) {
-        int currentSide = getClosestReefSide(currentPose);
-        
-        ArrayList<Pose2d> poses = new ArrayList<>();
-        while (distanceBetweenSides(currentSide, side) > 1) {
-            int nextSide = getNextSide(currentSide, side);
-            Pose2d sidePose = AlignToReefCommands.getReefPose(nextSide, 0);
-            
-            sidePose.transformBy(new Transform2d(new Translation2d(TRAVERSE_DISTANCE.unaryMinus(), Meters.zero()), Rotation2d.kZero));
-            
-            if (nextSide == (currentSide + 1 + 6) % 6) {
-                sidePose.rotateAround(sidePose.getTranslation(), Rotation2d.kCCW_90deg);
-            } else {
-                sidePose.rotateAround(sidePose.getTranslation(), Rotation2d.kCW_90deg);
-            }
-
-            poses.add(sidePose);
-            currentSide = nextSide;
-        }
-        Pose2d endPose = AlignToReefCommands.getReefPose(side, relativePos);
-        poses.add(endPose);
-
-        PathPlannerPath path = new PathPlannerPath(
-                PathPlannerPath.waypointsFromPoses(poses), 
-                CONSTRAINTS,
-                null,
-                new GoalEndState(endVelocity.in(MetersPerSecond), endPose.getRotation())
-        );
-        path.preventFlipping = false;
-        return path;
-    }
-
     private static void overrideFeedback(Swerve swerve, AlignToPoseCommand alignToPoseCommand) {
         PPHolonomicDriveController.overrideXFeedback(() -> {
             Pose2d pose = swerve.getPose();
@@ -151,9 +81,8 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         Vector<N2> initialPIDVelocity = VecBuilder.fill(relativeApproachX, relativeApproachY);
         Translation2d direction = new Translation2d(1, 0).rotateBy(alignToReefCommand.targetPose.getRotation());
         double initialPIDSpeed = initialPIDVelocity.projection(VecBuilder.fill(direction.getX(), direction.getY())).norm();
-
-        //Command pathFindingCommand = AutoBuilder.pathfindToPose(approachTarget, CONSTRAINTS, initialPIDSpeed);
-        Command followPathCommand = AutoBuilder.followPath(generatePath(swerve.getPose(), side, relativePos, MetersPerSecond.of(initialPIDSpeed)));
+        
+        Command followPathCommand = AutoBuilder.followPath(Pathfinding.generateReefPath(swerve.getPose(), side, relativePos, MetersPerSecond.of(initialPIDSpeed)));
 
         // First follow generated path
         // When within approach distance while following path, override PP's feedback
