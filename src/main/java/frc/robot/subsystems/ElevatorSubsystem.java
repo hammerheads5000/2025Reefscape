@@ -77,6 +77,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorFeedforward = CONTROL_CONSTANTS.getElevatorFeedforward();
 
         motor1 = new TalonFX(MOTOR_1_ID, Constants.CAN_FD_BUS);
+        motor1.getConfigurator().apply(MOTOR_CONFIGS);
 
         motorControl = new VoltageOut(0);
 

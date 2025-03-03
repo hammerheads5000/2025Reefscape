@@ -79,7 +79,7 @@ public class Constants {
 
     public static final double CONTROLLER_DEADBAND = .225;
     
-    public static final Distance BUMPER_THICKNESS = Inches.of(2);
+    public static final Distance BUMPER_THICKNESS = Inches.of(3.5);
 
     public static class SwerveConstants {
         public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(2.5);//define later
@@ -267,13 +267,13 @@ public class Constants {
 
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
-                .withPID(2, 0.2, 0.0).withTolerance(Inches.of(2).in(Meters));
+                .withPID(1, 0.2, 0.0).withTolerance(Inches.of(2).in(Meters));
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(2, 0.2, 0.0).withTolerance(Inches.of(2).in(Meters));
+                .withPID(1, 0.2, 0.0).withTolerance(Inches.of(1).in(Meters));
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
-                .withPID(5, 0.4, 0.0).withTolerance(1);
+                .withPID(4, 0.4, 0.0).withTolerance(1);
 
 
         // output: m/s, measure: m
@@ -285,17 +285,17 @@ public class Constants {
     public static class AutoConstants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
-                SwerveConstants.FAST_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1.5)),
+                SwerveConstants.DEFAULT_DRIVE_SPEED,
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
-                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
+                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1)));
 
         public static final Distance SIDE_DISTANCE = Meters.of(3);
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
 
-        public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching
-        public static final Distance TRAVERSE_DISTANCE = Inches.of(60); // *extra* distance to reef when moving around to other side
+        public static final Distance APPROACH_DISTANCE = Inches.of(20); // *extra* distance to reef when approaching
+        public static final Distance TRAVERSE_DISTANCE = Inches.of(50); // *extra* distance to reef when moving around to other side
 
         public static final Map<Character, Pair<Integer, Integer>> LETTER_TO_SIDE_AND_RELATIVE = Map.ofEntries(
                 Map.entry(Character.valueOf('A'), new Pair<Integer, Integer>(0, 1)),
@@ -344,15 +344,19 @@ public class Constants {
     public static class ElevatorConstants {
         // Motors
         public static final int MOTOR_1_ID = 12;
+        
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Amps.of(40));
-        public static final MotorOutputConfigs OUTPUT_CONFIGS = new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive);
-        public static final MotorOutputConfigs BRAKE_CONFIGS = OUTPUT_CONFIGS.withNeutralMode(NeutralModeValue.Brake);
-        public static final MotorOutputConfigs COAST_CONFIGS = OUTPUT_CONFIGS.withNeutralMode(NeutralModeValue.Coast);
+        public static final MotorOutputConfigs OUTPUT_CONFIGS = new MotorOutputConfigs()
+                .withInverted(InvertedValue.Clockwise_Positive)
+                .withNeutralMode(NeutralModeValue.Brake);
+        public static final TalonFXConfiguration MOTOR_CONFIGS = new TalonFXConfiguration()
+                .withCurrentLimits(CURRENT_LIMITS_CONFIGS)
+                .withMotorOutput(OUTPUT_CONFIGS);
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0.5, 0.1, 0.1).withTolerance(1).withIZone(30).withIRange(-1, 2)
+                .withPID(0.5, 0.1, 0.1).withTolerance(0.5).withIZone(30).withIRange(-1, 2)
                 .withFeedforward(0.1265, 0.004).withPhysical(0.05, 0.375)
                 .withProfile(350, 250);
 
@@ -416,6 +420,19 @@ public class Constants {
         public static final double SLOW_TROUGH_SPEED = 0.1;
     }
 
+    public static class ClimberConstants {
+        public static final int MOTOR_ID = 13;
+        public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(Amps.of(40));
+        
+        public static final MotorOutputConfigs OUTPUT_CONFIGS = new MotorOutputConfigs()
+                .withInverted(InvertedValue.Clockwise_Positive)
+                .withNeutralMode(NeutralModeValue.Brake);
+
+        public static final Voltage CLIMB_SPEED = Volts.of(10);
+        public static final Voltage RELEASE_SPEED = Volts.of(-6);
+    }
+
     public static class FieldConstants {
         public static final AprilTagFieldLayout APRIL_TAGS = AprilTagFieldLayout
                 .loadField(AprilTagFields.k2025ReefscapeAndyMark);
@@ -431,7 +448,7 @@ public class Constants {
         public static final Pose2d STATION_0 = APRIL_TAGS.getTagPose(12).get().toPose2d();
         public static final Pose2d STATION_1 = APRIL_TAGS.getTagPose(13).get().toPose2d();
         
-        public static final Distance STATION_APPROACH_DISTANCE = Inches.of(18);
+        public static final Distance STATION_APPROACH_DISTANCE = Inches.of(24);
         public static final Distance SIDE_STATION_OFFSET = Inches.of(29).plus(BUMPER_THICKNESS).div(2);
     }
 }

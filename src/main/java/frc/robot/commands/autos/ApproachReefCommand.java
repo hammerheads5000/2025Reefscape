@@ -82,7 +82,7 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         Translation2d direction = new Translation2d(1, 0).rotateBy(alignToReefCommand.targetPose.getRotation());
         double initialPIDSpeed = initialPIDVelocity.projection(VecBuilder.fill(direction.getX(), direction.getY())).norm();
         
-        Command followPathCommand = AutoBuilder.followPath(Pathfinding.generateReefPath(swerve.getPose(), side, relativePos, MetersPerSecond.of(initialPIDSpeed)));
+        Command followPathCommand = AutoBuilder.followPath(Pathfinding.generateReefPath(swerve.getPose(), side, relativePos));
 
         // First follow generated path
         // When within approach distance while following path, override PP's feedback
