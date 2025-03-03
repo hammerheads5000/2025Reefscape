@@ -6,6 +6,7 @@ package frc.robot.commands.autos;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static frc.robot.Constants.AutoConstants.APPROACH_DISTANCE;
 import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
 import static frc.robot.Constants.AutoConstants.TRAVERSE_DISTANCE;
 
@@ -106,7 +107,15 @@ public class Pathfinding {
         Pose2d endPose = ApproachCoralStationCommands.getStationPose(station, relativePos);
         endPose = endPose.rotateAround(endPose.getTranslation(), Rotation2d.k180deg);
         poses.add(endPose);
-        poses.add(0, pointPoseTowards(currentPose, poses.get(0)));
+
+        Pose2d startPose;
+        Pose2d closestReefSide = AlignToReefCommands.getReefPose(getClosestReefSide(currentPose), 0);
+        if (closestReefSide.getTranslation().getDistance(currentPose.getTranslation()) < APPROACH_DISTANCE.in(Meters)) {
+            startPose = new Pose2d(currentPose.getTranslation(), closestReefSide.getRotation().rotateBy(Rotation2d.k180deg));
+        } else {
+            startPose = pointPoseTowards(currentPose, poses.get(0));
+        }
+        poses.add(0, startPose);
 
         PathPlannerPath path = new PathPlannerPath(
                 PathPlannerPath.waypointsFromPoses(poses), 
