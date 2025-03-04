@@ -77,6 +77,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorFeedforward = CONTROL_CONSTANTS.getElevatorFeedforward();
 
         motor1 = new TalonFX(MOTOR_1_ID, Constants.CAN_FD_BUS);
+        motor1.getConfigurator().apply(MOTOR_CONFIGS);
 
         motorControl = new VoltageOut(0);
 
@@ -99,6 +100,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putData("L4", goToL4Command(true));
         SmartDashboard.putData("Intake", goToIntakePosCommand(true));
         SmartDashboard.putData("Zero", zeroCommand());
+        SmartDashboard.putData("Elevator PID", controller);
     }
 
     // Enable PID/feedforward control
@@ -247,10 +249,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         return this.run(
             () -> {motor1.set(MANUAL_DOWN_SPEED); disable();})
             .until(() -> motor1.getTorqueCurrent().getValue().abs(Amps) > STALL_CURRENT.in(Amps))
-            .andThen(this.runOnce(() -> motor1.setControl(new NeutralOut())), 
-                Commands.waitSeconds(0.5), 
+            .andThen(this.runOnce(() -> motor1.setVoltage(elevatorFeedforward.getKg())), 
+                Commands.waitSeconds(1), 
                 resetPositionCommand(),
-                Commands.waitSeconds(0.1),
+                Commands.waitSeconds(0.5),
                 resetPositionCommand(),
                 this.runOnce(this::enable));
     }

@@ -54,6 +54,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.elevatorSubsystem.setBrake(true);
     m_robotContainer.elevatorSubsystem.setRotations(m_robotContainer.elevatorSubsystem.getMotorRotations());
     m_robotContainer.elevatorSubsystem.resetPID();
+    m_robotContainer.climberSubsystem.latchIntake();
     m_robotContainer.disabledLightsCommand.cancel();
   }
 

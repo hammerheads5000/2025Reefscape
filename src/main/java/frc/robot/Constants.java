@@ -82,7 +82,7 @@ public class Constants {
 
     public static final double CONTROLLER_DEADBAND = .225;
     
-    public static final Distance BUMPER_THICKNESS = Inches.of(2);
+    public static final Distance BUMPER_THICKNESS = Inches.of(3.5);
 
     public static class SwerveConstants {
         public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(2.5);//define later
@@ -138,14 +138,14 @@ public class Constants {
         private static final Pigeon2Configuration PIGEON_CONFIGS = new Pigeon2Configuration().withMountPose(
                 new MountPoseConfigs().withMountPoseYaw(Degrees.of(-90)).withMountPosePitch(Degrees.of(180)));
 
-        public static final LinearVelocity SPEED_AT_12V = MetersPerSecond.of(10); // maybe needs tuning
+        public static final LinearVelocity SPEED_AT_12V = MetersPerSecond.of(5); // maybe needs tuning
 
         // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
         private static final double COUPLE_RATIO = 3.5714285714285716;
 
         private static final double DRIVE_GEAR_RATIO = 6.746031746031747;
         private static final double STEER_GEAR_RATIO = 21.428571428571427;
-        private static final Distance WHEEL_RADIUS = Inches.of(2);
+        private static final Distance WHEEL_RADIUS = Inches.of(1.875);
 
         private static final int PIGEON_ID = 1;
 
@@ -257,7 +257,8 @@ public class Constants {
 
         public static final Frequency ODOMETRY_UPDATE_FREQ = Hertz.of(0); // 0 Hz = default 250 Hz for CAN FD
         public static final Matrix<N3, N1> ODOMETRY_STD_DEV = VecBuilder.fill(0.02, 0.02, 0.01);
-        public static final Matrix<N3, N1> VISION_STD_DEV = VecBuilder.fill(0.1, 0.1, 0.05);
+        public static final Matrix<N3, N1> VISION_STD_DEV_0M = VecBuilder.fill(0.06, 0.06, 0.03);
+        public static final Matrix<N3, N1> VISION_STD_DEV_5M = VecBuilder.fill(1.5, 1.5, 0.75);
 
         public static final DriveRequestType DRIVE_REQUEST_TYPE = DriveRequestType.Velocity;
         public static final SteerRequestType STEER_REQUEST_TYPE = SteerRequestType.MotionMagicExpo;
@@ -269,17 +270,17 @@ public class Constants {
 
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
-                .withPID(2, 0.2, 0.0).withTolerance(Inches.of(2).in(Meters));
+                .withPID(1, 0.2, 0.0).withTolerance(Inches.of(2).in(Meters));
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(2, 0.2, 0.0).withTolerance(Inches.of(2).in(Meters));
+                .withPID(1, 0.2, 0.0).withTolerance(Inches.of(1).in(Meters));
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
-                .withPID(5, 0.4, 0.0).withTolerance(1);
+                .withPID(4, 0.4, 0.0).withTolerance(1);
 
 
         // output: m/s, measure: m
-        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(5, 0, 0);
+        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(3, 0, 0);
         // output: rad/s, measure: rad
         public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(2, 0, 0);
         }
@@ -287,17 +288,17 @@ public class Constants {
     public static class AutoConstants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
-                SwerveConstants.FAST_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1.5)),
+                SwerveConstants.DEFAULT_DRIVE_SPEED,
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
-                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
+                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1)));
 
         public static final Distance SIDE_DISTANCE = Meters.of(3);
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
 
-        public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching
-        public static final Distance TRAVERSE_DISTANCE = Inches.of(60); // *extra* distance to reef when moving around to other side
+        public static final Distance APPROACH_DISTANCE = Inches.of(20); // *extra* distance to reef when approaching
+        public static final Distance TRAVERSE_DISTANCE = Inches.of(50); // *extra* distance to reef when moving around to other side
 
         public static final Map<Character, Pair<Integer, Integer>> LETTER_TO_SIDE_AND_RELATIVE = Map.ofEntries(
                 Map.entry(Character.valueOf('A'), new Pair<Integer, Integer>(0, 1)),
@@ -321,6 +322,8 @@ public class Constants {
         public static final String FRONT_LEFT_CAM_NAME = "Arducam_OV9281_FL01";
         public static final String FRONT_RIGHT_CAM_NAME = "Arducam_OV9281_FR01";
         public static final String BACK_CAM_NAME = "Back Cam";
+
+        public static final double MAX_AMBIGUITY = 0.2;
 
         // Transforms from robot to cameras, (x forward, y left, z up), (roll, pitch, yaw)
         public static final Transform3d FRONT_LEFT_CAM_POS = new Transform3d(
@@ -346,17 +349,21 @@ public class Constants {
     public static class ElevatorConstants {
         // Motors
         public static final int MOTOR_1_ID = 12;
+        
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Amps.of(40));
-        public static final MotorOutputConfigs OUTPUT_CONFIGS = new MotorOutputConfigs().withInverted(InvertedValue.Clockwise_Positive);
-        public static final MotorOutputConfigs BRAKE_CONFIGS = OUTPUT_CONFIGS.withNeutralMode(NeutralModeValue.Brake);
-        public static final MotorOutputConfigs COAST_CONFIGS = OUTPUT_CONFIGS.withNeutralMode(NeutralModeValue.Coast);
+        public static final MotorOutputConfigs OUTPUT_CONFIGS = new MotorOutputConfigs()
+                .withInverted(InvertedValue.Clockwise_Positive)
+                .withNeutralMode(NeutralModeValue.Brake);
+        public static final TalonFXConfiguration MOTOR_CONFIGS = new TalonFXConfiguration()
+                .withCurrentLimits(CURRENT_LIMITS_CONFIGS)
+                .withMotorOutput(OUTPUT_CONFIGS);
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0.4, 0.025, 0.05).withTolerance(1).withIZone(30).withIRange(-1, 2)
-                .withFeedforward(0.1257, 0.004).withPhysical(0.05, 0.375)
-                .withProfile(350, 200);
+                .withPID(0.5, 0.1, 0.1).withTolerance(0.5).withIZone(30).withIRange(-1, 2)
+                .withFeedforward(0.1265, 0.004).withPhysical(0.05, 0.375)
+                .withProfile(350, 250);
 
         public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
 
@@ -387,10 +394,10 @@ public class Constants {
         public static final RegionOfInterest REGION_OF_INTEREST = new RegionOfInterest(8, 3, 6, 6);
 
         // Setpoints
-        public static final Distance L1_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(26)).in(Meters));
-        public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(38.8)).in(Meters));
-        public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(56.1)).in(Meters));
-        public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(86.5)).in(Meters));
+        public static final Distance L1_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(26.5)).in(Meters));
+        public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(39.3)).in(Meters));
+        public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(56.6)).in(Meters));
+        public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(87)).in(Meters));
         public static final Distance INTAKE_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(2.25)).in(Meters));
     }
 
@@ -411,11 +418,24 @@ public class Constants {
         public static final int BACK_LIDAR_ID = 8;
 
         // Speed (duty cycle)
-        public static final double INTAKE_SPEED = 0.3;
+        public static final double INTAKE_SPEED = 0.25;
         public static final double SLOW_INTAKE_SPEED = 0.15;
-        public static final double SCORE_SPEED = 0.3;
+        public static final double SCORE_SPEED = 0.2;
         public static final double FAST_TROUGH_SPEED = 0.5;
         public static final double SLOW_TROUGH_SPEED = 0.1;
+    }
+
+    public static class ClimberConstants {
+        public static final int MOTOR_ID = 13;
+        public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
+                .withStatorCurrentLimit(Amps.of(40));
+        
+        public static final MotorOutputConfigs OUTPUT_CONFIGS = new MotorOutputConfigs()
+                .withInverted(InvertedValue.Clockwise_Positive)
+                .withNeutralMode(NeutralModeValue.Brake);
+
+        public static final Voltage CLIMB_SPEED = Volts.of(10);
+        public static final Voltage RELEASE_SPEED = Volts.of(-6);
     }
 
     public static class LightsConstants {
@@ -447,6 +467,7 @@ public class Constants {
         public static final Time VISION_TIMEOUT_START = Seconds.of(0.5);
         public static final Time VISION_TIMEOUT_DURATION = Seconds.of(5);
     }
+
     public static class FieldConstants {
         public static final AprilTagFieldLayout APRIL_TAGS = AprilTagFieldLayout
                 .loadField(AprilTagFields.k2025ReefscapeAndyMark);
@@ -462,7 +483,7 @@ public class Constants {
         public static final Pose2d STATION_0 = APRIL_TAGS.getTagPose(12).get().toPose2d();
         public static final Pose2d STATION_1 = APRIL_TAGS.getTagPose(13).get().toPose2d();
         
-        public static final Distance STATION_APPROACH_DISTANCE = Inches.of(18);
+        public static final Distance STATION_APPROACH_DISTANCE = Inches.of(24);
         public static final Distance SIDE_STATION_OFFSET = Inches.of(29).plus(BUMPER_THICKNESS).div(2);
     }
 }

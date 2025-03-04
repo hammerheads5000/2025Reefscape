@@ -10,6 +10,8 @@ import java.util.Optional;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Constants.INST;
+import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_0M;
+import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_5M;
 import static frc.robot.Constants.VisionConstants.*;
 
 import org.photonvision.EstimatedRobotPose;
@@ -19,13 +21,20 @@ import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.simulation.SimCameraProperties;
 import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.Utils;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
@@ -61,6 +70,10 @@ public class VisionSubsystem extends SubsystemBase {
     PhotonCameraSim camFLSim = new PhotonCameraSim(camFL, camProperties);
     PhotonCameraSim camFRSim = new PhotonCameraSim(camFR, camProperties);
     //PhotonCameraSim camBSim = new PhotonCameraSim(camB, camProperties);
+
+    private double X_DEV_SLOPE = (VISION_STD_DEV_0M.get(0, 0) - VISION_STD_DEV_5M.get(0, 0)) / 5;
+    private double Y_DEV_SLOPE = (VISION_STD_DEV_0M.get(1, 0) - VISION_STD_DEV_5M.get(1, 0)) / 5;
+    private double ROT_DEV_SLOPE = (VISION_STD_DEV_0M.get(2, 0) - VISION_STD_DEV_5M.get(2, 0)) / 5;
 
     /** Creates a new AprilTagSubsystem. */
     public VisionSubsystem(Swerve swerve) {
@@ -104,22 +117,53 @@ public class VisionSubsystem extends SubsystemBase {
         return estimatedRobotPose;
     }
 
+    private Matrix<N3, N1> calculateStdDevs(Distance distance) {
+        double meters = distance.in(Meters);
+        double xDev = VISION_STD_DEV_0M.get(0, 0) + X_DEV_SLOPE*meters;
+        double yDev = VISION_STD_DEV_0M.get(1, 0) + Y_DEV_SLOPE*meters;
+        double rotDev = VISION_STD_DEV_0M.get(2, 0) + ROT_DEV_SLOPE*meters;
+
+        return VecBuilder.fill(xDev, yDev, rotDev);
+    }
+
+    private Distance avgTargetDistance(List<PhotonTrackedTarget> targets) {
+        double total = 0;
+        for (PhotonTrackedTarget target : targets) {
+            total += target.getBestCameraToTarget().getTranslation().getNorm();
+        }
+        return Meters.of(total/targets.size());
+    }
+
+    // Check if estimated pose ambiguity exceeds MAX_AMBIGUITY
+    private boolean isResultAmbiguous(EstimatedRobotPose estimatedRobotPose) {
+        for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
+            if (target.getPoseAmbiguity() > MAX_AMBIGUITY) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
     private boolean updatePoseEstimator(PhotonPoseEstimator poseEstimator, PhotonCamera cam) {
         List<PhotonPipelineResult> results = cam.getAllUnreadResults();
+        
         hasTarget = false;
 
         for (PhotonPipelineResult result : results) {
             EstimatedRobotPose estimatedRobotPose = estimatedPoseFromResult(result, poseEstimator);
-            if (estimatedRobotPose == null) {
+            if (estimatedRobotPose == null || isResultAmbiguous(estimatedRobotPose)) {
                 continue;
             }
+            
+            Matrix<N3, N1> stdDevs = calculateStdDevs(avgTargetDistance(estimatedRobotPose.targetsUsed));
             
             hasTarget = true;
             if (poseEstimator == poseEstimatorFL) fieldFL.set(estimatedRobotPose.estimatedPose.toPose2d());
             if (poseEstimator == poseEstimatorFR) fieldFR.set(estimatedRobotPose.estimatedPose.toPose2d());
-            
+
             Pose2d poseBefore = swerve.getPose();
-            swerve.addVisionMeasurement(estimatedRobotPose);
+            swerve.addVisionMeasurement(estimatedRobotPose, stdDevs);
             Pose2d poseAfter = swerve.getPose();
 
             lastPoseChange = Meters.of(poseAfter.getTranslation().getDistance(poseBefore.getTranslation()));

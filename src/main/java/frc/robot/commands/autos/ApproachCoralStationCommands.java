@@ -9,6 +9,7 @@ import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
 import static frc.robot.Constants.FieldConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -54,8 +55,8 @@ public class ApproachCoralStationCommands {
      * @return
      */
     public static Command pathfindCommand(int station, int relativePos, Swerve swerve) {
-        Pose2d target = getStationPose(station, relativePos);
+        PathPlannerPath path = Pathfinding.generateStationPath(swerve.getPose(), station, relativePos);
         
-        return AutoBuilder.pathfindToPoseFlipped(target, CONSTRAINTS, 0);
+        return AutoBuilder.followPath(path);
     }
 }

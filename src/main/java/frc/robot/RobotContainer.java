@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.StringEntry;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -24,6 +25,7 @@ import frc.robot.commands.DisabledLightsCommand;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.autos.ApproachCoralStationCommands;
 import frc.robot.commands.autos.FullAutoCommand;
+import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.EndEffectorSubsystem;
 import frc.robot.subsystems.LightsSubsystem;
@@ -36,12 +38,15 @@ public class RobotContainer {
     CommandXboxController primaryController = new CommandXboxController(0);
     // #endregion
 
+    PowerDistribution pdh = new PowerDistribution();
+
     // #region Subsystems
     Swerve swerve = new Swerve();
     VisionSubsystem visionSubsystem = new VisionSubsystem(swerve);
     ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     SwerveTelemetry swerveTelemetry = new SwerveTelemetry();
     EndEffectorSubsystem endEffectorSubsystem = new EndEffectorSubsystem();
+    ClimberSubsystem climberSubsystem = new ClimberSubsystem(pdh);
     LightsSubsystem lightsSubsystem = new LightsSubsystem();
     // #endregion
 
@@ -60,10 +65,12 @@ public class RobotContainer {
 
     Trigger resetFieldRelative = primaryController.y();
 
-    Trigger elevatorUpTrigger = primaryController.povUp();
-    Trigger elevatorDownTrigger = primaryController.povDown();
-    Trigger elevatorIntakeTrigger = primaryController.povLeft();
-    Trigger elevatorL2Trigger = primaryController.povRight();
+    // Trigger elevatorUpTrigger = primaryController.povUp();
+    // Trigger elevatorDownTrigger = primaryController.povDown();
+    // Trigger elevatorIntakeTrigger = primaryController.povLeft();
+    // Trigger elevatorL2Trigger = primaryController.povRight();
+    Trigger climbTrigger = primaryController.povUp();
+    Trigger reverseClimbTrigger = primaryController.povDown();
 
     Trigger moveToZeroTrigger = primaryController.x();
 
@@ -91,6 +98,7 @@ public class RobotContainer {
         autoDescriptorSubscriber.set("");
 
         //elevatorSubsystem.disable();
+        climberSubsystem.latchIntake();
         configureBindings();
     }
 
@@ -100,12 +108,14 @@ public class RobotContainer {
 
         resetFieldRelative.onTrue(new InstantCommand(swerve::resetOdometry));
 
-        elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations().plus(Rotations.of(3)))));
-        elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations().minus(Rotations.of(3)))));
+        // elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations().plus(Rotations.of(3)))));
+        // elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations().minus(Rotations.of(3)))));
         // elevatorUpTrigger.whileTrue(elevatorSubsystem.moveUpManualCommand());
         // elevatorDownTrigger.whileTrue(elevatorSubsystem.moveDownManualCommand());
-        elevatorIntakeTrigger.whileTrue(elevatorSubsystem.goToIntakePosCommand(false));
-        elevatorL2Trigger.whileTrue(elevatorSubsystem.goToL2Command(false));
+        // elevatorIntakeTrigger.whileTrue(elevatorSubsystem.goToIntakePosCommand(false));
+        // elevatorL2Trigger.whileTrue(elevatorSubsystem.goToL2Command(false));
+        climbTrigger.whileTrue(climberSubsystem.climbCommand());
+        reverseClimbTrigger.whileTrue(climberSubsystem.reverseCommand());
 
         moveToZeroTrigger.whileTrue(reefAlign);
 
