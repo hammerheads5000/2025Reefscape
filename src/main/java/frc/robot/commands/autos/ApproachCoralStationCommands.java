@@ -7,6 +7,8 @@ package frc.robot.commands.autos;
 import static frc.robot.Constants.INST;
 import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
 import static frc.robot.Constants.FieldConstants.*;
+import static frc.robot.Constants.LightsConstants.IDLE_COLOR;
+import static frc.robot.Constants.LightsConstants.PATH_FOLLOWING_COLOR;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -16,6 +18,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.Swerve;
 
 /** Container class for approaching/moving to coral station */
@@ -54,9 +58,13 @@ public class ApproachCoralStationCommands {
      * @param swerve
      * @return
      */
-    public static Command pathfindCommand(int station, int relativePos, Swerve swerve) {
+    public static Command pathfindCommand(int station, int relativePos, Swerve swerve, LightsSubsystem lightsSubsystem) {
         PathPlannerPath path = Pathfinding.generateStationPath(swerve.getPose(), station, relativePos);
         
-        return AutoBuilder.followPath(path);
+        return Commands.sequence(
+                lightsSubsystem.setSolidColorCommand(PATH_FOLLOWING_COLOR),
+                AutoBuilder.followPath(path),
+                lightsSubsystem.setSolidColorCommand(IDLE_COLOR)
+        );
     }
 }

@@ -40,6 +40,22 @@ public class LightsSubsystem extends SubsystemBase {
         rightStrip.setPattern(pattern);
     }
 
+    public Command setSolidColorCommand(Color color) {
+        return this.runOnce(() -> this.setSolidColor(color));
+    }
+
+    public Command setStepsCommand(Color color1, Color color2, double proportion) {
+        return this.runOnce(() -> this.setSteps(color1, color2, proportion));
+    }
+
+    public Command setRainbowCommand() {
+        return this.runOnce(() -> this.setRainbow());
+    }
+
+    public Command setPatternCommand(LEDPattern pattern) {
+        return this.runOnce(() -> this.setPattern(pattern));
+    }
+
     @Override
     public void periodic() {
         leftStrip.update();

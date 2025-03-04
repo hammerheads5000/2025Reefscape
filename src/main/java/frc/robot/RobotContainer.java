@@ -129,6 +129,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new FullAutoCommand(autoDescriptorSubscriber.get(), swerve, elevatorSubsystem, endEffectorSubsystem);
+        return new FullAutoCommand(autoDescriptorSubscriber.get(), swerve, elevatorSubsystem, endEffectorSubsystem, lightsSubsystem);
     }
 }

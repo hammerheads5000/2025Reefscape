@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.EndEffectorSubsystem;
+import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.Swerve;
 
 /**
@@ -21,9 +22,10 @@ public class FullAutoCommand extends SequentialCommandGroup {
     Swerve swerve;
     ElevatorSubsystem elevatorSubsystem;
     EndEffectorSubsystem endEffectorSubsystem;
+    LightsSubsystem lightsSubsystem;
 
     private Command stationCommand(int station) {
-        return ApproachCoralStationCommands.pathfindCommand(station, 0, swerve)
+        return ApproachCoralStationCommands.pathfindCommand(station, 0, swerve, lightsSubsystem)
                 .alongWith(elevatorSubsystem.goToIntakePosCommand(false))
                 .andThen(endEffectorSubsystem.intakeCommand());
     }
@@ -51,7 +53,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
                 break;
         }
 
-        commandToAdd = new ApproachReefCommand(side, relativePos, swerve)
+        commandToAdd = new ApproachReefCommand(side, relativePos, swerve, lightsSubsystem)
             .alongWith(elevatorPosCommand)
             .andThen(endEffectorSubsystem.scoreCommand());
 
@@ -89,10 +91,11 @@ public class FullAutoCommand extends SequentialCommandGroup {
      *                         separated (e.g. "E4 S0 A3 S1 K1") 
      * @param swerve
      */
-    public FullAutoCommand(String descriptorString, Swerve swerve, ElevatorSubsystem elevatorSubsystem, EndEffectorSubsystem endEffectorSubsystem) {
+    public FullAutoCommand(String descriptorString, Swerve swerve, ElevatorSubsystem elevatorSubsystem, EndEffectorSubsystem endEffectorSubsystem, LightsSubsystem lightsSubsystem) {
         this.swerve = swerve;
         this.elevatorSubsystem = elevatorSubsystem;
         this.endEffectorSubsystem = endEffectorSubsystem;
+        this.lightsSubsystem = lightsSubsystem;
 
         String[] tokens = descriptorString.split(" ");
 
