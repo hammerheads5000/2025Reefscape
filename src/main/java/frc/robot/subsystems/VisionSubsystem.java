@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Constants.INST;
 import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_0M;
 import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_5M;
@@ -37,8 +36,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
 
@@ -60,9 +57,6 @@ public class VisionSubsystem extends SubsystemBase {
     private StructPublisher<Pose2d> fieldFR = INST.getStructTopic("Vision/FR Pose", Pose2d.struct).publish();
 
     private Swerve swerve;
-
-    public Distance lastPoseChange = Meters.of(-1);
-    private Time lastPoseChangeTime = Seconds.zero();
 
     // Simulation
     VisionSystemSim visionSim = new VisionSystemSim("main");
@@ -97,14 +91,6 @@ public class VisionSubsystem extends SubsystemBase {
         camFLSim.enableDrawWireframe(true);
         camFRSim.enableDrawWireframe(true);
         //camBSim.enableDrawWireframe(true);
-    }
-
-    public boolean camerasConnected() {
-        return camFL.isConnected() && camFR.isConnected();// && camB.isConnected();
-    }
-
-    public Time timeSinceHadTarget() {
-        return RobotController.getMeasureTime().minus(lastPoseChangeTime);
     }
 
     private EstimatedRobotPose estimatedPoseFromResult(PhotonPipelineResult result, PhotonPoseEstimator poseEstimator) {
@@ -161,13 +147,7 @@ public class VisionSubsystem extends SubsystemBase {
             hasTarget = true;
             if (poseEstimator == poseEstimatorFL) fieldFL.set(estimatedRobotPose.estimatedPose.toPose2d());
             if (poseEstimator == poseEstimatorFR) fieldFR.set(estimatedRobotPose.estimatedPose.toPose2d());
-
-            Pose2d poseBefore = swerve.getPose();
             swerve.addVisionMeasurement(estimatedRobotPose, stdDevs);
-            Pose2d poseAfter = swerve.getPose();
-
-            lastPoseChange = Meters.of(poseAfter.getTranslation().getDistance(poseBefore.getTranslation()));
-            lastPoseChangeTime = RobotController.getMeasureTime();
         }
 
         return hasTarget;
