@@ -135,14 +135,14 @@ public class Constants {
         private static final Pigeon2Configuration PIGEON_CONFIGS = new Pigeon2Configuration().withMountPose(
                 new MountPoseConfigs().withMountPoseYaw(Degrees.of(-90)).withMountPosePitch(Degrees.of(180)));
 
-        public static final LinearVelocity SPEED_AT_12V = MetersPerSecond.of(10); // maybe needs tuning
+        public static final LinearVelocity SPEED_AT_12V = MetersPerSecond.of(5); // maybe needs tuning
 
         // Every 1 rotation of the azimuth results in kCoupleRatio drive motor turns;
         private static final double COUPLE_RATIO = 3.5714285714285716;
 
         private static final double DRIVE_GEAR_RATIO = 6.746031746031747;
         private static final double STEER_GEAR_RATIO = 21.428571428571427;
-        private static final Distance WHEEL_RADIUS = Inches.of(2);
+        private static final Distance WHEEL_RADIUS = Inches.of(1.875);
 
         private static final int PIGEON_ID = 1;
 
