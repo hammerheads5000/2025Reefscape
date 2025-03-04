@@ -59,6 +59,7 @@ import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Frequency;
 import edu.wpi.first.units.measure.LinearAcceleration;
@@ -69,6 +70,7 @@ import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.util.Color;
 
 public class Constants {
     public static final CANBus CAN_FD_BUS = new CANBus("Bobby");
@@ -417,14 +419,33 @@ public class Constants {
     }
 
     public static class LightsConstants {
+        public static final Distance LED_SPACING = Meters.of(1).div(144);
+
         public static final int PWM_PORT_LEFT = 0; // TODO define
         public static final int PWM_PORT_RIGHT = 1; // TODO define
 
         public static final int LED_COUNT_LEFT = 60; // TODO define
         public static final int LED_COUNT_RIGHT = 60; // TODO define
 
-        public static final LEDPattern RAINBOW = LEDPattern.rainbow(255, 128);
+        public static final Dimensionless BRIGHTNESS = Percent.of(50);
 
+        public static final Color PATH_FOLLOWING_COLOR = Color.kBlue;
+        public static final Color ALIGNMENT_COLOR = Color.kOrange;
+        public static final Color IDLE_COLOR = Color.kBlack;
+        public static final Color INTAKE_COLOR = Color.kPurple;
+
+        public static final Color HAS_TARGET_COLOR = Color.kGreen;
+        public static final Color NO_VISION_COLOR = Color.kYellow;
+        public static final Color LOW_BATTERY_COLOR = Color.kRed;
+
+        public static final LEDPattern RAINBOW = LEDPattern.rainbow(255, 128)
+                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.75), LED_SPACING);
+
+        public static final Distance MAX_VISION_POSE_CHANGE = Meters.of(6);
+        public static final Voltage LOW_BATTERY_VOLTAGE = Volts.of(12.4);
+
+        public static final Time VISION_TIMEOUT_START = Seconds.of(0.5);
+        public static final Time VISION_TIMEOUT_DURATION = Seconds.of(5);
     }
     public static class FieldConstants {
         public static final AprilTagFieldLayout APRIL_TAGS = AprilTagFieldLayout

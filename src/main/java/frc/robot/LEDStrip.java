@@ -14,36 +14,47 @@ import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 
 public class LEDStrip {
-  /** Creates a new LightsSubsystem. */
-  AddressableLED ledStrip;
-  AddressableLEDBuffer ledBuffer;
+    /** Creates a new LightsSubsystem. */
+    AddressableLED ledStrip;
+    AddressableLEDBuffer ledBuffer;
 
-  public LEDStrip(int port, int length) {
-    ledStrip = new AddressableLED(port);
-    ledBuffer = new AddressableLEDBuffer(length);
+    LEDPattern currentPatten = LEDPattern.solid(Color.kBlack);
+    boolean animated = false;
 
-    ledStrip.setLength(ledBuffer.getLength());
+    public LEDStrip(int port, int length) {
+        ledStrip = new AddressableLED(port);
+        ledBuffer = new AddressableLEDBuffer(length);
 
-    ledStrip.setData(ledBuffer);
-    ledStrip.start();
-  }
+        ledStrip.setLength(ledBuffer.getLength());
 
-  public void setSolidColor(Color color){
-    LEDPattern pattern = LEDPattern.solid(color);
+        ledStrip.setData(ledBuffer);
+        ledStrip.start();
+    }
 
-    pattern.applyTo(ledBuffer);
-    ledStrip.setData(ledBuffer);
-  }
+    public void setSolidColor(Color color) {
+        currentPatten = LEDPattern.solid(color);
+        animated = false;
+    }
 
-  public void setSteps(Color color1, Color color2, double proportion){
-    LEDPattern steps = LEDPattern.steps(Map.of(0, color1, proportion, color2));
+    public void setSteps(Color color1, Color color2, double proportion) {
+        currentPatten = LEDPattern.steps(Map.of(0, color1, proportion, color2));
+        animated = false;
+    }
 
-    steps.applyTo(ledBuffer);
-    ledStrip.setData(ledBuffer);
-  }
+    public void setRainbow() {
+        currentPatten = RAINBOW;
+        animated = true;
+    }
 
-  public void setRainbow(){
-    RAINBOW.applyTo(ledBuffer);
-    ledStrip.setData(ledBuffer);
-  }
+    public void setPattern(LEDPattern pattern) {
+        currentPatten = pattern;
+        animated = false;
+    }
+
+    public void update() {
+        if (!animated) return;
+
+        currentPatten.atBrightness(BRIGHTNESS).applyTo(ledBuffer);
+        ledStrip.setData(ledBuffer);
+    }
 }

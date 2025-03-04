@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     m_robotContainer.elevatorSubsystem.setBrake(true);
-
+    m_robotContainer.disabledLightsCommand.schedule();
   }
 
   @Override
@@ -54,6 +54,7 @@ public class Robot extends TimedRobot {
     m_robotContainer.elevatorSubsystem.setBrake(true);
     m_robotContainer.elevatorSubsystem.setRotations(m_robotContainer.elevatorSubsystem.getMotorRotations());
     m_robotContainer.elevatorSubsystem.resetPID();
+    m_robotContainer.disabledLightsCommand.cancel();
   }
 
   @Override
