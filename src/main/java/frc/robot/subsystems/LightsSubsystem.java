@@ -14,8 +14,8 @@ import frc.robot.LEDStrip;
 
 public class LightsSubsystem extends SubsystemBase {
     LEDStrip leftStrip = new LEDStrip(PWM_PORT_LEFT, LED_COUNT_LEFT);
-    LEDStrip rightStrip = new LEDStrip(PWM_PORT_LEFT, LED_COUNT_RIGHT);
-
+    //LEDStrip rightStrip = new LEDStrip(PWM_PORT_RIGHT, LED_COUNT_RIGHT);
+    LEDStrip rightStrip = leftStrip;
     /** Creates a new LightsSubsystem. */
     public LightsSubsystem() {
     }

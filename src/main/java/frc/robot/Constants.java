@@ -441,8 +441,8 @@ public class Constants {
     public static class LightsConstants {
         public static final Distance LED_SPACING = Meters.of(1).div(144);
 
-        public static final int PWM_PORT_LEFT = 0; // TODO define
-        public static final int PWM_PORT_RIGHT = 1; // TODO define
+        public static final int PWM_PORT_LEFT = 9; // TODO define
+        public static final int PWM_PORT_RIGHT = 8; // TODO define
 
         public static final int LED_COUNT_LEFT = 60; // TODO define
         public static final int LED_COUNT_RIGHT = 60; // TODO define

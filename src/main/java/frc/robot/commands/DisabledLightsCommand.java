@@ -54,8 +54,8 @@ public class DisabledLightsCommand extends Command {
             lightsSubsystem.setSolidColor(NO_VISION_COLOR);
             return;
         }
-
-        lightsSubsystem.setSteps(Color.lerpRGB(HAS_TARGET_COLOR, Color.kBlack, getVisionFade()), Color.kBlack, getVisionProportion());
+        lightsSubsystem.setSolidColor(Color.kNavy);
+        //lightsSubsystem.setSteps(Color.lerpRGB(HAS_TARGET_COLOR, Color.kBlack, getVisionFade()), Color.kBlack, getVisionProportion());
     }
 
     // Called once the command ends or is interrupted.
