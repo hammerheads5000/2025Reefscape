@@ -120,6 +120,17 @@ public class VisionSubsystem extends SubsystemBase {
         return Meters.of(total/targets.size());
     }
 
+    // Check if estimated pose ambiguity exceeds MAX_AMBIGUITY
+    private boolean isResultAmbiguous(EstimatedRobotPose estimatedRobotPose) {
+        for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
+            if (target.getPoseAmbiguity() > MAX_AMBIGUITY) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
     private boolean updatePoseEstimator(PhotonPoseEstimator poseEstimator, PhotonCamera cam) {
         List<PhotonPipelineResult> results = cam.getAllUnreadResults();
         
@@ -127,7 +138,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         for (PhotonPipelineResult result : results) {
             EstimatedRobotPose estimatedRobotPose = estimatedPoseFromResult(result, poseEstimator);
-            if (estimatedRobotPose == null) {
+            if (estimatedRobotPose == null || isResultAmbiguous(estimatedRobotPose)) {
                 continue;
             }
             

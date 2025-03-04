@@ -320,6 +320,8 @@ public class Constants {
         public static final String FRONT_RIGHT_CAM_NAME = "Arducam_OV9281_FR01";
         public static final String BACK_CAM_NAME = "Back Cam";
 
+        public static final double MAX_AMBIGUITY = 0.2;
+
         // Transforms from robot to cameras, (x forward, y left, z up), (roll, pitch, yaw)
         public static final Transform3d FRONT_LEFT_CAM_POS = new Transform3d(
             new Translation3d(SwerveConstants.MODULE_DISTANCE.div(2), SwerveConstants.MODULE_DISTANCE.div(2), Inches.of(10)),
