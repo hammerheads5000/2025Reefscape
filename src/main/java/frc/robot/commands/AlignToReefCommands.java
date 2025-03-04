@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.Constants.FieldConstants.*;
 import static frc.robot.Constants.SwerveConstants.*;
@@ -14,35 +13,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.Constants.AutoConstants;
 import frc.robot.subsystems.Swerve;
 
 /**
  * Container class for aligning to reef     
  */
 public class AlignToReefCommands {
-    // Pose at midpoint between tags 18 and 21 (which are opposite on blue reef)
-    private static final Translation2d REEF_CENTER_BLUE = APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation()
-        .plus(APRIL_TAGS.getTagPose(21).get().toPose2d().getTranslation()).div(2);
-
-    // Pose at midpoint between tags 10 and 7 (which are opposite on red reef)
-    private static final Translation2d REEF_CENTER_RED = APRIL_TAGS.getTagPose(10).get().toPose2d().getTranslation()
-        .plus(APRIL_TAGS.getTagPose(7).get().toPose2d().getTranslation()).div(2);
-
     private static boolean flipToRed; // whether to use red reef (otherwise blue)
-
-    // Distance from center of robot to center of reef
-    // Found by taking distance from tag 18 to center and adding offset from reef
-    private static final Distance REEF_APOTHEM = Meters.of(
-            APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation().getDistance(REEF_CENTER_BLUE))
-            .plus(AutoConstants.DISTANCE_TO_REEF);
-
-    // translation to move from centered on a side to scoring position for the left branch
-    private static final Translation2d CENTERED_TO_LEFT_BRANCH = new Translation2d(Meters.of(0),
-            Inches.of(12.94 / 2));
 
     /**
      * Calculates the pose of the robot for scoring on a branch or trough.

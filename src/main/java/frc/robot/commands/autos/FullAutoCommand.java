@@ -5,6 +5,7 @@
 package frc.robot.commands.autos;
 
 import static frc.robot.Constants.AutoConstants.*;
+import static frc.robot.Constants.FieldConstants.L1_RELATIVE_POS;
 
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,9 +33,14 @@ public class FullAutoCommand extends SequentialCommandGroup {
         Command commandToAdd;
 
         Command elevatorPosCommand;
+        Command endEffectorCommand = endEffectorSubsystem.scoreCommand();
         switch (level) {
             case '1':
                 elevatorPosCommand = elevatorSubsystem.goToL1Command(false);
+                endEffectorCommand = relativePos == 1 ? endEffectorSubsystem.troughLeftCommand()
+                        : endEffectorSubsystem.troughRightCommand();
+                    
+                relativePos *= L1_RELATIVE_POS;
                 break;
             case '2':
                 elevatorPosCommand = elevatorSubsystem.goToL2Command(false);

@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.FieldConstants.L1_RELATIVE_POS;
 
 import java.util.Map;
 
@@ -79,7 +80,7 @@ public class Constants {
 
     public static final double CONTROLLER_DEADBAND = .225;
     
-    public static final Distance BUMPER_THICKNESS = Inches.of(3.5);
+    public static final Distance BUMPER_THICKNESS = Inches.of(3.75);
 
     public static class SwerveConstants {
         public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(2.5);//define later
@@ -295,7 +296,7 @@ public class Constants {
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
 
         public static final Distance APPROACH_DISTANCE = Inches.of(20); // *extra* distance to reef when approaching
-        public static final Distance TRAVERSE_DISTANCE = Inches.of(50); // *extra* distance to reef when moving around to other side
+        public static final Distance TRAVERSE_DISTANCE = Inches.of(45); // *extra* distance to reef when moving around to other side
 
         public static final Map<Character, Pair<Integer, Integer>> LETTER_TO_SIDE_AND_RELATIVE = Map.ofEntries(
                 Map.entry(Character.valueOf('A'), new Pair<Integer, Integer>(0, 1)),
@@ -450,7 +451,29 @@ public class Constants {
         public static final Pose2d STATION_0 = APRIL_TAGS.getTagPose(12).get().toPose2d();
         public static final Pose2d STATION_1 = APRIL_TAGS.getTagPose(13).get().toPose2d();
         
+        
         public static final Distance STATION_APPROACH_DISTANCE = Inches.of(24);
         public static final Distance SIDE_STATION_OFFSET = Inches.of(29).plus(BUMPER_THICKNESS).div(2);
+        
+        // Pose at midpoint between tags 18 and 21 (which are opposite on blue reef)
+        public static final Translation2d REEF_CENTER_BLUE = APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation()
+        .plus(APRIL_TAGS.getTagPose(21).get().toPose2d().getTranslation()).div(2);
+        
+        // Pose at midpoint between tags 10 and 7 (which are opposite on red reef)
+        public static final Translation2d REEF_CENTER_RED = APRIL_TAGS.getTagPose(10).get().toPose2d().getTranslation()
+        .plus(APRIL_TAGS.getTagPose(7).get().toPose2d().getTranslation()).div(2);
+        
+        // Distance from center of robot to center of reef
+        // Found by taking distance from tag 18 to center and adding offset from reef
+        public static final Distance REEF_APOTHEM = Meters.of(
+                APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation().getDistance(REEF_CENTER_BLUE))
+                .plus(AutoConstants.DISTANCE_TO_REEF);
+                
+        // translation to move from centered on a side to scoring position for the left branch
+        public static final Translation2d CENTERED_TO_LEFT_BRANCH = new Translation2d(Meters.of(0),
+                Inches.of(12.94 / 2));
+
+        public static final Distance L1_SIDE_DISTANCE = Inches.of(18);
+        public static final double L1_RELATIVE_POS = L1_SIDE_DISTANCE.div(CENTERED_TO_LEFT_BRANCH.getMeasureY()).magnitude();
     }
 }
