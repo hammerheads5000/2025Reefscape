@@ -99,6 +99,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putData("L3", goToL3Command(true));
         SmartDashboard.putData("L4", goToL4Command(true));
         SmartDashboard.putData("Intake", goToIntakePosCommand(true));
+        SmartDashboard.putData("Intake Jitter", intakeJitterCommand());
         SmartDashboard.putData("Zero", zeroCommand());
         SmartDashboard.putData("Elevator PID", controller);
     }
@@ -264,6 +265,13 @@ public class ElevatorSubsystem extends SubsystemBase {
         return this.startEnd(() -> setHeight(height), () -> {}).until(() -> controller.atGoal());
     }
 
+    public Command goToHeightCommand(boolean instant, Angle height) {
+        if (instant) {
+            return this.runOnce(() -> setRotations(height));
+        }
+        return this.startEnd(() -> setRotations(height), () -> {}).until(() -> controller.atGoal());
+    }
+
     public Command goToL1Command(boolean instant) {
         return goToHeightCommand(instant, L1_HEIGHT);
     }
@@ -282,6 +290,19 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public Command goToIntakePosCommand(boolean instant) {
         return goToHeightCommand(instant, INTAKE_HEIGHT);
+    }
+
+    private Command goToIntakeJitterPosCommand(boolean instant) {
+        return goToHeightCommand(instant, INTAKE_HEIGHT.plus(INTAKE_JITTER_AMOUNT));
+    }
+
+    public Command intakeJitterCommand() {
+        return Commands.repeatingSequence(
+            goToIntakePosCommand(true),
+            Commands.waitTime(INTAKE_JITTER_PERIOD),
+            goToIntakeJitterPosCommand(true),
+            Commands.waitTime(INTAKE_JITTER_PERIOD)
+        );
     }
 
     private final SysIdRoutine sysIdRoutine = new SysIdRoutine(

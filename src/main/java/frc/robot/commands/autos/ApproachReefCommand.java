@@ -23,6 +23,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N2;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -63,8 +64,12 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         PPHolonomicDriveController.clearFeedbackOverrides();
     }
 
+    private static boolean withinRange(Pose2d pose, Pose2d target, Distance distance) {
+        return pose.getTranslation().getDistance(target.getTranslation()) <= distance.in(Meters);
+    }
+
     private static boolean withinApproachRange(Pose2d pose, Pose2d target) {
-        return pose.getTranslation().getDistance(target.getTranslation()) <= APPROACH_DISTANCE.in(Meters);
+        return withinRange(pose, target, APPROACH_DISTANCE);
     }
 
     /** Creates a new ApproachReefCommand. */
@@ -89,11 +94,20 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         // Finally, alignToReefCommand to ensure alignment
         addCommands(
             followPathCommand.alongWith(
-                    Commands.idle().until(() -> withinApproachRange(
-                    swerve.getPose(), AlignToReefCommands.getReefPose(side, relativePos)))
+                    waitUntilAligningCommand(side, relativePos, swerve)
                     .andThen(Commands.runOnce(() -> overrideFeedback(swerve, alignToReefCommand)))
             ).andThen(Commands.runOnce(ApproachReefCommand::resetOverrideFeedback)),
             alignToReefCommand
         );
+    }
+
+    public static Command waitUntilAligningCommand(int side, int relativePos, Swerve swerve) {
+        return Commands.waitUntil(() -> withinApproachRange(
+            swerve.getPose(), AlignToReefCommands.getReefPose(side, relativePos)));
+    }
+
+    public static Command waitToDeployElevator(int side, int relativePos, Swerve swerve) {
+        return Commands.waitUntil(() -> withinRange(
+            swerve.getPose(), AlignToReefCommands.getReefPose(side, relativePos), ELEVATOR_DEPLOY_DISTANCE));
     }
 }

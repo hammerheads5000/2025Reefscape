@@ -80,7 +80,7 @@ public class Constants {
 
     public static final double CONTROLLER_DEADBAND = .225;
     
-    public static final Distance BUMPER_THICKNESS = Inches.of(3.75);
+    public static final Distance BUMPER_THICKNESS = Inches.of(4);
 
     public static class SwerveConstants {
         public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(2.5);//define later
@@ -99,7 +99,7 @@ public class Constants {
         private static final Distance MODULE_DISTANCE = Inches.of(23.75);
 
         private static final Slot0Configs STEER_GAINS = new Slot0Configs()
-                .withKP(56).withKI(10).withKD(9)
+                .withKP(56).withKI(20).withKD(9)
                 .withKS(2.38).withKV(0.29).withKA(1.23)
                 .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
@@ -268,9 +268,9 @@ public class Constants {
 
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
-                .withPID(1, 0.2, 0.0).withTolerance(Inches.of(2).in(Meters));
+                .withPID(2, 0.6, 0.0).withTolerance(Inches.of(2).in(Meters));
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(1, 0.2, 0.0).withTolerance(Inches.of(1).in(Meters));
+                .withPID(2, 0.6, 0.0).withTolerance(Inches.of(1).in(Meters));
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
@@ -278,25 +278,26 @@ public class Constants {
 
 
         // output: m/s, measure: m
-        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(3, 0, 0);
+        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(2, 0.5, 1);
         // output: rad/s, measure: rad
-        public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(2, 0, 0);
+        public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(1.5, 0, 0.5);
         }
 
     public static class AutoConstants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
                 SwerveConstants.DEFAULT_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1)),
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(3)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
-                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1)));
+                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
 
         public static final Distance SIDE_DISTANCE = Meters.of(3);
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
 
-        public static final Distance APPROACH_DISTANCE = Inches.of(20); // *extra* distance to reef when approaching
-        public static final Distance TRAVERSE_DISTANCE = Inches.of(45); // *extra* distance to reef when moving around to other side
+        public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching
+        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(45);
+        public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side
 
         public static final Map<Character, Pair<Integer, Integer>> LETTER_TO_SIDE_AND_RELATIVE = Map.ofEntries(
                 Map.entry(Character.valueOf('A'), new Pair<Integer, Integer>(0, 1)),
@@ -359,9 +360,9 @@ public class Constants {
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0.5, 0.1, 0.1).withTolerance(0.5).withIZone(30).withIRange(-1, 2)
-                .withFeedforward(0.1265, 0.004).withPhysical(0.05, 0.375)
-                .withProfile(350, 250);
+                .withPID(0.3, 0.1, 0.1).withTolerance(0.5).withIZone(30).withIRange(-1, 2)
+                .withFeedforward(0.125, 0.004).withPhysical(0.05, 0.375)
+                .withProfile(350, 175);
 
         public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
 
@@ -370,7 +371,7 @@ public class Constants {
         public static final double MANUAL_UP_SPEED = 0.3;
         public static final double MANUAL_DOWN_SPEED = -0.2;
 
-        public static final Current STALL_CURRENT = Amps.of(58);
+        public static final Current STALL_CURRENT = Amps.of(55);
         
         public static final double GEAR_RATIO = 4;
         public static final Mass CARRIAGE_MASS = Ounces.of(50.884);
@@ -392,11 +393,14 @@ public class Constants {
         public static final RegionOfInterest REGION_OF_INTEREST = new RegionOfInterest(8, 3, 6, 6);
 
         // Setpoints
-        public static final Distance L1_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(26.5)).in(Meters));
-        public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(39.3)).in(Meters));
-        public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(56.6)).in(Meters));
-        public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(87)).in(Meters));
-        public static final Distance INTAKE_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(2.25)).in(Meters));
+        public static final Angle L1_HEIGHT = Rotations.of(26.5);
+        public static final Angle L2_HEIGHT = Rotations.of(39.3);
+        public static final Angle L3_HEIGHT = Rotations.of(56.6);
+        public static final Angle L4_HEIGHT = Rotations.of(87);
+        public static final Angle INTAKE_HEIGHT = Rotations.of(2.9);
+        
+        public static final Angle INTAKE_JITTER_AMOUNT = Rotations.of(1);
+        public static final Time INTAKE_JITTER_PERIOD = Seconds.of(0.75);
     }
 
     public static class EndEffectorConstants {
@@ -419,8 +423,8 @@ public class Constants {
         public static final double INTAKE_SPEED = 0.25;
         public static final double SLOW_INTAKE_SPEED = 0.15;
         public static final double SCORE_SPEED = 0.2;
-        public static final double FAST_TROUGH_SPEED = 0.5;
-        public static final double SLOW_TROUGH_SPEED = 0.1;
+        public static final double FAST_TROUGH_SPEED = 0.6;
+        public static final double SLOW_TROUGH_SPEED = 0.25;
     }
 
     public static class ClimberConstants {

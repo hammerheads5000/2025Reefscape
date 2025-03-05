@@ -58,7 +58,8 @@ public class FullAutoCommand extends SequentialCommandGroup {
         }
 
         commandToAdd = new ApproachReefCommand(side, relativePos, swerve)
-            .alongWith(elevatorPosCommand)
+            .alongWith(ApproachReefCommand.waitToDeployElevator(side, relativePos, swerve)
+                .andThen(elevatorPosCommand))
             .andThen(endEffectorSubsystem.scoreCommand());
 
         return commandToAdd;
