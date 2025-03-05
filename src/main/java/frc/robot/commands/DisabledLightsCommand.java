@@ -10,6 +10,7 @@ import static frc.robot.Constants.LightsConstants.*;
 import edu.wpi.first.units.DimensionlessUnit;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,11 +31,15 @@ public class DisabledLightsCommand extends Command {
     }
 
     private double getVisionProportionL() {
+        if (!visionSubsystem.hasHadTargetFL) return 0;
+
         Distance distance = visionSubsystem.getDistanceToEstimatedFL();
         return MAX_VISION_DISTANCE.minus(distance).div(MAX_VISION_DISTANCE).magnitude();
     }
 
     private double getVisionProportionR() {
+        if (!visionSubsystem.hasHadTargetFR) return 0;
+        
         Distance distance = visionSubsystem.getDistanceToEstimatedFR();
         return MAX_VISION_DISTANCE.minus(distance).div(MAX_VISION_DISTANCE).magnitude();
     }
@@ -47,11 +52,11 @@ public class DisabledLightsCommand extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (RobotController.getMeasureBatteryVoltage().lte(LOW_BATTERY_VOLTAGE)) {
-            lightsSubsystem.setSolidColor(LOW_BATTERY_COLOR);
-            lightsSubsystem.setShouldFade(false);
-            return;
-        }
+        // if (RobotController.getMeasureBatteryVoltage().lte(LOW_BATTERY_VOLTAGE)) {
+        //     lightsSubsystem.setSolidColor(LOW_BATTERY_COLOR);
+        //     lightsSubsystem.setShouldFade(false);
+        //     return;
+        // }
 
         if (!visionSubsystem.camerasConnected()) {
             lightsSubsystem.setSolidColor(NO_VISION_COLOR);
@@ -59,20 +64,20 @@ public class DisabledLightsCommand extends Command {
             return;
         }
 
-        // if (visionSubsystem.hasTargetFL && !previousHasTargetFL) {
-        //     lightsSubsystem.resetFadeLeft();
-        //     previousHasTargetFL = true;
-        // }
-        // if (visionSubsystem.hasTargetFR && !previousHasTargetFR) {
-        //     lightsSubsystem.resetFadeRight();
-        //     previousHasTargetFR = true;
-        // }
-        
-        // lightsSubsystem.setShouldFade(true);
+        if (visionSubsystem.hasTargetFL && !previousHasTargetFL) {
+            lightsSubsystem.resetFadeLeft();
+        }
+        if (visionSubsystem.hasTargetFR && !previousHasTargetFR) {
+            lightsSubsystem.resetFadeRight();
+        }
 
-        lightsSubsystem.setSolidColor(Color.kNavy);
-        // lightsSubsystem.setStepsLeft(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionL());
-        // lightsSubsystem.setStepsRight(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionR());
+        previousHasTargetFL = visionSubsystem.hasTargetFL;
+        previousHasTargetFR = visionSubsystem.hasTargetFR;
+        
+        lightsSubsystem.setShouldFade(true);
+
+        lightsSubsystem.setStepsLeft(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionL());
+        lightsSubsystem.setStepsRight(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionR());
     }
 
     // Called once the command ends or is interrupted.

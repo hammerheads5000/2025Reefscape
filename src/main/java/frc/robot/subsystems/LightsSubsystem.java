@@ -9,6 +9,7 @@ import static frc.robot.Constants.LightsConstants.*;
 
 import java.util.Map;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -36,12 +37,14 @@ public class LightsSubsystem extends SubsystemBase {
 
     /** Creates a new LightsSubsystem. */
     public LightsSubsystem() {
+        ledStrip.setLength(buffer.getLength());
+        ledStrip.start();
     }
 
     public void resetFadeLeft() {
         lastUpdateLeft = RobotController.getMeasureTime();
     }
-
+    
     public void resetFadeRight() {
         lastUpdateRight = RobotController.getMeasureTime();
     }
@@ -101,23 +104,27 @@ public class LightsSubsystem extends SubsystemBase {
         return this.runOnce(() -> this.setPattern(pattern));
     }
 
-    private Dimensionless getFadeLeft() {
+    @Logged
+    public Dimensionless getFadeLeft() {
         if (!shouldFade) return Value.of(1);
 
-        return Value.of(1).minus(lastUpdateLeft.minus(FADE_START).div(FADE_DURATION));
+        Time fadeTime = RobotController.getMeasureTime().minus(lastUpdateLeft);
+        return Value.of(1).minus(fadeTime.minus(FADE_START).div(FADE_DURATION));
     } 
 
-    private Dimensionless getFadeRight() {
+    @Logged
+    public Dimensionless getFadeRight() {
         if (!shouldFade) return Value.of(1);
 
-        return Value.of(1).minus(lastUpdateRight.minus(FADE_START).div(FADE_DURATION));
+        Time fadeTime = RobotController.getMeasureTime().minus(lastUpdateRight);
+        return Value.of(1).minus(fadeTime.minus(FADE_START).div(FADE_DURATION));
     } 
 
     @Override
     public void periodic() {
         currentPatternLeft.atBrightness(BRIGHTNESS.times(getFadeLeft())).applyTo(leftView);
         currentPatternRight.atBrightness(BRIGHTNESS.times(getFadeRight())).applyTo(rightView);
-
+        
         ledStrip.setData(buffer);
         
     }

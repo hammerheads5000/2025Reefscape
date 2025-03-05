@@ -442,12 +442,11 @@ public class Constants {
         public static final Distance LED_SPACING = Meters.of(1).div(144);
 
         public static final int PWM_PORT = 9; // TODO define
-        public static final int PWM_PORT_RIGHT = 8; // TODO define
 
-        public static final int LED_COUNT_LEFT = 60; // TODO define
-        public static final int LED_COUNT_RIGHT = 60; // TODO define
+        public static final int LED_COUNT_LEFT = 36; // TODO define
+        public static final int LED_COUNT_RIGHT = 35; // TODO define
 
-        public static final Dimensionless BRIGHTNESS = Percent.of(50);
+        public static final Dimensionless BRIGHTNESS = Percent.of(25);
 
         public static final Color PATH_FOLLOWING_COLOR = Color.kBlue;
         public static final Color ALIGNMENT_COLOR = Color.kOrange;
@@ -459,13 +458,13 @@ public class Constants {
         public static final Color LOW_BATTERY_COLOR = Color.kRed;
 
         public static final LEDPattern RAINBOW = LEDPattern.rainbow(255, 128)
-                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.75), LED_SPACING);
+                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.15), LED_SPACING);
 
-        public static final Distance MAX_VISION_DISTANCE = Meters.of(6);
+        public static final Distance MAX_VISION_DISTANCE = Meters.of(1);
         public static final Voltage LOW_BATTERY_VOLTAGE = Volts.of(12.4);
 
-        public static final Time FADE_START = Seconds.of(0.5);
-        public static final Time FADE_DURATION = Seconds.of(5);
+        public static final Time FADE_START = Seconds.of(1);
+        public static final Time FADE_DURATION = Seconds.of(3);
     }
 
     public static class FieldConstants {

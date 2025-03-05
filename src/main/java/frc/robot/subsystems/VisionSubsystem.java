@@ -58,6 +58,8 @@ public class VisionSubsystem extends SubsystemBase {
     
     public boolean hasTargetFL = false;
     public boolean hasTargetFR = false;
+    public boolean hasHadTargetFL = false;
+    public boolean hasHadTargetFR = false;
     public boolean hasTarget = false;
 
     private StructEntry<Pose2d> fieldFL = INST.getStructTopic("Vision/FL Pose", Pose2d.struct).getEntry(new Pose2d());
@@ -183,6 +185,9 @@ public class VisionSubsystem extends SubsystemBase {
         
         hasTargetFL = updatePoseEstimator(poseEstimatorFL, camFL);
         hasTargetFR = updatePoseEstimator(poseEstimatorFR, camFR);
+
+        hasHadTargetFL = hasTargetFL || hasHadTargetFL;
+        hasHadTargetFR = hasTargetFR || hasHadTargetFR;
 
         hasTarget = hasTargetFL || hasTargetFR;
     }

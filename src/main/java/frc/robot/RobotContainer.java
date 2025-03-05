@@ -56,7 +56,7 @@ public class RobotContainer {
     AlignToPoseCommand moveToZero = new AlignToPoseCommand(Pose2d.kZero, SwerveConstants.SCORING_PID_X, SwerveConstants.SCORING_PID_Y, SwerveConstants.SCORING_PID_ANGLE, swerve);
     AlignToPoseCommand reefAlign = AlignToReefCommands.alignToReef(5, -1, swerve);
 
-    DisabledLightsCommand disabledLightsCommand = new DisabledLightsCommand(lightsSubsystem, visionSubsystem);
+    Command disabledLightsCommand = new DisabledLightsCommand(lightsSubsystem, visionSubsystem).ignoringDisable(true);
     // #endregion
 
     // #region Triggers
