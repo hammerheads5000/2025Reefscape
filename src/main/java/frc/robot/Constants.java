@@ -441,7 +441,7 @@ public class Constants {
     public static class LightsConstants {
         public static final Distance LED_SPACING = Meters.of(1).div(144);
 
-        public static final int PWM_PORT_LEFT = 9; // TODO define
+        public static final int PWM_PORT = 9; // TODO define
         public static final int PWM_PORT_RIGHT = 8; // TODO define
 
         public static final int LED_COUNT_LEFT = 60; // TODO define
@@ -461,11 +461,11 @@ public class Constants {
         public static final LEDPattern RAINBOW = LEDPattern.rainbow(255, 128)
                 .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.75), LED_SPACING);
 
-        public static final Distance MAX_VISION_POSE_CHANGE = Meters.of(6);
+        public static final Distance MAX_VISION_DISTANCE = Meters.of(6);
         public static final Voltage LOW_BATTERY_VOLTAGE = Volts.of(12.4);
 
-        public static final Time VISION_TIMEOUT_START = Seconds.of(0.5);
-        public static final Time VISION_TIMEOUT_DURATION = Seconds.of(5);
+        public static final Time FADE_START = Seconds.of(0.5);
+        public static final Time FADE_DURATION = Seconds.of(5);
     }
 
     public static class FieldConstants {

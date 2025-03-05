@@ -4,40 +4,85 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Value;
 import static frc.robot.Constants.LightsConstants.*;
 
+import java.util.Map;
+
+import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.AddressableLED;
+import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.LEDStrip;
 
 public class LightsSubsystem extends SubsystemBase {
-    LEDStrip leftStrip = new LEDStrip(PWM_PORT_LEFT, LED_COUNT_LEFT);
-    //LEDStrip rightStrip = new LEDStrip(PWM_PORT_RIGHT, LED_COUNT_RIGHT);
-    LEDStrip rightStrip = leftStrip;
+    AddressableLED ledStrip = new AddressableLED(PWM_PORT);
+    AddressableLEDBuffer buffer = new AddressableLEDBuffer(LED_COUNT_LEFT + LED_COUNT_RIGHT);
+    AddressableLEDBufferView leftView = buffer.createView(0, LED_COUNT_LEFT-1);
+    AddressableLEDBufferView rightView = buffer.createView(LED_COUNT_LEFT, LED_COUNT_LEFT + LED_COUNT_RIGHT-1);
+
+    private LEDPattern currentPatternLeft = LEDPattern.kOff;
+    private LEDPattern currentPatternRight = LEDPattern.kOff;
+
+    private Time lastUpdateLeft = RobotController.getMeasureTime();
+    private Time lastUpdateRight = RobotController.getMeasureTime();
+
+    private boolean shouldFade = false;
+
     /** Creates a new LightsSubsystem. */
     public LightsSubsystem() {
     }
 
-    public void setSolidColor(Color color) {
-        leftStrip.setSolidColor(color);
-        rightStrip.setSolidColor(color);
+    public void resetFadeLeft() {
+        lastUpdateLeft = RobotController.getMeasureTime();
     }
 
-    public void setSteps(Color color1, Color color2, double proportion) {
-        leftStrip.setSteps(color1, color2, proportion);
-        rightStrip.setSteps(color1, color2, proportion);
+    public void resetFadeRight() {
+        lastUpdateRight = RobotController.getMeasureTime();
+    }
+    
+    public void resetFade() {
+        resetFadeLeft();
+        resetFadeRight();
     }
 
-    public void setRainbow() {
-        leftStrip.setRainbow();
-        rightStrip.setRainbow();
+    public void setShouldFade(boolean shouldFade) {
+        this.shouldFade = shouldFade;
+    }
+
+    public void setPatterns(LEDPattern patternLeft, LEDPattern patternRight) {
+        currentPatternLeft = patternLeft;
+        currentPatternRight = patternRight;
     }
 
     public void setPattern(LEDPattern pattern) {
-        leftStrip.setPattern(pattern);
-        rightStrip.setPattern(pattern);
+        setPatterns(pattern, pattern);
+    }
+
+    public void setSolidColor(Color color) {
+        setPattern(LEDPattern.solid(color));
+    }
+
+    public void setStepsLeft(Color color1, Color color2, double proportion) {
+        setPatterns(LEDPattern.steps(Map.of(0, color1, proportion, color2)), currentPatternRight);
+    }
+
+    public void setStepsRight(Color color1, Color color2, double proportion) {
+        setPatterns(currentPatternLeft, LEDPattern.steps(Map.of(0, color1, proportion, color2)));
+    }
+
+    public void setSteps(Color color1, Color color2, double proportion) {
+        setStepsLeft(color1, color2, proportion);
+        setStepsRight(color1, color2, proportion);
+    }
+
+    public void setRainbow() {
+        setPattern(RAINBOW);
     }
 
     public Command setSolidColorCommand(Color color) {
@@ -56,9 +101,24 @@ public class LightsSubsystem extends SubsystemBase {
         return this.runOnce(() -> this.setPattern(pattern));
     }
 
+    private Dimensionless getFadeLeft() {
+        if (!shouldFade) return Value.of(1);
+
+        return Value.of(1).minus(lastUpdateLeft.minus(FADE_START).div(FADE_DURATION));
+    } 
+
+    private Dimensionless getFadeRight() {
+        if (!shouldFade) return Value.of(1);
+
+        return Value.of(1).minus(lastUpdateRight.minus(FADE_START).div(FADE_DURATION));
+    } 
+
     @Override
     public void periodic() {
-        leftStrip.update();
-        rightStrip.update();
+        currentPatternLeft.atBrightness(BRIGHTNESS.times(getFadeLeft())).applyTo(leftView);
+        currentPatternRight.atBrightness(BRIGHTNESS.times(getFadeRight())).applyTo(rightView);
+
+        ledStrip.setData(buffer);
+        
     }
 }

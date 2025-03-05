@@ -35,11 +35,13 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.StructEntry;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.FieldConstants;
 
 @Logged
@@ -54,15 +56,14 @@ public class VisionSubsystem extends SubsystemBase {
     private PhotonCamera camFR = new PhotonCamera(FRONT_RIGHT_CAM_NAME); // front right
     //private PhotonCamera camB = new PhotonCamera(BACK_CAM_NAME); // back
     
-    private boolean hasTarget = false;
+    public boolean hasTargetFL = false;
+    public boolean hasTargetFR = false;
+    public boolean hasTarget = false;
 
-    private StructPublisher<Pose2d> fieldFL = INST.getStructTopic("Vision/FL Pose", Pose2d.struct).publish();
-    private StructPublisher<Pose2d> fieldFR = INST.getStructTopic("Vision/FR Pose", Pose2d.struct).publish();
+    private StructEntry<Pose2d> fieldFL = INST.getStructTopic("Vision/FL Pose", Pose2d.struct).getEntry(new Pose2d());
+    private StructEntry<Pose2d> fieldFR = INST.getStructTopic("Vision/FR Pose", Pose2d.struct).getEntry(new Pose2d());
 
     private Swerve swerve;
-
-    public Distance lastPoseChange = Meters.of(-1);
-    private Time lastPoseChangeTime = Seconds.zero();
 
     // Simulation
     VisionSystemSim visionSim = new VisionSystemSim("main");
@@ -103,8 +104,12 @@ public class VisionSubsystem extends SubsystemBase {
         return camFL.isConnected() && camFR.isConnected();// && camB.isConnected();
     }
 
-    public Time timeSinceHadTarget() {
-        return RobotController.getMeasureTime().minus(lastPoseChangeTime);
+    public Distance getDistanceToEstimatedFL() {
+        return Meters.of(swerve.getPose().getTranslation().getDistance(fieldFL.get().getTranslation()));
+    }
+
+    public Distance getDistanceToEstimatedFR() {
+        return Meters.of(swerve.getPose().getTranslation().getDistance(fieldFR.get().getTranslation()));
     }
 
     private EstimatedRobotPose estimatedPoseFromResult(PhotonPipelineResult result, PhotonPoseEstimator poseEstimator) {
@@ -162,12 +167,7 @@ public class VisionSubsystem extends SubsystemBase {
             if (poseEstimator == poseEstimatorFL) fieldFL.set(estimatedRobotPose.estimatedPose.toPose2d());
             if (poseEstimator == poseEstimatorFR) fieldFR.set(estimatedRobotPose.estimatedPose.toPose2d());
 
-            Pose2d poseBefore = swerve.getPose();
             swerve.addVisionMeasurement(estimatedRobotPose, stdDevs);
-            Pose2d poseAfter = swerve.getPose();
-
-            lastPoseChange = Meters.of(poseAfter.getTranslation().getDistance(poseBefore.getTranslation()));
-            lastPoseChangeTime = RobotController.getMeasureTime();
         }
 
         return hasTarget;
@@ -181,9 +181,10 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() {
         if(Utils.isSimulation()) return;
         
-        hasTarget = updatePoseEstimator(poseEstimatorFL, camFL) ||
-                updatePoseEstimator(poseEstimatorFR, camFR);// ||
-                //updatePoseEstimator(poseEstimatorB, camB);
+        hasTargetFL = updatePoseEstimator(poseEstimatorFL, camFL);
+        hasTargetFR = updatePoseEstimator(poseEstimatorFR, camFR);
+
+        hasTarget = hasTargetFL || hasTargetFR;
     }
 
     @Override
