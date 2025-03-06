@@ -116,7 +116,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void resetPosition() {
         motor1.setPosition(0);
-        resetPID();
+        resetPID(Rotations.of(0));
     }
 
     public Angle getMotorRotations() {
@@ -139,9 +139,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         setRotations(heightToMotorRotations(height));
     }
 
+    public void resetPID(Angle rotations) {
+        controller.setGoal(rotations.in(Rotations));
+        controller.reset(rotations.in(Rotations), 0);
+    }
+    
     public void resetPID() {
-        controller.reset(getMotorRotations().in(Rotations), 0);
         controller.setGoal(getMotorRotations().in(Rotations));
+        controller.reset(getMotorRotations().in(Rotations), 0);
     }
 
     public void setRotations(double rotations) {
