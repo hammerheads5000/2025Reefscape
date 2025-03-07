@@ -51,7 +51,7 @@ public class RobotContainer {
     TeleopSwerve teleopSwerve = new TeleopSwerve(swerve, primaryController);
 
     AlignToPoseCommand moveToZero = new AlignToPoseCommand(Pose2d.kZero, SwerveConstants.SCORING_PID_X, SwerveConstants.SCORING_PID_Y, SwerveConstants.SCORING_PID_ANGLE, swerve);
-    AlignToPoseCommand reefAlign = AlignToReefCommands.alignToReef(5, -1, swerve);
+    AlignToPoseCommand reefAlign = AlignToReefCommands.alignToReef(0, 1, swerve);
     // #endregion
 
     // #region Triggers

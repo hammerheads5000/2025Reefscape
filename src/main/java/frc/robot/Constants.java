@@ -268,17 +268,21 @@ public class Constants {
 
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
-                .withPID(2, 0.6, 0.0).withTolerance(Inches.of(2).in(Meters));
+                .withPID(2, 0.1, 0.2).withTolerance(Inches.of(4).in(Meters))
+                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(2, 0.6, 0.0).withTolerance(Inches.of(1).in(Meters));
+                .withPID(3, 0.4, 0.1).withTolerance(Inches.of(1.5).in(Meters))
+                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
-                .withPID(4, 0.4, 0.0).withTolerance(1);
+                .withPID(3, 3, 0.0).withTolerance(1.5);
 
+
+        public static final Time ALIGN_TIME = Seconds.of(0.1); // amount to wait to make sure aligned
 
         // output: m/s, measure: m
-        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(2, 0.5, 1);
+        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(4, 0.5, 0.5);
         // output: rad/s, measure: rad
         public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(1.5, 0, 0.5);
         }
@@ -397,7 +401,7 @@ public class Constants {
         public static final Angle L2_HEIGHT = Rotations.of(39.3);
         public static final Angle L3_HEIGHT = Rotations.of(56.6);
         public static final Angle L4_HEIGHT = Rotations.of(87);
-        public static final Angle INTAKE_HEIGHT = Rotations.of(2.9);
+        public static final Angle INTAKE_HEIGHT = Rotations.of(3.2);
         
         public static final Angle INTAKE_JITTER_AMOUNT = Rotations.of(1);
         public static final Time INTAKE_JITTER_PERIOD = Seconds.of(0.75);

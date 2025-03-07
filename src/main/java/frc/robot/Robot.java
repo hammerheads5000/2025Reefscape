@@ -64,6 +64,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
+    m_robotContainer.elevatorSubsystem.resetPID();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }

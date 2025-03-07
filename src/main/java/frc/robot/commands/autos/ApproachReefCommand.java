@@ -88,15 +88,15 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         double initialPIDSpeed = initialPIDVelocity.projection(VecBuilder.fill(direction.getX(), direction.getY())).norm();
         
         Command followPathCommand = AutoBuilder.followPath(Pathfinding.generateReefPath(swerve.getPose(), side, relativePos));
-
+        
         // First follow generated path
         // When within approach distance while following path, override PP's feedback
         // Finally, alignToReefCommand to ensure alignment
         addCommands(
-            followPathCommand.alongWith(
-                    waitUntilAligningCommand(side, relativePos, swerve)
-                    .andThen(Commands.runOnce(() -> overrideFeedback(swerve, alignToReefCommand)))
-            ).andThen(Commands.runOnce(ApproachReefCommand::resetOverrideFeedback)),
+            followPathCommand,//.alongWith(
+            //         waitUntilAligningCommand(side, relativePos, swerve)
+            //         .andThen(Commands.runOnce(() -> overrideFeedback(swerve, alignToReefCommand)))
+            // ).andThen(Commands.runOnce(ApproachReefCommand::resetOverrideFeedback)),
             alignToReefCommand
         );
     }
