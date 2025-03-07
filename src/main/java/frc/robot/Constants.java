@@ -441,7 +441,7 @@ public class Constants {
                 .withNeutralMode(NeutralModeValue.Brake);
 
         public static final Voltage CLIMB_SPEED = Volts.of(10);
-        public static final Voltage RELEASE_SPEED = Volts.of(-6);
+        public static final Voltage RELEASE_SPEED = Volts.of(-5);
     }
 
     public static class FieldConstants {

@@ -13,9 +13,10 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class ClimberSubsystem extends SubsystemBase {
-  private TalonFX motor = new TalonFX(MOTOR_ID);
+  private TalonFX motor = new TalonFX(MOTOR_ID, Constants.CAN_FD_BUS);
   private PowerDistribution pdh;
 
   /** Creates a new ClimberSubsystem. */
