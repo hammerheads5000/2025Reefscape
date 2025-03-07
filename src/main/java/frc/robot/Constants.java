@@ -261,8 +261,8 @@ public class Constants {
         public static final DriveRequestType DRIVE_REQUEST_TYPE = DriveRequestType.Velocity;
         public static final SteerRequestType STEER_REQUEST_TYPE = SteerRequestType.MotionMagicExpo;
         
-        public static final LinearVelocity LINEAR_VEL_DEADBAND = MetersPerSecond.of(0.1);
-        public static final AngularVelocity ANGLULAR_VEL_DEADBAND = DegreesPerSecond.of(5);
+        public static final LinearVelocity LINEAR_VEL_DEADBAND = MetersPerSecond.of(0.02);
+        public static final AngularVelocity ANGLULAR_VEL_DEADBAND = DegreesPerSecond.of(1);
 
         // Aligning to the reef to score coral
 
@@ -291,7 +291,7 @@ public class Constants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
                 SwerveConstants.DEFAULT_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(3)),
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
                 SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
 

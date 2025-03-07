@@ -7,10 +7,13 @@ package frc.robot.commands.autos;
 import static frc.robot.Constants.AutoConstants.*;
 import static frc.robot.Constants.FieldConstants.L1_RELATIVE_POS;
 
+import java.util.Set;
+
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Robot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.EndEffectorSubsystem;
 import frc.robot.subsystems.Swerve;
@@ -24,9 +27,13 @@ public class FullAutoCommand extends SequentialCommandGroup {
     EndEffectorSubsystem endEffectorSubsystem;
 
     private Command stationCommand(int station) {
-        return ApproachCoralStationCommands.pathfindCommand(station, 0, swerve)
-                .alongWith(elevatorSubsystem.goToIntakePosCommand(false))
-                .andThen(endEffectorSubsystem.intakeCommand());
+        Command command = ApproachCoralStationCommands.pathfindCommand(station, 0, swerve);
+                
+        if (Robot.isReal()) {
+            command = command.alongWith(elevatorSubsystem.goToIntakePosCommand(false))
+                    .andThen(endEffectorSubsystem.intakeCommand());
+        }
+        return command;
     }
 
     private Command reefCommand(int side, int relativePos, char level) {
@@ -57,11 +64,12 @@ public class FullAutoCommand extends SequentialCommandGroup {
                 break;
         }
 
-        commandToAdd = new ApproachReefCommand(side, relativePos, swerve)
-            .alongWith(ApproachReefCommand.waitToDeployElevator(side, relativePos, swerve)
-                .andThen(elevatorPosCommand))
-            .andThen(endEffectorSubsystem.scoreCommand());
-
+        commandToAdd = new ApproachReefCommand(side, relativePos, swerve);
+        if (Robot.isReal()) {
+            commandToAdd = commandToAdd.alongWith(ApproachReefCommand.waitToDeployElevator(side, relativePos, swerve)
+                    .andThen(elevatorPosCommand))
+                    .andThen(endEffectorSubsystem.scoreCommand());
+        }
         return commandToAdd;
     }
 
@@ -71,7 +79,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
         if (token.charAt(0) == 'S') {
             int station = token.charAt(1) == '0' ? 0 : 1;
 
-            commandToAdd = stationCommand(station);
+            commandToAdd = Commands.defer(() -> stationCommand(station), Set.of(swerve, elevatorSubsystem, endEffectorSubsystem));
         } else {
             Pair<Integer, Integer> sidePosPair;
             if (!LETTER_TO_SIDE_AND_RELATIVE.containsKey(token.charAt(0))) {
@@ -83,7 +91,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
             int side = sidePosPair.getFirst();
             int relativePos = sidePosPair.getSecond();
 
-            commandToAdd = reefCommand(side, relativePos, token.charAt(1));
+            commandToAdd = Commands.defer(() -> reefCommand(side, relativePos, token.charAt(1)), Set.of(swerve, elevatorSubsystem, endEffectorSubsystem));
         }
 
         return commandToAdd;
