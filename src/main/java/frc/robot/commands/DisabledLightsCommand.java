@@ -71,13 +71,15 @@ public class DisabledLightsCommand extends Command {
             lightsSubsystem.resetFadeRight();
         }
 
-        previousHasTargetFL = visionSubsystem.hasTargetFL;
-        previousHasTargetFR = visionSubsystem.hasTargetFR;
-        
-        lightsSubsystem.setShouldFade(true);
+        lightsSubsystem.setSolidColor(Color.kGreen);
 
-        lightsSubsystem.setStepsLeft(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionL());
-        lightsSubsystem.setStepsRight(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionR());
+        // previousHasTargetFL = visionSubsystem.hasTargetFL;
+        // previousHasTargetFR = visionSubsystem.hasTargetFR;
+        
+        // lightsSubsystem.setShouldFade(true);
+
+        // lightsSubsystem.setStepsLeft(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionL());
+        // lightsSubsystem.setStepsRight(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionR());
     }
 
     // Called once the command ends or is interrupted.

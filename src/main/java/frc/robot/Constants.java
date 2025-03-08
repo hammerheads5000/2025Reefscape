@@ -60,6 +60,7 @@ import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Frequency;
 import edu.wpi.first.units.measure.LinearAcceleration;
@@ -69,6 +70,9 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
+import edu.wpi.first.wpilibj.util.Color;
 
 public class Constants {
     public static final CANBus CAN_FD_BUS = new CANBus("Bobby");
@@ -445,14 +449,21 @@ public class Constants {
     }
 
     public static class LightsConstants {
-        public static final Distance LED_SPACING = Meters.of(1).div(144);
+        public static final Distance LED_SPACING = Meters.of(1).div(20);
 
-        public static final int PWM_PORT = 9; // TODO define
+        public static final int PWM_PORT = 0; // TODO define
 
-        public static final int LED_COUNT_LEFT = 36; // TODO define
-        public static final int LED_COUNT_RIGHT = 35; // TODO define
+        public static final int LED_COUNT_LEFT = 5; // TODO define
+        public static final int LED_COUNT_RIGHT = 5; // TODO define
 
-        public static final Dimensionless BRIGHTNESS = Percent.of(25);
+        public static final int HIGH_TIME_0_NS = 500;
+        public static final int HIGH_TIME_1_NS = 1200;
+        public static final int LOW_TIME_0_NS = 2000;
+        public static final int LOW_TIME_1_NS = 1300;
+        public static final int SYNC_TIME_US = 280;
+        public static final ColorOrder COLOR_ORDER = ColorOrder.kRGB;
+
+        public static final Dimensionless BRIGHTNESS = Percent.of(50);
 
         public static final Color PATH_FOLLOWING_COLOR = Color.kBlue;
         public static final Color ALIGNMENT_COLOR = Color.kOrange;

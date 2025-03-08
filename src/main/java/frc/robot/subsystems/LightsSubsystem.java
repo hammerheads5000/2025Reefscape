@@ -37,6 +37,9 @@ public class LightsSubsystem extends SubsystemBase {
 
     /** Creates a new LightsSubsystem. */
     public LightsSubsystem() {
+        ledStrip.setBitTiming(HIGH_TIME_0_NS, LOW_TIME_0_NS, HIGH_TIME_1_NS, LOW_TIME_1_NS);
+        ledStrip.setSyncTime(SYNC_TIME_US);
+        ledStrip.setColorOrder(COLOR_ORDER);
         ledStrip.setLength(buffer.getLength());
         ledStrip.start();
     }

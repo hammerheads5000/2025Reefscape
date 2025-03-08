@@ -21,12 +21,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.AlignToPoseCommand;
 import frc.robot.commands.AlignToReefCommands;
+import frc.robot.commands.DisabledLightsCommand;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.autos.ApproachCoralStationCommands;
 import frc.robot.commands.autos.FullAutoCommand;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.EndEffectorSubsystem;
+import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.VisionSubsystem;
 
@@ -45,6 +47,7 @@ public class RobotContainer {
     SwerveTelemetry swerveTelemetry = new SwerveTelemetry();
     EndEffectorSubsystem endEffectorSubsystem = new EndEffectorSubsystem();
     ClimberSubsystem climberSubsystem = new ClimberSubsystem(pdh);
+    LightsSubsystem lightsSubsystem = new LightsSubsystem();
     // #endregion
 
     // #region Commands

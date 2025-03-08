@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Robot;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.EndEffectorSubsystem;
+import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.Swerve;
 
 /**
@@ -25,9 +26,10 @@ public class FullAutoCommand extends SequentialCommandGroup {
     Swerve swerve;
     ElevatorSubsystem elevatorSubsystem;
     EndEffectorSubsystem endEffectorSubsystem;
+    LightsSubsystem lightsSubsystem;
 
     private Command stationCommand(int station) {
-        Command command = ApproachCoralStationCommands.pathfindCommand(station, 0, swerve);
+        Command command = ApproachCoralStationCommands.pathfindCommand(station, 0, swerve, lightsSubsystem);
                 
         if (Robot.isReal()) {
             command = command.alongWith(elevatorSubsystem.goToIntakePosCommand(false))
@@ -104,10 +106,11 @@ public class FullAutoCommand extends SequentialCommandGroup {
      *                         separated (e.g. "E4 S0 A3 S1 K1") 
      * @param swerve
      */
-    public FullAutoCommand(String descriptorString, Swerve swerve, ElevatorSubsystem elevatorSubsystem, EndEffectorSubsystem endEffectorSubsystem) {
+    public FullAutoCommand(String descriptorString, Swerve swerve, ElevatorSubsystem elevatorSubsystem, EndEffectorSubsystem endEffectorSubsystem, LightsSubsystem lightsSubsystem) {
         this.swerve = swerve;
         this.elevatorSubsystem = elevatorSubsystem;
         this.endEffectorSubsystem = endEffectorSubsystem;
+        this.lightsSubsystem = lightsSubsystem;
 
         String[] tokens = descriptorString.split(" ");
 
