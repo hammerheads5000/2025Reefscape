@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Constants.INST;
 import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_0M;
 import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_5M;
@@ -38,8 +37,6 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.StructEntry;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.FieldConstants;
@@ -168,7 +165,6 @@ public class VisionSubsystem extends SubsystemBase {
             hasTarget = true;
             if (poseEstimator == poseEstimatorFL) fieldFL.set(estimatedRobotPose.estimatedPose.toPose2d());
             if (poseEstimator == poseEstimatorFR) fieldFR.set(estimatedRobotPose.estimatedPose.toPose2d());
-
             swerve.addVisionMeasurement(estimatedRobotPose, stdDevs);
         }
 

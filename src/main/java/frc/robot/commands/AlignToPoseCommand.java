@@ -7,13 +7,18 @@ package frc.robot.commands;
 import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
+import static frc.robot.Constants.SwerveConstants.ALIGN_TIME;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.ControlConstants;
 import frc.robot.subsystems.Swerve;
@@ -22,9 +27,10 @@ import frc.robot.subsystems.Swerve;
 @Logged
 public class AlignToPoseCommand extends Command {
     public Pose2d targetPose;
-    public PIDController pidControllerX;
-    public PIDController pidControllerY;
+    public ProfiledPIDController pidControllerX;
+    public ProfiledPIDController pidControllerY;
     public PIDController pidControllerAngle;
+    private Timer alignedTimer;
 
     private Swerve swerve;
 
@@ -32,22 +38,34 @@ public class AlignToPoseCommand extends Command {
     public AlignToPoseCommand(Pose2d targetPose, ControlConstants pidConstantsX,
             ControlConstants pidConstantsY, ControlConstants pidConstantsAngle, Swerve swerve) {
         this.targetPose = targetPose;
+        this.swerve = swerve;
 
-        pidControllerX = pidConstantsX.getPIDController();
-        pidControllerY = pidConstantsY.getPIDController();
+        pidControllerX = pidConstantsX.getProfiledPIDController();
+        pidControllerY = pidConstantsY.getProfiledPIDController();
         pidControllerAngle = pidConstantsAngle.getPIDController();
         pidControllerAngle.enableContinuousInput(-180, 180);
 
-        pidControllerX.setSetpoint(targetPose.getX());
-        pidControllerY.setSetpoint(targetPose.getY());
+        pidControllerX.setGoal(targetPose.getX());
+        pidControllerY.setGoal(targetPose.getY());
         pidControllerAngle.setSetpoint(targetPose.getRotation().getDegrees());
 
-        this.swerve = swerve;
+        alignedTimer = new Timer();
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        Pose2d pose = getPose();
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(swerve.getChassisSpeeds(), pose.getRotation());
+        pidControllerX.reset(pose.getX(), chassisSpeeds.vxMetersPerSecond);
+        pidControllerY.reset(pose.getY(), chassisSpeeds.vyMetersPerSecond);
+        pidControllerAngle.reset();
+
+        pidControllerX.setGoal(targetPose.getX());
+        pidControllerY.setGoal(targetPose.getY());
+        pidControllerAngle.setSetpoint(targetPose.getRotation().getDegrees());
+
+        alignedTimer.reset();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -79,9 +97,19 @@ public class AlignToPoseCommand extends Command {
         return MetersPerSecond.of(pidControllerY.calculate(error.in(Meters)));
     }
 
+    public boolean isAligned() {
+        return pidControllerX.atGoal() && pidControllerY.atGoal() && pidControllerAngle.atSetpoint();
+    }
+
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return (pidControllerX.atSetpoint() && pidControllerY.atSetpoint() && pidControllerAngle.atSetpoint());
+        if (!alignedTimer.isRunning() && isAligned()) {
+            alignedTimer.restart();
+        } else if(alignedTimer.isRunning() && !isAligned()) {
+            alignedTimer.stop();
+        }
+
+        return isAligned() && alignedTimer.hasElapsed(ALIGN_TIME.in(Seconds));
     }
 }

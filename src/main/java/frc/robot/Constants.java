@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.FieldConstants.L1_RELATIVE_POS;
 
 import java.util.Map;
 
@@ -59,7 +60,6 @@ import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Frequency;
 import edu.wpi.first.units.measure.LinearAcceleration;
@@ -69,8 +69,6 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Per;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.util.Color;
 
 public class Constants {
     public static final CANBus CAN_FD_BUS = new CANBus("Bobby");
@@ -82,7 +80,7 @@ public class Constants {
 
     public static final double CONTROLLER_DEADBAND = .225;
     
-    public static final Distance BUMPER_THICKNESS = Inches.of(3.5);
+    public static final Distance BUMPER_THICKNESS = Inches.of(4);
 
     public static class SwerveConstants {
         public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(2.5);//define later
@@ -101,7 +99,7 @@ public class Constants {
         private static final Distance MODULE_DISTANCE = Inches.of(23.75);
 
         private static final Slot0Configs STEER_GAINS = new Slot0Configs()
-                .withKP(56).withKI(10).withKD(9)
+                .withKP(56).withKI(20).withKD(9)
                 .withKS(2.38).withKV(0.29).withKA(1.23)
                 .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
@@ -263,26 +261,30 @@ public class Constants {
         public static final DriveRequestType DRIVE_REQUEST_TYPE = DriveRequestType.Velocity;
         public static final SteerRequestType STEER_REQUEST_TYPE = SteerRequestType.MotionMagicExpo;
         
-        public static final LinearVelocity LINEAR_VEL_DEADBAND = MetersPerSecond.of(0.1);
-        public static final AngularVelocity ANGLULAR_VEL_DEADBAND = DegreesPerSecond.of(5);
+        public static final LinearVelocity LINEAR_VEL_DEADBAND = MetersPerSecond.of(0.02);
+        public static final AngularVelocity ANGLULAR_VEL_DEADBAND = DegreesPerSecond.of(1);
 
         // Aligning to the reef to score coral
 
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
-                .withPID(1, 0.2, 0.0).withTolerance(Inches.of(2).in(Meters));
+                .withPID(2, 0.1, 0.2).withTolerance(Inches.of(4).in(Meters))
+                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(1, 0.2, 0.0).withTolerance(Inches.of(1).in(Meters));
+                .withPID(3, 0.4, 0.1).withTolerance(Inches.of(1.5).in(Meters))
+                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
-                .withPID(4, 0.4, 0.0).withTolerance(1);
+                .withPID(3, 3, 0.0).withTolerance(1.5);
 
+
+        public static final Time ALIGN_TIME = Seconds.of(0.1); // amount to wait to make sure aligned
 
         // output: m/s, measure: m
-        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(3, 0, 0);
+        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(4, 0.5, 0.5);
         // output: rad/s, measure: rad
-        public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(2, 0, 0);
+        public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(1.5, 0, 0.5);
         }
 
     public static class AutoConstants {
@@ -291,14 +293,15 @@ public class Constants {
                 SwerveConstants.DEFAULT_DRIVE_SPEED,
                 SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
-                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1)));
+                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
 
         public static final Distance SIDE_DISTANCE = Meters.of(3);
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
 
-        public static final Distance APPROACH_DISTANCE = Inches.of(20); // *extra* distance to reef when approaching
-        public static final Distance TRAVERSE_DISTANCE = Inches.of(50); // *extra* distance to reef when moving around to other side
+        public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching
+        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(45);
+        public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side
 
         public static final Map<Character, Pair<Integer, Integer>> LETTER_TO_SIDE_AND_RELATIVE = Map.ofEntries(
                 Map.entry(Character.valueOf('A'), new Pair<Integer, Integer>(0, 1)),
@@ -361,9 +364,9 @@ public class Constants {
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0.5, 0.1, 0.1).withTolerance(0.5).withIZone(30).withIRange(-1, 2)
-                .withFeedforward(0.1265, 0.004).withPhysical(0.05, 0.375)
-                .withProfile(350, 250);
+                .withPID(0.3, 0.1, 0.1).withTolerance(0.5).withIZone(30).withIRange(-1, 2)
+                .withFeedforward(0.125, 0.004).withPhysical(0.05, 0.375)
+                .withProfile(350, 175);
 
         public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
 
@@ -372,7 +375,7 @@ public class Constants {
         public static final double MANUAL_UP_SPEED = 0.3;
         public static final double MANUAL_DOWN_SPEED = -0.2;
 
-        public static final Current STALL_CURRENT = Amps.of(58);
+        public static final Current STALL_CURRENT = Amps.of(55);
         
         public static final double GEAR_RATIO = 4;
         public static final Mass CARRIAGE_MASS = Ounces.of(50.884);
@@ -394,11 +397,14 @@ public class Constants {
         public static final RegionOfInterest REGION_OF_INTEREST = new RegionOfInterest(8, 3, 6, 6);
 
         // Setpoints
-        public static final Distance L1_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(26.5)).in(Meters));
-        public static final Distance L2_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(39.3)).in(Meters));
-        public static final Distance L3_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(56.6)).in(Meters));
-        public static final Distance L4_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(87)).in(Meters));
-        public static final Distance INTAKE_HEIGHT = Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(Rotations.of(2.25)).in(Meters));
+        public static final Angle L1_HEIGHT = Rotations.of(26.5);
+        public static final Angle L2_HEIGHT = Rotations.of(39.3);
+        public static final Angle L3_HEIGHT = Rotations.of(56.6);
+        public static final Angle L4_HEIGHT = Rotations.of(87);
+        public static final Angle INTAKE_HEIGHT = Rotations.of(3.2);
+        
+        public static final Angle INTAKE_JITTER_AMOUNT = Rotations.of(1);
+        public static final Time INTAKE_JITTER_PERIOD = Seconds.of(0.75);
     }
 
     public static class EndEffectorConstants {
@@ -421,8 +427,8 @@ public class Constants {
         public static final double INTAKE_SPEED = 0.25;
         public static final double SLOW_INTAKE_SPEED = 0.15;
         public static final double SCORE_SPEED = 0.2;
-        public static final double FAST_TROUGH_SPEED = 0.5;
-        public static final double SLOW_TROUGH_SPEED = 0.1;
+        public static final double FAST_TROUGH_SPEED = 0.6;
+        public static final double SLOW_TROUGH_SPEED = 0.25;
     }
 
     public static class ClimberConstants {
@@ -482,7 +488,29 @@ public class Constants {
         public static final Pose2d STATION_0 = APRIL_TAGS.getTagPose(12).get().toPose2d();
         public static final Pose2d STATION_1 = APRIL_TAGS.getTagPose(13).get().toPose2d();
         
+        
         public static final Distance STATION_APPROACH_DISTANCE = Inches.of(24);
         public static final Distance SIDE_STATION_OFFSET = Inches.of(29).plus(BUMPER_THICKNESS).div(2);
+        
+        // Pose at midpoint between tags 18 and 21 (which are opposite on blue reef)
+        public static final Translation2d REEF_CENTER_BLUE = APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation()
+        .plus(APRIL_TAGS.getTagPose(21).get().toPose2d().getTranslation()).div(2);
+        
+        // Pose at midpoint between tags 10 and 7 (which are opposite on red reef)
+        public static final Translation2d REEF_CENTER_RED = APRIL_TAGS.getTagPose(10).get().toPose2d().getTranslation()
+        .plus(APRIL_TAGS.getTagPose(7).get().toPose2d().getTranslation()).div(2);
+        
+        // Distance from center of robot to center of reef
+        // Found by taking distance from tag 18 to center and adding offset from reef
+        public static final Distance REEF_APOTHEM = Meters.of(
+                APRIL_TAGS.getTagPose(18).get().toPose2d().getTranslation().getDistance(REEF_CENTER_BLUE))
+                .plus(AutoConstants.DISTANCE_TO_REEF);
+                
+        // translation to move from centered on a side to scoring position for the left branch
+        public static final Translation2d CENTERED_TO_LEFT_BRANCH = new Translation2d(Meters.of(0),
+                Inches.of(12.94 / 2));
+
+        public static final Distance L1_SIDE_DISTANCE = Inches.of(18);
+        public static final double L1_RELATIVE_POS = L1_SIDE_DISTANCE.div(CENTERED_TO_LEFT_BRANCH.getMeasureY()).magnitude();
     }
 }

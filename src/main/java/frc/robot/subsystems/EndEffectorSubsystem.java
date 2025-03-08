@@ -80,12 +80,12 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
   public Command troughLeftCommand() {
     return this.startEnd(() -> setMotors(SLOW_TROUGH_SPEED, FAST_TROUGH_SPEED), this::stop)
-        .until(() -> !frontLidar.get());
+        .until(() -> frontLidar.get());
   }
 
   public Command troughRightCommand() {
     return this.startEnd(() -> setMotors(FAST_TROUGH_SPEED, SLOW_TROUGH_SPEED), this::stop)
-        .until(() -> !frontLidar.get());
+        .until(() -> frontLidar.get());
   }
 
   @Override
