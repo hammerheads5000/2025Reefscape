@@ -5,6 +5,9 @@
 package frc.robot.commands.autos;
 
 import static frc.robot.Constants.AutoConstants.*;
+import static frc.robot.Constants.LightsConstants.ALIGNMENT_COLOR;
+import static frc.robot.Constants.LightsConstants.IDLE_COLOR;
+import static frc.robot.Constants.LightsConstants.PATH_FOLLOWING_COLOR;
 
 import java.util.ArrayList;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -30,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AlignToPoseCommand;
 import frc.robot.commands.AlignToReefCommands;
+import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.Swerve;
 
 /**
@@ -73,7 +77,7 @@ public class ApproachReefCommand extends SequentialCommandGroup {
     }
 
     /** Creates a new ApproachReefCommand. */
-    public ApproachReefCommand(int side, int relativePos, Swerve swerve) {
+    public ApproachReefCommand(int side, int relativePos, Swerve swerve, LightsSubsystem lightsSubsystem) {
         AlignToPoseCommand alignToReefCommand = AlignToReefCommands.alignToReef(side, relativePos, swerve);
         
         Pose2d approachTarget = AlignToReefCommands.getReefPose(side, relativePos);
@@ -93,11 +97,11 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         // When within approach distance while following path, override PP's feedback
         // Finally, alignToReefCommand to ensure alignment
         addCommands(
-            followPathCommand,//.alongWith(
-            //         waitUntilAligningCommand(side, relativePos, swerve)
-            //         .andThen(Commands.runOnce(() -> overrideFeedback(swerve, alignToReefCommand)))
-            // ).andThen(Commands.runOnce(ApproachReefCommand::resetOverrideFeedback)),
-            alignToReefCommand
+            lightsSubsystem.setSolidColorCommand(PATH_FOLLOWING_COLOR),
+            followPathCommand,
+            lightsSubsystem.setSolidColorCommand(ALIGNMENT_COLOR),
+            alignToReefCommand,
+            lightsSubsystem.setSolidColorCommand(IDLE_COLOR)
         );
     }
 

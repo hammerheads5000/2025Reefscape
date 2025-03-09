@@ -8,6 +8,8 @@ import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.Constants.AutoConstants.AUTO_DESCRIPTOR_TOPIC;
 import static frc.robot.Constants.AutoConstants.TELEOP_AUTO_DESCRIPTOR_TOPIC;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import edu.wpi.first.epilogue.Logged;
@@ -20,6 +22,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -41,6 +44,8 @@ import frc.robot.subsystems.VisionSubsystem;
 public class RobotContainer {
     // #region Controllers
     CommandXboxController primaryController = new CommandXboxController(0);
+    CommandGenericHID buttonBoardReef = new CommandGenericHID(1);
+    CommandGenericHID buttonBoardOther = new CommandGenericHID(2);
     // #endregion
     
     PowerDistribution pdh = new PowerDistribution();
@@ -96,6 +101,32 @@ public class RobotContainer {
     Trigger elevatorSysIdBack = primaryController.b();
 
     Trigger approachAndScoreTrigger = primaryController.a();
+    
+    Map<Integer, Character> BUTTON_TO_REEF = Map.ofEntries(
+        Map.entry(4, 'A'),
+        Map.entry(6, 'B'),
+        Map.entry(8, 'C'),
+        Map.entry(10, 'D'),
+        Map.entry(11, 'E'),
+        Map.entry(9, 'F'),
+        Map.entry(7, 'G'),
+        Map.entry(5, 'H'),
+        Map.entry(3, 'I'),
+        Map.entry(1, 'J'),
+        Map.entry(0, 'K'),
+        Map.entry(2, 'L')
+    );
+
+    Trigger[] reefTriggers = new Trigger[12];
+    Trigger[] levelTriggers = new Trigger[] {
+        buttonBoardOther.button(8),
+        buttonBoardOther.button(9),
+        buttonBoardOther.button(10),
+        buttonBoardOther.button(11)
+    };
+
+    Trigger station0Trigger = buttonBoardOther.button(6);
+    Trigger station1Trigger = buttonBoardOther.button(3);
     // #endregion
 
 
@@ -143,6 +174,31 @@ public class RobotContainer {
         elevatorSysIdQuasistatic.and(elevatorSysIdBack).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kReverse));
         elevatorSysIdDynamic.and(elevatorSysIdForward).whileTrue(elevatorSubsystem.sysIdDynamic(Direction.kForward));
         elevatorSysIdDynamic.and(elevatorSysIdBack).whileTrue(elevatorSubsystem.sysIdDynamic(Direction.kReverse));
+
+        for(int i = 0; i < reefTriggers.length; i++) {
+            reefTriggers[i] = buttonBoardReef.button(i);
+
+            final char branch = BUTTON_TO_REEF.get(i);
+            reefTriggers[i].onTrue(new InstantCommand(() -> setTeleopAutoDescriptorLetter(branch)));
+        }
+
+        for (int i = 0; i < levelTriggers.length; i++) {
+            final int level = i + 1;
+            levelTriggers[i].onTrue(new InstantCommand(() -> setTeleopAutoDescriptorLevel(level)));
+        }
+
+        station0Trigger.onTrue(new InstantCommand(() -> teleopAutoDescriptorEntry.set("S0")));
+        station1Trigger.onTrue(new InstantCommand(() -> teleopAutoDescriptorEntry.set("S1")));
+    }
+
+    private void setTeleopAutoDescriptorLetter(char letter) {
+        String descriptor = teleopAutoDescriptorEntry.get();
+        teleopAutoDescriptorEntry.set(letter + descriptor.substring(1));
+    }
+
+    private void setTeleopAutoDescriptorLevel(int level) {
+        String descriptor = teleopAutoDescriptorEntry.get();
+        teleopAutoDescriptorEntry.set(descriptor.substring(0, 1) + level);
     }
 
     public Command getAutonomousCommand() {
