@@ -19,6 +19,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.ControlConstants;
 import frc.robot.subsystems.Swerve;
@@ -50,6 +51,10 @@ public class AlignToPoseCommand extends Command {
         pidControllerAngle.setSetpoint(targetPose.getRotation().getDegrees());
 
         alignedTimer = new Timer();
+
+        SmartDashboard.putData("Align X PID", pidControllerX);
+        SmartDashboard.putData("Align Y PID", pidControllerY);
+        SmartDashboard.putData("Align Angle PID", pidControllerAngle);
     }
 
     // Called when the command is initially scheduled.
@@ -66,6 +71,7 @@ public class AlignToPoseCommand extends Command {
         pidControllerAngle.setSetpoint(targetPose.getRotation().getDegrees());
 
         alignedTimer.reset();
+        SmartDashboard.putBoolean("Aligned", false);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -78,11 +84,16 @@ public class AlignToPoseCommand extends Command {
                 .of(pidControllerAngle.calculate(pose.getRotation().getDegrees()));
 
         swerve.driveFieldCentric(xVel, yVel, angleVel);
+
+        SmartDashboard.putNumber("Align X Setpoint", pidControllerX.getSetpoint().position);
+        SmartDashboard.putNumber("Align Y Setpoint", pidControllerY.getSetpoint().position);
+        SmartDashboard.putNumber("Align Angle Setpoint", pidControllerAngle.getSetpoint());
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        SmartDashboard.putBoolean("Aligned", true);
     }
 
     private Pose2d getPose() {

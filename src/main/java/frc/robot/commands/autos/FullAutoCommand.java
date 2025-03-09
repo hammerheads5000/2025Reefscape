@@ -12,6 +12,7 @@ import java.util.Set;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Robot;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -33,7 +34,8 @@ public class FullAutoCommand extends SequentialCommandGroup {
                 
         if (Robot.isReal()) {
             command = command.alongWith(elevatorSubsystem.goToIntakePosCommand(false))
-                    .andThen(endEffectorSubsystem.intakeCommand());
+                    .alongWith(new ScheduleCommand(endEffectorSubsystem.intakeCommand()));
+                    //.andThen(Commands.waitUntil(() -> !endEffectorSubsystem.getBackLidar()));
         }
         return command;
     }
@@ -69,8 +71,9 @@ public class FullAutoCommand extends SequentialCommandGroup {
         commandToAdd = new ApproachReefCommand(side, relativePos, swerve);
         if (Robot.isReal()) {
             commandToAdd = commandToAdd.alongWith(ApproachReefCommand.waitToDeployElevator(side, relativePos, swerve)
+                    .andThen(Commands.waitUntil(() -> !endEffectorSubsystem.getFrontLidar()))
                     .andThen(elevatorPosCommand))
-                    .andThen(endEffectorSubsystem.scoreCommand());
+                    .andThen(endEffectorCommand.asProxy());
         }
         return commandToAdd;
     }
@@ -81,7 +84,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
         if (token.charAt(0) == 'S') {
             int station = token.charAt(1) == '0' ? 0 : 1;
 
-            commandToAdd = Commands.defer(() -> stationCommand(station), Set.of(swerve, elevatorSubsystem, endEffectorSubsystem));
+            commandToAdd = Commands.defer(() -> stationCommand(station), Set.of(swerve, elevatorSubsystem));
         } else {
             Pair<Integer, Integer> sidePosPair;
             if (!LETTER_TO_SIDE_AND_RELATIVE.containsKey(token.charAt(0))) {
@@ -93,7 +96,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
             int side = sidePosPair.getFirst();
             int relativePos = sidePosPair.getSecond();
 
-            commandToAdd = Commands.defer(() -> reefCommand(side, relativePos, token.charAt(1)), Set.of(swerve, elevatorSubsystem, endEffectorSubsystem));
+            commandToAdd = Commands.defer(() -> reefCommand(side, relativePos, token.charAt(1)), Set.of(swerve, elevatorSubsystem));
         }
 
         return commandToAdd;

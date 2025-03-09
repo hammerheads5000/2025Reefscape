@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Millimeters;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
@@ -17,6 +18,7 @@ import static frc.robot.Constants.ElevatorConstants.*;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -47,12 +49,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     ElevatorFeedforward elevatorFeedforward;
 
     TalonFX motor1;
+    CANcoder encoder;
 
     VoltageOut motorControl;
 
     boolean enabled = true;
-
-    Angle initMotorPos;
 
     // To be implemented: LaserCan
     //LaserCan laserCan = new LaserCan(0);
@@ -79,10 +80,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         motor1 = new TalonFX(MOTOR_1_ID, Constants.CAN_FD_BUS);
         motor1.getConfigurator().apply(MOTOR_CONFIGS);
 
-        motorControl = new VoltageOut(0);
+        encoder = new CANcoder(ENCODER_ID, Constants.CAN_RIO_BUS);
+        encoder.getConfigurator().apply(ENCODER_CONFIGS);
 
-        motor1.setPosition(0);
-        initMotorPos = motor1.getPosition().getValue();
+        motorControl = new VoltageOut(0);
         
         // try {
         //     laserCan.setRangingMode(LASERCAN_RANGING_MODE);
@@ -115,12 +116,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void resetPosition() {
-        motor1.setPosition(0);
+        encoder.setPosition(0);
         resetPID(Rotations.of(0));
     }
 
-    public Angle getMotorRotations() {
-        return motor1.getPosition().getValue();
+    public Angle getPosition() {
+        return encoder.getPosition().getValue();
     }
 
     public void setBrake(boolean shouldBrake) {
@@ -128,7 +129,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Distance getHeight() {
-        return motorRotationsToHeight(getMotorRotations());
+        return motorRotationsToHeight(getPosition());
     }
 
     // public Distance getLaserCan() {
@@ -145,13 +146,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
     
     public void resetPID() {
-        controller.setGoal(getMotorRotations().in(Rotations));
-        controller.reset(getMotorRotations().in(Rotations), 0);
+        controller.setGoal(getPosition().in(Rotations));
+        controller.reset(getPosition().in(Rotations), 0);
     }
 
     public void setRotations(double rotations) {
         controller.setGoal(Math.max(rotations, 0));
-        controller.reset(getMotorRotations().in(Rotations));
+        controller.reset(getPosition().in(Rotations));
     }
 
     public void setRotations(Angle rotations) {
@@ -204,7 +205,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     private void controlUpdate() {
-        Angle measured = getMotorRotations();
+        Angle measured = getPosition();
 
         double output = controller.calculate(measured.in(Rotations));
         output += elevatorFeedforward.calculate(controller.getSetpoint().velocity);
@@ -310,11 +311,23 @@ public class ElevatorSubsystem extends SubsystemBase {
         );
     }
 
+    public double getRotations() {
+        return encoder.getPosition().getValue().in(Rotations);
+    }
+
+    public double getVelocity() {
+        return encoder.getVelocity().getValue().in(RotationsPerSecond);
+    }
+
+    public double getVolts() {
+        return motor1.getMotorVoltage().getValueAsDouble();
+    }
+
     private final SysIdRoutine sysIdRoutine = new SysIdRoutine(
             new SysIdRoutine.Config(
-                    Volts.of(1).per(Second),
-                    Volts.of(5), null,
-                    state -> SignalLogger.writeString("SysId_Elevator_State", state.toString())),
+                    Volts.of(0.75).per(Second),
+                    Volts.of(3), null,
+                    state -> SmartDashboard.putString("SysId_Elevator_State", state.toString())),
             new SysIdRoutine.Mechanism(output -> 
                 motor1.setControl(motorControl.withOutput(output.in(Volts))),
                     null, 

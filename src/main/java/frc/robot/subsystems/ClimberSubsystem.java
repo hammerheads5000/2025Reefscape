@@ -11,6 +11,7 @@ import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -22,6 +23,11 @@ public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new ClimberSubsystem. */
   public ClimberSubsystem(PowerDistribution pdh) {
     this.pdh = pdh;
+
+    SmartDashboard.putData("Climb", climbCommand());
+    SmartDashboard.putData("Unclimb", reverseCommand());
+    SmartDashboard.putData("Release Electromagnet", releaseIntakeCommand());
+    SmartDashboard.putData("Latch Electromagnet", latchIntakeCommand());
   }
 
   public void stop() {
@@ -34,6 +40,14 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public void latchIntake() {
     pdh.setSwitchableChannel(true);
+  }
+
+  public Command releaseIntakeCommand() {
+    return this.runOnce(this::releaseIntake);
+  }
+
+  public Command latchIntakeCommand() {
+    return this.runOnce(this::latchIntake);
   }
 
   public Command climbCommand() {

@@ -14,6 +14,7 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
@@ -21,6 +22,7 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
@@ -272,30 +274,30 @@ public class Constants {
 
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
-                .withPID(2, 0.1, 0.2).withTolerance(Inches.of(4).in(Meters))
+                .withPID(3, 0.1, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
                 .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(3, 0.4, 0.1).withTolerance(Inches.of(1.5).in(Meters))
+                .withPID(4, 0.4, 0.05).withTolerance(Inches.of(1.0).in(Meters), 0.1)
                 .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
-                .withPID(3, 3, 0.0).withTolerance(1.5);
+                .withPID(3.5, 1.0, 0.0).withTolerance(1.5);
 
 
         public static final Time ALIGN_TIME = Seconds.of(0.1); // amount to wait to make sure aligned
 
         // output: m/s, measure: m
-        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(4, 0.5, 0.5);
+        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(3, 0.5, 0.5);
         // output: rad/s, measure: rad
-        public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(1.5, 0, 0.5);
-        }
+        public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(2, 0, 0.5);
+    }
 
     public static class AutoConstants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
-                SwerveConstants.DEFAULT_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1)),
+                SwerveConstants.FAST_DRIVE_SPEED,
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(0.7)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
                 SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
 
@@ -304,7 +306,7 @@ public class Constants {
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
 
         public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching
-        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(45);
+        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(60);
         public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side
 
         public static final Map<Character, Pair<Integer, Integer>> LETTER_TO_SIDE_AND_RELATIVE = Map.ofEntries(
@@ -323,6 +325,7 @@ public class Constants {
         );
 
         public static final StringTopic AUTO_DESCRIPTOR_TOPIC = INST.getStringTopic("Auto Descriptor");
+        public static final StringTopic TELEOP_AUTO_DESCRIPTOR_TOPIC = INST.getStringTopic("Teleop Auto Descriptor");
     }
 
     public static class VisionConstants {
@@ -355,7 +358,8 @@ public class Constants {
 
     public static class ElevatorConstants {
         // Motors
-        public static final int MOTOR_1_ID = 12;
+        public static final int MOTOR_1_ID = 12; // fd bus
+        public static final int ENCODER_ID = 5; // rio bus
         
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Amps.of(40));
@@ -366,11 +370,15 @@ public class Constants {
                 .withCurrentLimits(CURRENT_LIMITS_CONFIGS)
                 .withMotorOutput(OUTPUT_CONFIGS);
 
+        public static final MagnetSensorConfigs ENCODER_CONFIGS = new MagnetSensorConfigs()
+                .withMagnetOffset(-0.258)
+                .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive);
+
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(0.3, 0.1, 0.1).withTolerance(0.5).withIZone(30).withIRange(-1, 2)
-                .withFeedforward(0.125, 0.004).withPhysical(0.05, 0.375)
-                .withProfile(350, 175);
+                .withPID(8, 1, 1.0).withTolerance(0.05).withIZone(30).withIRange(-1, 2)
+                .withFeedforward(3.0, 0.394).withPhysical(0.166, 0.44)
+                .withProfile(40, 10);
 
         public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
 
@@ -383,7 +391,7 @@ public class Constants {
         
         public static final double GEAR_RATIO = 4;
         public static final Mass CARRIAGE_MASS = Ounces.of(50.884);
-        public static final Distance DRUM_RADIUS = Inches.of(1.888);
+        public static final Distance DRUM_RADIUS = Inches.of(1.756);
         public static final Distance MIN_HEIGHT = Meters.zero();
         public static final Distance MAX_HEIGHT = Inches.of(72.154); // from base plate
         public static final Distance MIN_LASERCAN_DISTANCE = Inches.of(0.5);
@@ -401,13 +409,13 @@ public class Constants {
         public static final RegionOfInterest REGION_OF_INTEREST = new RegionOfInterest(8, 3, 6, 6);
 
         // Setpoints
-        public static final Angle L1_HEIGHT = Rotations.of(26.5);
-        public static final Angle L2_HEIGHT = Rotations.of(39.3);
-        public static final Angle L3_HEIGHT = Rotations.of(56.6);
-        public static final Angle L4_HEIGHT = Rotations.of(87);
-        public static final Angle INTAKE_HEIGHT = Rotations.of(3.2);
+        public static final Angle L1_HEIGHT = Rotations.of(1.325);
+        public static final Angle L2_HEIGHT = Rotations.of(1.965);
+        public static final Angle L3_HEIGHT = Rotations.of(2.83);
+        public static final Angle L4_HEIGHT = Rotations.of(4.4);
+        public static final Angle INTAKE_HEIGHT = Rotations.of(0.16);
         
-        public static final Angle INTAKE_JITTER_AMOUNT = Rotations.of(1);
+        public static final Angle INTAKE_JITTER_AMOUNT = Rotations.of(0.025);
         public static final Time INTAKE_JITTER_PERIOD = Seconds.of(0.75);
     }
 
@@ -453,17 +461,17 @@ public class Constants {
 
         public static final int PWM_PORT = 0; // TODO define
 
-        public static final int LED_COUNT_LEFT = 5; // TODO define
-        public static final int LED_COUNT_RIGHT = 5; // TODO define
+        public static final int LED_COUNT_LEFT = 15; // TODO define
+        public static final int LED_COUNT_RIGHT = 15; // TODO define
 
-        public static final int HIGH_TIME_0_NS = 500;
-        public static final int HIGH_TIME_1_NS = 1200;
-        public static final int LOW_TIME_0_NS = 2000;
-        public static final int LOW_TIME_1_NS = 1300;
+        public static final int HIGH_TIME_0_NS = 400;
+        public static final int HIGH_TIME_1_NS = 900;
+        public static final int LOW_TIME_0_NS = 900;
+        public static final int LOW_TIME_1_NS = 600;
         public static final int SYNC_TIME_US = 280;
         public static final ColorOrder COLOR_ORDER = ColorOrder.kRGB;
 
-        public static final Dimensionless BRIGHTNESS = Percent.of(50);
+        public static final Dimensionless BRIGHTNESS = Percent.of(20);
 
         public static final Color PATH_FOLLOWING_COLOR = Color.kBlue;
         public static final Color ALIGNMENT_COLOR = Color.kOrange;

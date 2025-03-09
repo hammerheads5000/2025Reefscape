@@ -13,6 +13,7 @@ public class ControlConstants {
     // PID gains
     double kP, kI, kD;
     double tolerance;
+    double velTolerance = Double.POSITIVE_INFINITY;
     double iZone = Double.POSITIVE_INFINITY;
     double iMin = Double.NEGATIVE_INFINITY;
     double iMax = Double.POSITIVE_INFINITY;
@@ -57,6 +58,13 @@ public class ControlConstants {
 
     public ControlConstants withTolerance(double tolerance) {
         this.tolerance = tolerance;
+        return this;
+    }
+
+    public ControlConstants withTolerance(double tolerance, double velTolerance) {
+        this.tolerance = tolerance;
+        this.velTolerance = velTolerance;
+
         return this;
     }
 

@@ -6,6 +6,10 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.Constants.AutoConstants.AUTO_DESCRIPTOR_TOPIC;
+import static frc.robot.Constants.AutoConstants.TELEOP_AUTO_DESCRIPTOR_TOPIC;
+
+import java.util.Set;
+
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,6 +18,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -37,9 +42,9 @@ public class RobotContainer {
     // #region Controllers
     CommandXboxController primaryController = new CommandXboxController(0);
     // #endregion
-
+    
     PowerDistribution pdh = new PowerDistribution();
-
+    
     // #region Subsystems
     Swerve swerve = new Swerve();
     VisionSubsystem visionSubsystem = new VisionSubsystem(swerve);
@@ -50,6 +55,9 @@ public class RobotContainer {
     LightsSubsystem lightsSubsystem = new LightsSubsystem();
     // #endregion
 
+    StringEntry autoDescriptorEntry = AUTO_DESCRIPTOR_TOPIC.getEntry("");
+    StringEntry teleopAutoDescriptorEntry = TELEOP_AUTO_DESCRIPTOR_TOPIC.getEntry("");
+
     // #region Commands
     TeleopSwerve teleopSwerve = new TeleopSwerve(swerve, primaryController);
 
@@ -57,12 +65,17 @@ public class RobotContainer {
 
     Command disabledLightsCommand = new DisabledLightsCommand(lightsSubsystem, visionSubsystem).ignoringDisable(true);
     AlignToPoseCommand reefAlign = AlignToReefCommands.alignToReef(0, 1, swerve);
-    // #endregion
 
+    Command approachAndScoreCommand = Commands.defer(
+            () -> new FullAutoCommand(teleopAutoDescriptorEntry.get(), swerve, elevatorSubsystem,
+                    endEffectorSubsystem, lightsSubsystem),
+            Set.of(swerve, elevatorSubsystem, endEffectorSubsystem, lightsSubsystem));
+    // #endregion
+    
     // #region Triggers
     Trigger fastSpeedTrigger = primaryController.rightTrigger();
     Trigger slowSpeedTrigger = primaryController.leftTrigger();
-
+    
     Trigger resetFieldRelative = primaryController.y();
 
     // Trigger elevatorUpTrigger = primaryController.povUp();
@@ -81,9 +94,10 @@ public class RobotContainer {
     Trigger elevatorSysIdDynamic = primaryController.back(); // on the left
     Trigger elevatorSysIdForward = primaryController.a();
     Trigger elevatorSysIdBack = primaryController.b();
+
+    Trigger approachAndScoreTrigger = primaryController.a();
     // #endregion
 
-    StringEntry autoDescriptorSubscriber = AUTO_DESCRIPTOR_TOPIC.getEntry("");
 
     public RobotContainer() {
         swerve.registerTelemetry(swerveTelemetry::telemeterize);
@@ -95,7 +109,8 @@ public class RobotContainer {
             swerve.setOperatorPerspective(alliance == Alliance.Blue ? Rotation2d.kZero : Rotation2d.k180deg);
         });
 
-        autoDescriptorSubscriber.set("");
+        autoDescriptorEntry.set("");
+        teleopAutoDescriptorEntry.set("");
 
         //elevatorSubsystem.disable();
         climberSubsystem.latchIntake();
@@ -122,6 +137,8 @@ public class RobotContainer {
         intakeTrigger.whileTrue(endEffectorSubsystem.intakeCommand());
         reverseIntakeTrigger.whileTrue(endEffectorSubsystem.scoreCommand());
 
+        approachAndScoreTrigger.whileTrue(approachAndScoreCommand);
+
         elevatorSysIdQuasistatic.and(elevatorSysIdForward).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kForward));
         elevatorSysIdQuasistatic.and(elevatorSysIdBack).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kReverse));
         elevatorSysIdDynamic.and(elevatorSysIdForward).whileTrue(elevatorSubsystem.sysIdDynamic(Direction.kForward));
@@ -129,6 +146,6 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new FullAutoCommand(autoDescriptorSubscriber.get(), swerve, elevatorSubsystem, endEffectorSubsystem, lightsSubsystem);
+        return new FullAutoCommand(autoDescriptorEntry.get(), swerve, elevatorSubsystem, endEffectorSubsystem, lightsSubsystem);
     }
 }
