@@ -22,7 +22,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.commands.AlignToReefCommands;
 
 /** Add your docs here. */
@@ -83,19 +85,23 @@ public class Pathfinding {
         return poses;
     }
 
-    public static PathPlannerPath generateReefPath(Pose2d currentPose, int side, int relativePos) {
+    public static PathPlannerPath generateReefPath(Pose2d currentPose, int side, int relativePos, ChassisSpeeds startSpeeds) {
         ArrayList<Pose2d> poses = generateApproachPoses(currentPose, side);
         Pose2d endPose = AlignToReefCommands.getReefPose(side, relativePos);
         // Transform2d shiftApproachTransform = new Transform2d(new Translation2d(APPROACH_DISTANCE.unaryMinus(), Meters.zero()), Rotation2d.kZero);
         // endPose = endPose.transformBy(shiftApproachTransform);
         
         poses.add(endPose);
-        poses.add(0, pointPoseTowards(currentPose, poses.get(0)));
+        if (DriverStation.isAutonomous()) {
+            poses.add(0, pointPoseTowards(currentPose, poses.get(0)));
+        } else {
+            poses.add(0, new Pose2d(currentPose.getTranslation(), chassisSpeedsToHeading(startSpeeds)));
+        }
 
         PathPlannerPath path = new PathPlannerPath(
                 PathPlannerPath.waypointsFromPoses(poses), 
                 CONSTRAINTS,
-                new IdealStartingState(MetersPerSecond.zero(), currentPose.getRotation()),
+                new IdealStartingState(chassisSpeedsToVelocity(startSpeeds), currentPose.getRotation()),
                 new GoalEndState(0, endPose.getRotation())
         );
 
@@ -105,33 +111,55 @@ public class Pathfinding {
         return path;
     }
 
-    public static PathPlannerPath generateStationPath(Pose2d currentPose, int station, int relativePos) {
+    public static PathPlannerPath generateReefPath(Pose2d currentPose, int side, int relativePos) {
+        return generateReefPath(currentPose, side, relativePos, new ChassisSpeeds());
+    }
+
+    private static Rotation2d chassisSpeedsToHeading(ChassisSpeeds chassisSpeeds) {
+        Translation2d translation = new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
+        return translation.getAngle();
+    }
+
+    private static LinearVelocity chassisSpeedsToVelocity(ChassisSpeeds chassisSpeeds) {
+        Translation2d translation = new Translation2d(chassisSpeeds.vxMetersPerSecond, chassisSpeeds.vyMetersPerSecond);
+        return MetersPerSecond.of(translation.getNorm());
+    }
+    
+    public static PathPlannerPath generateStationPath(Pose2d currentPose, int station, int relativePos, ChassisSpeeds startSpeeds) {
         int side = station == 1 ? 1 : 5;
         ArrayList<Pose2d> poses = generateApproachPoses(currentPose, side);
         Pose2d endPose = ApproachCoralStationCommands.getStationPose(station, relativePos);
         endPose = endPose.rotateAround(endPose.getTranslation(), Rotation2d.k180deg);
         poses.add(endPose);
-
+        
         Pose2d startPose;
-        Pose2d closestReefSide = AlignToReefCommands.getReefPose(getClosestReefSide(currentPose), 0);
-        if (closestReefSide.getTranslation().getDistance(currentPose.getTranslation()) < APPROACH_DISTANCE.in(Meters)) {
-            startPose = new Pose2d(currentPose.getTranslation(), closestReefSide.getRotation().rotateBy(Rotation2d.k180deg));
+        if (DriverStation.isAutonomous()) {
+            Pose2d closestReefSide = AlignToReefCommands.getReefPose(getClosestReefSide(currentPose), 0);
+            if (closestReefSide.getTranslation().getDistance(currentPose.getTranslation()) < APPROACH_DISTANCE.in(Meters)) {
+                startPose = new Pose2d(currentPose.getTranslation(), closestReefSide.getRotation().rotateBy(Rotation2d.k180deg));
+            } else {
+                startPose = pointPoseTowards(currentPose, poses.get(0));
+            }
         } else {
-            startPose = pointPoseTowards(currentPose, poses.get(0));
+            Rotation2d startHeading = chassisSpeedsToHeading(startSpeeds);
+            startPose = new Pose2d(currentPose.getTranslation(), startHeading);
         }
         poses.add(0, startPose);
-
+        
         PathPlannerPath path = new PathPlannerPath(
                 PathPlannerPath.waypointsFromPoses(poses), 
                 CONSTRAINTS,
-                new IdealStartingState(MetersPerSecond.zero(), currentPose.getRotation()),
+                new IdealStartingState(chassisSpeedsToVelocity(startSpeeds), currentPose.getRotation()),
                 new GoalEndState(0, endPose.getRotation().rotateBy(Rotation2d.k180deg))
         );
-
+            
         if (AutoBuilder.shouldFlip()) {
             path = path.flipPath();            
         }
         return path;
     }
 
+    public static PathPlannerPath generateStationPath(Pose2d currentPose, int station, int relativePos) {
+        return generateStationPath(currentPose, station, relativePos, new ChassisSpeeds());
+    }
 }
