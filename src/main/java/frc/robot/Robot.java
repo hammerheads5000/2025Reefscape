@@ -56,7 +56,6 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledExit() {
     m_robotContainer.elevatorSubsystem.setBrake(true);
-    m_robotContainer.elevatorSubsystem.resetPID();
     m_robotContainer.climberSubsystem.latchIntake();
     m_robotContainer.disabledLightsCommand.cancel();
 
@@ -71,7 +70,6 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    m_robotContainer.elevatorSubsystem.resetPID();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }

@@ -14,12 +14,15 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -359,21 +362,45 @@ public class Constants {
     public static class ElevatorConstants {
         // Motors
         public static final int MOTOR_1_ID = 12; // fd bus
-        public static final int ENCODER_ID = 5; // rio bus
+        public static final int ENCODER_ID = 5; // fd bus
         
+        // Motor Configs
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Amps.of(40));
+
         public static final MotorOutputConfigs OUTPUT_CONFIGS = new MotorOutputConfigs()
                 .withInverted(InvertedValue.Clockwise_Positive)
                 .withNeutralMode(NeutralModeValue.Brake);
+
+        public static final FeedbackConfigs FEEDBACK_CONFIGS = new FeedbackConfigs()
+                .withFeedbackRemoteSensorID(ENCODER_ID)
+                .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
+                .withRotorToSensorRatio(20);
+
+        public static final Slot0Configs GAINS = new Slot0Configs()
+                .withKP(8).withKI(2).withKD(1.0)
+                .withKV(3.0).withKA(0.394)
+                .withKS(0.166).withKG(0.44);
+
+        public static final MotionMagicConfigs MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
+                .withMotionMagicCruiseVelocity(40)
+                .withMotionMagicAcceleration(10)
+                .withMotionMagicExpo_kV(Volts.of(5).per(RotationsPerSecond))
+                .withMotionMagicExpo_kA(Volts.of(1.0).per(RotationsPerSecondPerSecond));
+
         public static final TalonFXConfiguration MOTOR_CONFIGS = new TalonFXConfiguration()
                 .withCurrentLimits(CURRENT_LIMITS_CONFIGS)
-                .withMotorOutput(OUTPUT_CONFIGS);
+                .withMotorOutput(OUTPUT_CONFIGS)
+                .withFeedback(FEEDBACK_CONFIGS)
+                .withSlot0(GAINS)
+                .withMotionMagic(MOTION_MAGIC_CONFIGS);
 
         public static final MagnetSensorConfigs ENCODER_CONFIGS = new MagnetSensorConfigs()
                 .withMagnetOffset(-0.258)
                 .withSensorDirection(SensorDirectionValue.CounterClockwise_Positive);
 
+
+        public static final Angle TOLERANCE = Rotations.of(0.05);
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
                 .withPID(8, 2, 1.0).withTolerance(0.05).withIZone(30).withIRange(-1, 2)

@@ -7,7 +7,6 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Kilograms;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Millimeters;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
@@ -15,22 +14,15 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.ElevatorConstants.*;
 
-import com.ctre.phoenix6.SignalLogger;
-import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import au.grapplerobotics.ConfigurationFailedException;
-import au.grapplerobotics.LaserCan;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -45,20 +37,11 @@ import frc.robot.Constants;
 
 @Logged
 public class ElevatorSubsystem extends SubsystemBase {
-    ProfiledPIDController controller;
-    ElevatorFeedforward elevatorFeedforward;
-
     TalonFX motor1;
-    CANcoder encoder;
-
-    VoltageOut motorControl;
+    
+    MotionMagicExpoVoltage motorControl;
 
     boolean enabled = true;
-
-    // To be implemented: LaserCan
-    //LaserCan laserCan = new LaserCan(0);
-
-    // MockLaserCan laserCanSim = new MockLaserCan();
 
     DCMotor elevatorGearbox = DCMotor.getKrakenX60(1);
     ElevatorSim elevatorSim = new ElevatorSim(elevatorGearbox,
@@ -73,25 +56,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     /** Creates a new ElevatorSubsystem. */
     public ElevatorSubsystem() {
-        controller = CONTROL_CONSTANTS.getProfiledPIDController();
-
-        elevatorFeedforward = CONTROL_CONSTANTS.getElevatorFeedforward();
-
         motor1 = new TalonFX(MOTOR_1_ID, Constants.CAN_FD_BUS);
         motor1.getConfigurator().apply(MOTOR_CONFIGS);
 
-        encoder = new CANcoder(ENCODER_ID, Constants.CAN_RIO_BUS);
-        encoder.getConfigurator().apply(ENCODER_CONFIGS);
-
-        motorControl = new VoltageOut(0);
+        motorControl = new MotionMagicExpoVoltage(0);
         
-        // try {
-        //     laserCan.setRangingMode(LASERCAN_RANGING_MODE);
-        //     laserCan.setRegionOfInterest(REGION_OF_INTEREST);
-        // } catch(ConfigurationFailedException e) {
-        //     System.err.println(e);
-        // }
-
         SmartDashboard.putData("Elevator Sim", mech2d);
 
         SmartDashboard.putData("Reset Elevator Position", resetPositionCommand());
@@ -102,82 +71,31 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putData("Intake", goToIntakePosCommand(true));
         SmartDashboard.putData("Intake Jitter", intakeJitterCommand());
         SmartDashboard.putData("Zero", zeroCommand());
-        SmartDashboard.putData("Elevator PID", controller);
-    }
-
-    // Enable PID/feedforward control
-    public void enable() {
-        enabled = true;
-    }
-    
-    // Disable PID/feedforward control
-    public void disable() {
-        enabled = false;
     }
 
     public void resetPosition() {
-        encoder.setPosition(0);
-        resetPID(Rotations.of(0));
+        motor1.setPosition(0);
     }
 
     public Angle getPosition() {
-        return encoder.getPosition().getValue();
+        return motor1.getPosition().getValue();
     }
 
     public void setBrake(boolean shouldBrake) {
         motor1.setNeutralMode(shouldBrake ? NeutralModeValue.Brake : NeutralModeValue.Coast);
     }
 
-    public Distance getHeight() {
-        return motorRotationsToHeight(getPosition());
-    }
-
     // public Distance getLaserCan() {
     //     return Millimeters.of(laserCan.getMeasurement().distance_mm);
     // }
 
-    public void setHeight(Distance height) {
-        setRotations(heightToMotorRotations(height));
-    }
 
-    public void resetPID(Angle rotations) {
-        controller.setGoal(rotations.in(Rotations));
-        controller.reset(rotations.in(Rotations), 0);
-    }
-    
-    public void resetPID() {
-        controller.setGoal(getPosition().in(Rotations));
-        controller.reset(getPosition().in(Rotations), 0);
+    public void setRotations(Angle rotations) {
+        motor1.setControl(motorControl.withPosition(rotations));
     }
 
     public void setRotations(double rotations) {
-        controller.setGoal(Math.max(rotations, 0));
-        controller.reset(getPosition().in(Rotations));
-    }
-
-    public void setRotations(Angle rotations) {
-        setRotations(rotations.in(Rotations));
-    }
-
-    public static Distance laserCANtoHeight(Distance measured) {
-        Distance yIntercept = MAX_HEIGHT.minus(MIN_LASERCAN_DISTANCE.times(HEIGHT_CHANGE_PER_LASERCAN_DISTANCE));
-        return measured.times(HEIGHT_CHANGE_PER_LASERCAN_DISTANCE).plus(yIntercept);
-    }
-
-    public static Angle laserCANtoRotations(Distance measured) {
-        return Rotations.of(measured.timesConversionFactor(MOTOR_ROTATIONS_PER_LASERCAN).plus(MOTOR_ROTATIONS_AT_LASERCAN_0).in(Rotations));
-    }
-    
-    public static Distance rotationsToLaserCAN(Angle measured) {
-        return Meters.of(measured.minus(MOTOR_ROTATIONS_AT_LASERCAN_0).divideRatio(MOTOR_ROTATIONS_PER_LASERCAN).in(Meters));
-    }
-
-    public static Distance motorRotationsToHeight(Angle rotations) {
-        return Meters.of(HEIGHT_PER_MOTOR_ROTATIONS.timesDivisor(rotations).in(Meters));
-    }
-    
-    public static Angle heightToMotorRotations(Distance height) {
-        return Rotations.of(height.divideRatio(HEIGHT_PER_MOTOR_ROTATIONS).in(Rotations));
+        setRotations(Rotations.of(rotations));
     }
 
     public double getOutputVolts() {
@@ -185,38 +103,27 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Angle getSetpoint() {
-        return Rotations.of(controller.getGoal().position);
+        return motorControl.getPositionMeasure();
     }
 
     public boolean atSetpoint() {
-        return controller.atGoal();
+        return motor1.getPosition().getValue().isNear(getSetpoint(), TOLERANCE);
     }
 
     public Angle getProfileSetpoint() {
-        return Rotations.of(controller.getSetpoint().position);
+        return Rotations.of(motor1.getClosedLoopReference().getValueAsDouble());
     }
 
-    public Angle getAccumulatedError() {
-        return Rotations.of(controller.getAccumulatedError());
+    public Voltage getIntegratedOutput() {
+        return Volts.of(motor1.getClosedLoopIntegratedOutput().getValueAsDouble());
     }
 
     public void stop() {
-        motor1.setVoltage(elevatorFeedforward.getKg());
-    }
-
-    private void controlUpdate() {
-        Angle measured = getPosition();
-
-        double output = controller.calculate(measured.in(Rotations));
-        output += elevatorFeedforward.calculate(controller.getSetpoint().velocity);
-        motor1.setControl(motorControl.withOutput(output));
+        motor1.setVoltage(GAINS.kG);
     }
 
     @Override
     public void periodic() {
-        if (enabled)
-            controlUpdate();
-
         ligament2d.setLength(elevatorSim.getPositionMeters());
     }
 
@@ -229,11 +136,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         elevatorSim.setInput(motor1sim.getMotorVoltage());
         elevatorSim.update(Constants.SIM_LOOP_PERIOD.in(Seconds));
         
-        double rotations = heightToMotorRotations(Meters.of(elevatorSim.getPositionMeters())).in(Rotations);
-        double angularVel = heightToMotorRotations(Meters.of(elevatorSim.getVelocityMetersPerSecond())).in(Rotations);
+        // double rotations = heightToMotorRotations(Meters.of(elevatorSim.getPositionMeters())).in(Rotations);
+        // double angularVel = heightToMotorRotations(Meters.of(elevatorSim.getVelocityMetersPerSecond())).in(Rotations);
 
-        motor1sim.setRawRotorPosition(rotations);
-        motor1sim.setRotorVelocity(angularVel);
+        // motor1sim.setRawRotorPosition(rotations);
+        // motor1sim.setRotorVelocity(angularVel);
     }
 
     public Command resetPositionCommand() {
@@ -254,28 +161,20 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public Command zeroCommand() {
         return this.run(
-            () -> {motor1.set(MANUAL_DOWN_SPEED); disable();})
+            () -> motor1.set(MANUAL_DOWN_SPEED))
             .until(() -> motor1.getTorqueCurrent().getValue().abs(Amps) > STALL_CURRENT.in(Amps))
-            .andThen(this.runOnce(() -> motor1.setVoltage(elevatorFeedforward.getKg())), 
+            .andThen(this.stopCommand(), 
                 Commands.waitSeconds(1), 
                 resetPositionCommand(),
                 Commands.waitSeconds(0.5),
-                resetPositionCommand(),
-                this.runOnce(this::enable));
-    }
-
-    public Command goToHeightCommand(boolean instant, Distance height) {
-        if (instant) {
-            return this.runOnce(() -> setHeight(height));
-        }
-        return this.startEnd(() -> setHeight(height), () -> {}).until(() -> controller.atGoal());
+                resetPositionCommand());
     }
 
     public Command goToHeightCommand(boolean instant, Angle height) {
         if (instant) {
             return this.runOnce(() -> setRotations(height));
         }
-        return this.startEnd(() -> setRotations(height), () -> {}).until(() -> controller.atGoal());
+        return this.startEnd(() -> setRotations(height), () -> {}).until(this::atSetpoint);
     }
 
     public Command goToL1Command(boolean instant) {
@@ -312,11 +211,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public double getRotations() {
-        return encoder.getPosition().getValue().in(Rotations);
+        return getPosition().in(Rotations);
     }
 
     public double getVelocity() {
-        return encoder.getVelocity().getValue().in(RotationsPerSecond);
+        return motor1.getVelocity().getValue().in(RotationsPerSecond);
     }
 
     public double getVolts() {
@@ -329,7 +228,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                     Volts.of(3), null,
                     state -> SmartDashboard.putString("SysId_Elevator_State", state.toString())),
             new SysIdRoutine.Mechanism(output -> 
-                motor1.setControl(motorControl.withOutput(output.in(Volts))),
+                motor1.setVoltage(output.in(Volts)),
                     null, 
                     this));
 
