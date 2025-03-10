@@ -31,8 +31,8 @@ public class FullAutoCommand extends SequentialCommandGroup {
     EndEffectorSubsystem endEffectorSubsystem;
     LightsSubsystem lightsSubsystem;
 
-    private Command stationCommand(int station) {
-        Command command = ApproachCoralStationCommands.pathfindCommand(station, 0, swerve, lightsSubsystem);
+    private Command getStationCommand(int station, int relativePos) {
+        Command command = ApproachCoralStationCommands.pathfindCommand(station, relativePos, swerve, lightsSubsystem);
                 
         if (Robot.isReal()) {
             command = command.alongWith(elevatorSubsystem.goToIntakePosCommand(false))
@@ -44,7 +44,11 @@ public class FullAutoCommand extends SequentialCommandGroup {
         return command;
     }
 
-    private Command reefCommand(int side, int relativePos, char level) {
+    private Command getStationCommand(int station) {
+        return getStationCommand(station, 0);
+    }
+
+    private Command getReefCommand(int side, int relativePos, char level) {
         Command commandToAdd;
 
         Command elevatorPosCommand;
@@ -89,7 +93,32 @@ public class FullAutoCommand extends SequentialCommandGroup {
         if (token.charAt(0) == 'S') {
             int station = token.charAt(1) == '0' ? 0 : 1;
 
-            commandToAdd = Commands.defer(() -> stationCommand(station), Set.of(swerve, elevatorSubsystem));
+            Command stationCommand;
+
+            if (token.length() == 3) {
+                int relativePos;
+                switch (token.charAt(2)) {
+                    case 'L':
+                        relativePos = 1;
+                        break;
+                    case 'C':
+                        relativePos = 0;
+                        break;
+                    case 'R':
+                        relativePos = -1;
+                        break;
+                    default:
+                        relativePos = 0;
+                        System.err.println("ERROR: Invalid auto station token: " + token);
+                        break;
+                }
+
+                stationCommand = getStationCommand(station, relativePos);
+            } else {
+                stationCommand = getStationCommand(station);
+            }
+
+            commandToAdd = Commands.defer(() -> stationCommand, Set.of(swerve, elevatorSubsystem));
         } else {
             Pair<Integer, Integer> sidePosPair;
             if (!LETTER_TO_SIDE_AND_RELATIVE.containsKey(token.charAt(0))) {
@@ -101,7 +130,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
             int side = sidePosPair.getFirst();
             int relativePos = sidePosPair.getSecond();
 
-            commandToAdd = Commands.defer(() -> reefCommand(side, relativePos, token.charAt(1)), Set.of(swerve, elevatorSubsystem));
+            commandToAdd = Commands.defer(() -> getReefCommand(side, relativePos, token.charAt(1)), Set.of(swerve, elevatorSubsystem));
         }
 
         return commandToAdd;
@@ -110,8 +139,8 @@ public class FullAutoCommand extends SequentialCommandGroup {
     /**
      * Create FullAutoCommand
      * 
-     * @param descriptorString S0-1 (station), A-L1-4 (branch and level), space
-     *                         separated (e.g. "E4 S0 A3 S1 K1") 
+     * @param descriptorString S0-1[L,C,R] (station and optional relative position), A-L1-4 (branch and level), space
+     *                         separated (e.g. "E4 S0C A3 S1 K1") 
      * @param swerve
      */
     public FullAutoCommand(String descriptorString, Swerve swerve, ElevatorSubsystem elevatorSubsystem, EndEffectorSubsystem endEffectorSubsystem, LightsSubsystem lightsSubsystem) {
