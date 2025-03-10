@@ -88,9 +88,12 @@ public class Pathfinding {
     public static PathPlannerPath generateReefPath(Pose2d currentPose, int side, int relativePos, ChassisSpeeds startSpeeds) {
         ArrayList<Pose2d> poses = generateApproachPoses(currentPose, side);
         Pose2d endPose = AlignToReefCommands.getReefPose(side, relativePos);
-        // Transform2d shiftApproachTransform = new Transform2d(new Translation2d(APPROACH_DISTANCE.unaryMinus(), Meters.zero()), Rotation2d.kZero);
-        // endPose = endPose.transformBy(shiftApproachTransform);
-        
+        Transform2d shiftApproachTransform = new Transform2d(new Translation2d(APPROACH_DISTANCE.unaryMinus(), Meters.zero()), Rotation2d.kZero);
+        //Pose2d approachEndPose = endPose.transformBy(shiftApproachTransform);
+        // if (poses.size() > 0) {
+        //     poses.set(poses.size()-1, pointPoseTowards(poses.get(poses.size()-1), endPose)); 
+        // }
+        //poses.add(approachEndPose);
         poses.add(endPose);
         if (DriverStation.isAutonomous()) {
             poses.add(0, pointPoseTowards(currentPose, poses.get(0)));

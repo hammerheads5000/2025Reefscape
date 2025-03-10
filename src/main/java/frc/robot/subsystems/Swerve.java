@@ -123,7 +123,7 @@ public class Swerve extends SubsystemBase {
                     this));
 
     /* The SysId routine to test */
-    private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineRotation;
+    private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineSteer;
     // #endregion
 
     public Swerve() {

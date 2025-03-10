@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.commands.FollowPathCommand;
 
 import au.grapplerobotics.CanBridge;
@@ -44,6 +45,8 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     m_robotContainer.elevatorSubsystem.setBrake(true);
     m_robotContainer.disabledLightsCommand.schedule();
+
+    SignalLogger.stop();
   }
 
   @Override
@@ -55,6 +58,8 @@ public class Robot extends TimedRobot {
     m_robotContainer.elevatorSubsystem.resetPID();
     m_robotContainer.climberSubsystem.latchIntake();
     m_robotContainer.disabledLightsCommand.cancel();
+
+    SignalLogger.start();
   }
 
   @Override

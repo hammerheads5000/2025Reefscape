@@ -6,7 +6,7 @@ package frc.robot.commands.autos;
 
 import static frc.robot.Constants.AutoConstants.*;
 import static frc.robot.Constants.LightsConstants.ALIGNMENT_COLOR;
-import static frc.robot.Constants.LightsConstants.IDLE_COLOR;
+import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 import static frc.robot.Constants.LightsConstants.PATH_FOLLOWING_COLOR;
 
 import java.util.ArrayList;
@@ -101,7 +101,7 @@ public class ApproachReefCommand extends SequentialCommandGroup {
             followPathCommand,
             lightsSubsystem.setSolidColorCommand(ALIGNMENT_COLOR),
             alignToReefCommand,
-            lightsSubsystem.setSolidColorCommand(IDLE_COLOR)
+            lightsSubsystem.setPatternCommand(IDLE_PATTERN)
         );
     }
 

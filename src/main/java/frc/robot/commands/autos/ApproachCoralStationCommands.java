@@ -7,7 +7,7 @@ package frc.robot.commands.autos;
 import static frc.robot.Constants.INST;
 import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
 import static frc.robot.Constants.FieldConstants.*;
-import static frc.robot.Constants.LightsConstants.IDLE_COLOR;
+import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 import static frc.robot.Constants.LightsConstants.PATH_FOLLOWING_COLOR;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -64,7 +64,7 @@ public class ApproachCoralStationCommands {
         return Commands.sequence(
                 lightsSubsystem.setSolidColorCommand(PATH_FOLLOWING_COLOR),
                 AutoBuilder.followPath(path),
-                lightsSubsystem.setSolidColorCommand(IDLE_COLOR)
+                lightsSubsystem.setPatternCommand(IDLE_PATTERN)
         );
     }
 }

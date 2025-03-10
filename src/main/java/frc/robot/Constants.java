@@ -105,12 +105,12 @@ public class Constants {
         private static final Distance MODULE_DISTANCE = Inches.of(23.75);
 
         private static final Slot0Configs STEER_GAINS = new Slot0Configs()
-                .withKP(56).withKI(20).withKD(9)
-                .withKS(2.38).withKV(0.29).withKA(1.23)
+                .withKP(200).withKI(5).withKD(8)
+                .withKS(0.5).withKV(2.54).withKA(0.09)
                 .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
         private static final Slot0Configs DRIVE_GAINS = new Slot0Configs()
-                .withKP(0.133).withKI(0).withKD(0)
+                .withKP(0.15).withKI(0.01).withKD(0.0)
                 .withKS(0.182).withKV(0.124);
 
         private static final ClosedLoopOutputType STEER_CLOSED_LOOP_OUTPUT = ClosedLoopOutputType.TorqueCurrentFOC;
@@ -275,17 +275,17 @@ public class Constants {
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
                 .withPID(3, 0.1, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
-                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
+                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/1);
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(4, 0.4, 0.05).withTolerance(Inches.of(1.0).in(Meters), 0.1)
-                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
+                .withPID(3, 0.4, 0.05).withTolerance(Inches.of(1.0).in(Meters), 0.1)
+                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/1);
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
-                .withPID(3.5, 1.0, 0.0).withTolerance(1.5);
+                .withPID(3.5, 2.0, 0.0).withTolerance(1.5);
 
 
-        public static final Time ALIGN_TIME = Seconds.of(0.1); // amount to wait to make sure aligned
+        public static final Time ALIGN_TIME = Seconds.of(0.3); // amount to wait to make sure aligned
 
         // output: m/s, measure: m
         public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(3, 0.5, 0.5);
@@ -297,7 +297,7 @@ public class Constants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
                 SwerveConstants.FAST_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(0.7)),
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(1)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
                 SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
 
@@ -305,7 +305,7 @@ public class Constants {
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
 
-        public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching
+        public static final Distance APPROACH_DISTANCE = Inches.of(15); // *extra* distance to reef when approaching
         public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(60);
         public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side
 
@@ -376,7 +376,7 @@ public class Constants {
 
         // Control (volts, rotations)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(8, 1, 1.0).withTolerance(0.05).withIZone(30).withIRange(-1, 2)
+                .withPID(8, 2, 1.0).withTolerance(0.05).withIZone(30).withIRange(-1, 2)
                 .withFeedforward(3.0, 0.394).withPhysical(0.166, 0.44)
                 .withProfile(40, 10);
 
@@ -410,10 +410,10 @@ public class Constants {
 
         // Setpoints
         public static final Angle L1_HEIGHT = Rotations.of(1.325);
-        public static final Angle L2_HEIGHT = Rotations.of(1.965);
+        public static final Angle L2_HEIGHT = Rotations.of(1.975);
         public static final Angle L3_HEIGHT = Rotations.of(2.83);
-        public static final Angle L4_HEIGHT = Rotations.of(4.4);
-        public static final Angle INTAKE_HEIGHT = Rotations.of(0.16);
+        public static final Angle L4_HEIGHT = Rotations.of(4.375);
+        public static final Angle INTAKE_HEIGHT = Rotations.of(0.13);
         
         public static final Angle INTAKE_JITTER_AMOUNT = Rotations.of(0.025);
         public static final Time INTAKE_JITTER_PERIOD = Seconds.of(0.75);
@@ -438,7 +438,7 @@ public class Constants {
         // Speed (duty cycle)
         public static final double INTAKE_SPEED = 0.25;
         public static final double SLOW_INTAKE_SPEED = 0.15;
-        public static final double SCORE_SPEED = 0.2;
+        public static final double SCORE_SPEED = 0.15;
         public static final double FAST_TROUGH_SPEED = 0.6;
         public static final double SLOW_TROUGH_SPEED = 0.25;
     }
@@ -471,19 +471,19 @@ public class Constants {
         public static final int SYNC_TIME_US = 280;
         public static final ColorOrder COLOR_ORDER = ColorOrder.kRGB;
 
-        public static final Dimensionless BRIGHTNESS = Percent.of(20);
+        public static final Dimensionless BRIGHTNESS = Percent.of(35);
+        
+        public static final LEDPattern RAINBOW = LEDPattern.rainbow(255, 128)
+                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.15), LED_SPACING);
 
         public static final Color PATH_FOLLOWING_COLOR = Color.kBlue;
         public static final Color ALIGNMENT_COLOR = Color.kOrange;
-        public static final Color IDLE_COLOR = Color.kBlack;
         public static final Color INTAKE_COLOR = Color.kPurple;
+        public static final LEDPattern IDLE_PATTERN = RAINBOW;
 
         public static final Color HAS_TARGET_COLOR = Color.kGreen;
         public static final Color NO_VISION_COLOR = Color.kYellow;
         public static final Color LOW_BATTERY_COLOR = Color.kRed;
-
-        public static final LEDPattern RAINBOW = LEDPattern.rainbow(255, 128)
-                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.15), LED_SPACING);
 
         public static final Distance MAX_VISION_DISTANCE = Meters.of(1);
         public static final Voltage LOW_BATTERY_VOLTAGE = Volts.of(12.4);

@@ -6,7 +6,7 @@ package frc.robot.commands.autos;
 
 import static frc.robot.Constants.AutoConstants.*;
 import static frc.robot.Constants.FieldConstants.L1_RELATIVE_POS;
-import static frc.robot.Constants.LightsConstants.IDLE_COLOR;
+import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 import static frc.robot.Constants.LightsConstants.INTAKE_COLOR;
 
 import java.util.Set;
@@ -39,7 +39,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
                     .alongWith(new ScheduleCommand(endEffectorSubsystem.intakeCommand()))
                     .andThen(lightsSubsystem.setSolidColorCommand(INTAKE_COLOR))
                     .andThen(Commands.waitUntil(() -> !endEffectorSubsystem.getBackLidar()))
-                    .andThen(lightsSubsystem.setSolidColorCommand(IDLE_COLOR));
+                    .andThen(lightsSubsystem.setPatternCommand(IDLE_PATTERN));
         }
         return command;
     }
@@ -77,7 +77,8 @@ public class FullAutoCommand extends SequentialCommandGroup {
             commandToAdd = commandToAdd.alongWith(ApproachReefCommand.waitToDeployElevator(side, relativePos, swerve)
                     .andThen(Commands.waitUntil(() -> !endEffectorSubsystem.getFrontLidar()))
                     .andThen(elevatorPosCommand))
-                    .andThen(endEffectorCommand.asProxy());
+                    .andThen(endEffectorCommand.asProxy())
+                    .andThen(elevatorSubsystem.goToIntakePosCommand(true));
         }
         return commandToAdd;
     }

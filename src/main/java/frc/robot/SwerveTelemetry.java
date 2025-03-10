@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 public class SwerveTelemetry {
     
     public SwerveTelemetry() {
-        SignalLogger.start();
     }
 
     /* What to publish over networktables for telemetry */
