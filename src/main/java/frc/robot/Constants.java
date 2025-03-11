@@ -5,6 +5,7 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
+import static frc.robot.Constants.ElevatorConstants.GEAR_RATIO;
 import static frc.robot.Constants.FieldConstants.L1_RELATIVE_POS;
 
 import java.util.Map;
@@ -285,7 +286,7 @@ public class Constants {
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
-                .withPID(3.5, 2.0, 0.0).withTolerance(1.5);
+                .withPID(6, 2.0, 0.0).withTolerance(1.5);
 
 
         public static final Time ALIGN_TIME = Seconds.of(0.3); // amount to wait to make sure aligned
@@ -366,6 +367,8 @@ public class Constants {
         public static final int ENCODER_ID = 5; // fd bus
         
         // Motor Configs
+        public static final double GEAR_RATIO = 16;
+
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Amps.of(40));
 
@@ -376,18 +379,16 @@ public class Constants {
         public static final FeedbackConfigs FEEDBACK_CONFIGS = new FeedbackConfigs()
                 .withFeedbackRemoteSensorID(ENCODER_ID)
                 .withFeedbackSensorSource(FeedbackSensorSourceValue.RemoteCANcoder)
-                .withRotorToSensorRatio(20);
+                .withRotorToSensorRatio(GEAR_RATIO);
 
         public static final Slot0Configs GAINS = new Slot0Configs()
-                .withKP(8).withKI(2).withKD(1.0)
-                .withKV(3.0).withKA(0.394)
-                .withKS(0.166).withKG(0.44);
+                .withKP(15).withKI(13).withKD(0.75)
+                .withKV(2.0).withKA(0.0)
+                .withKS(0.18).withKG(0.37);
 
         public static final MotionMagicConfigs MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
-                .withMotionMagicCruiseVelocity(40)
-                .withMotionMagicAcceleration(10)
-                .withMotionMagicExpo_kV(Volts.of(5).per(RotationsPerSecond))
-                .withMotionMagicExpo_kA(Volts.of(1.0).per(RotationsPerSecondPerSecond));
+                .withMotionMagicExpo_kV(Volts.of(0.75).per(RotationsPerSecond))
+                .withMotionMagicExpo_kA(Volts.of(0.83).per(RotationsPerSecondPerSecond));
 
         public static final TalonFXConfiguration MOTOR_CONFIGS = new TalonFXConfiguration()
                 .withCurrentLimits(CURRENT_LIMITS_CONFIGS)
@@ -402,7 +403,8 @@ public class Constants {
 
 
         public static final Angle TOLERANCE = Rotations.of(0.05);
-        // Control (volts, rotations)
+
+        // Control (volts, rotations) (FOR 20:1!!!)
         public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
                 .withPID(8, 2, 1.0).withTolerance(0.05).withIZone(30).withIRange(-1, 2)
                 .withFeedforward(3.0, 0.394).withPhysical(0.166, 0.44)
@@ -417,7 +419,6 @@ public class Constants {
 
         public static final Current STALL_CURRENT = Amps.of(55);
         
-        public static final double GEAR_RATIO = 4;
         public static final Mass CARRIAGE_MASS = Ounces.of(50.884);
         public static final Distance DRUM_RADIUS = Inches.of(1.756);
         public static final Distance MIN_HEIGHT = Meters.zero();
@@ -481,7 +482,14 @@ public class Constants {
                 .withNeutralMode(NeutralModeValue.Brake);
 
         public static final Voltage CLIMB_SPEED = Volts.of(10);
+        public static final Voltage BREAK_SPEED = Volts.of(6);
         public static final Voltage RELEASE_SPEED = Volts.of(-6);
+
+        public static final double GEAR_RATIO = (46.0 / 26) * (54.0 / 20) * 100;
+        public static final Angle BREAK_ANGLE = Degrees.of(260);
+        public static final Angle ALIGN_ANGLE = Degrees.of(115);
+
+        public static final Current STALL_CURRENT = Amps.of(50);
     }
 
     public static class LightsConstants {

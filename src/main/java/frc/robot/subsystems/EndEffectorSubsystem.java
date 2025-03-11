@@ -27,8 +27,8 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
   /** Creates a new EndEffectorSubsystem. */
   public EndEffectorSubsystem() {
-    motorLeft = new TalonFX(MOTOR_LEFT_ID, Constants.CAN_RIO_BUS);
-    motorRight = new TalonFX(MOTOR_RIGHT_ID, Constants.CAN_RIO_BUS);
+    motorLeft = new TalonFX(MOTOR_LEFT_ID, Constants.CAN_FD_BUS);
+    motorRight = new TalonFX(MOTOR_RIGHT_ID, Constants.CAN_FD_BUS);
 
     motorLeft.getConfigurator().apply(MOTOR_LEFT_CONFIGS);
     motorRight.getConfigurator().apply(MOTOR_RIGHT_CONFIGS);

@@ -59,7 +59,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         motor1 = new TalonFX(MOTOR_1_ID, Constants.CAN_FD_BUS);
         motor1.getConfigurator().apply(MOTOR_CONFIGS);
 
-        motorControl = new MotionMagicExpoVoltage(0);
+        motorControl = new MotionMagicExpoVoltage(0).withEnableFOC(false);
         
         SmartDashboard.putData("Elevator Sim", mech2d);
 
@@ -96,6 +96,10 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     public void setRotations(double rotations) {
         setRotations(Rotations.of(rotations));
+    }
+
+    public void resetAtPosition() {
+        setRotations(getPosition());
     }
 
     public double getOutputVolts() {
@@ -163,11 +167,12 @@ public class ElevatorSubsystem extends SubsystemBase {
         return this.run(
             () -> motor1.set(MANUAL_DOWN_SPEED))
             .until(() -> motor1.getTorqueCurrent().getValue().abs(Amps) > STALL_CURRENT.in(Amps))
-            .andThen(this.stopCommand(), 
+            .andThen(this.runOnce(motor1::disable), // neutral out
                 Commands.waitSeconds(1), 
                 resetPositionCommand(),
                 Commands.waitSeconds(0.5),
-                resetPositionCommand());
+                resetPositionCommand(),
+                this.runOnce(this::resetAtPosition));
     }
 
     public Command goToHeightCommand(boolean instant, Angle height) {
