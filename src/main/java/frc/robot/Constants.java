@@ -328,7 +328,8 @@ public class Constants {
         );
 
         public static final StringTopic AUTO_DESCRIPTOR_TOPIC = INST.getStringTopic("Auto Descriptor");
-        public static final StringTopic TELEOP_AUTO_DESCRIPTOR_TOPIC = INST.getStringTopic("Teleop Auto Descriptor");
+        public static final StringTopic REEF_TELEOP_AUTO_TOPIC = INST.getStringTopic("Reef Descriptor");
+        public static final StringTopic STATION_TELEOP_AUTO_TOPIC = INST.getStringTopic("Station Descriptor");
     }
 
     public static class VisionConstants {
