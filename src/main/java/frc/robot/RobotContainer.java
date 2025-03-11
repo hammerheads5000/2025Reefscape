@@ -149,7 +149,7 @@ public class RobotContainer {
 
         autoDescriptorEntry.set("");
         reefTeleopAutoEntry.set("A4");
-        reefTeleopAutoEntry.set("S0");
+        stationTeleopAutoEntry.set("S0");
 
         //elevatorSubsystem.disable();
         climberSubsystem.latchIntake();
