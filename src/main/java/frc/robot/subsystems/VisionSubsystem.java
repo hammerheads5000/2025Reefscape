@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.Constants.INST;
+import static frc.robot.Constants.FieldConstants.APRIL_TAGS;
 import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_0M;
 import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_5M;
 import static frc.robot.Constants.VisionConstants.*;
@@ -140,6 +141,13 @@ public class VisionSubsystem extends SubsystemBase {
 
     // Check if estimated pose ambiguity exceeds MAX_AMBIGUITY
     private boolean isResultAmbiguous(EstimatedRobotPose estimatedRobotPose) {
+        Pose2d pose = estimatedRobotPose.estimatedPose.toPose2d();
+        
+        if (pose.getX() < 0 || pose.getX() > APRIL_TAGS.getFieldLength()
+                || pose.getY() < 0 || pose.getY() > APRIL_TAGS.getFieldWidth()) {
+            return true;
+        }
+
         for (PhotonTrackedTarget target : estimatedRobotPose.targetsUsed) {
             if (target.getPoseAmbiguity() > MAX_AMBIGUITY) {
                 return true;
