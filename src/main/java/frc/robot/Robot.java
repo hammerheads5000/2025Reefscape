@@ -32,6 +32,7 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
     Epilogue.bind(this);
+    SignalLogger.start();
     
     FollowPathCommand.warmupCommand().schedule();
   }
@@ -46,8 +47,6 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     m_robotContainer.elevatorSubsystem.setBrake(true);
     m_robotContainer.disabledLightsCommand.schedule();
-
-    SignalLogger.stop();
   }
 
   @Override
@@ -59,8 +58,6 @@ public class Robot extends TimedRobot {
     m_robotContainer.elevatorSubsystem.setRotations(m_robotContainer.elevatorSubsystem.getRotations());
     m_robotContainer.climberSubsystem.latchIntake();
     m_robotContainer.disabledLightsCommand.cancel();
-
-    SignalLogger.start();
   }
 
   @Override

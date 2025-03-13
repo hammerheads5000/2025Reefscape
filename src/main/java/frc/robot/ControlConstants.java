@@ -31,6 +31,23 @@ public class ControlConstants {
     public ControlConstants() {
     }
 
+    public ControlConstants(ControlConstants constants) {
+        this.kP = constants.kP;
+        this.kI = constants.kI;
+        this.kD = constants.kD;
+        this.tolerance = constants.tolerance;
+        this.velTolerance = constants.velTolerance;
+        this.iZone = constants.iZone;
+        this.iMax = constants.iMax;
+        this.iMin = constants.iMin;
+        this.kV = constants.kV;
+        this.kA = constants.kA;
+        this.kS = constants.kS;
+        this.kG = constants.kG;
+        this.maxVel = constants.maxVel;
+        this.maxAcc = constants.maxAcc;
+    }
+
     public ControlConstants withPID(double kP, double kI, double kD) {
         this.kP = kP;
         this.kI = kI;

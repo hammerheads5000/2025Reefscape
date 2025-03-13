@@ -278,15 +278,24 @@ public class Constants {
 
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
-                .withPID(3, 0.1, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
+                .withPID(5, 0.3, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
                 .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/1);
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(3, 0.4, 0.05).withTolerance(Inches.of(1.0).in(Meters), 0.1)
+                .withPID(5, 0.4, 0.05).withTolerance(Inches.of(1.0).in(Meters), 0.1)
                 .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/1);
 
+        public static ControlConstants ALGAE_PID_X = new ControlConstants(SCORING_PID_X)
+                .withTolerance(Inches.of(2).in(Meters));
+        public static ControlConstants ALGAE_PID_Y = new ControlConstants(SCORING_PID_Y)
+                .withTolerance(Inches.of(4).in(Meters));
+        
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
                 .withPID(6, 2.0, 0.0).withTolerance(1.5);
+        
+        public static ControlConstants ALGAE_PID_ANGLE = new ControlConstants(SCORING_PID_ANGLE)
+                .withTolerance(5);
+
 
 
         public static final Time ALIGN_TIME = Seconds.of(0.3); // amount to wait to make sure aligned
@@ -310,6 +319,7 @@ public class Constants {
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
 
         public static final Distance APPROACH_DISTANCE = Inches.of(15); // *extra* distance to reef when approaching
+        public static final Distance PULL_DISTANCE = Inches.of(15);
         public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(60);
         public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side
 
@@ -364,13 +374,16 @@ public class Constants {
     public static class ElevatorConstants {
         // Motors
         public static final int MOTOR_1_ID = 12; // fd bus
+        public static final int MOTOR_2_ID = 13; // fd bus
         public static final int ENCODER_ID = 5; // fd bus
         
         // Motor Configs
         public static final double GEAR_RATIO = 16;
 
+        public static final boolean OPPOSE_FOLLOWER = true;
+
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
-                .withStatorCurrentLimit(Amps.of(40));
+                .withStatorCurrentLimit(Amps.of(70));
 
         public static final MotorOutputConfigs OUTPUT_CONFIGS = new MotorOutputConfigs()
                 .withInverted(InvertedValue.Clockwise_Positive)
@@ -382,13 +395,13 @@ public class Constants {
                 .withRotorToSensorRatio(GEAR_RATIO);
 
         public static final Slot0Configs GAINS = new Slot0Configs()
-                .withKP(15).withKI(13).withKD(0.75)
-                .withKV(2.0).withKA(0.0)
-                .withKS(0.18).withKG(0.37);
+                .withKP(20).withKI(15).withKD(1)
+                .withKV(0.74).withKA(0.0)
+                .withKS(0.09).withKG(0.48);
 
         public static final MotionMagicConfigs MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
-                .withMotionMagicExpo_kV(Volts.of(0.75).per(RotationsPerSecond))
-                .withMotionMagicExpo_kA(Volts.of(0.83).per(RotationsPerSecondPerSecond));
+                .withMotionMagicExpo_kV(Volts.of(0.6).per(RotationsPerSecond))
+                .withMotionMagicExpo_kA(Volts.of(0.75).per(RotationsPerSecondPerSecond));
 
         public static final TalonFXConfiguration MOTOR_CONFIGS = new TalonFXConfiguration()
                 .withCurrentLimits(CURRENT_LIMITS_CONFIGS)
@@ -403,12 +416,6 @@ public class Constants {
 
 
         public static final Angle TOLERANCE = Rotations.of(0.05);
-
-        // Control (volts, rotations) (FOR 20:1!!!)
-        public static final ControlConstants CONTROL_CONSTANTS = new ControlConstants()
-                .withPID(8, 2, 1.0).withTolerance(0.05).withIZone(30).withIRange(-1, 2)
-                .withFeedforward(3.0, 0.394).withPhysical(0.166, 0.44)
-                .withProfile(40, 10);
 
         public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
 
@@ -441,7 +448,7 @@ public class Constants {
         public static final Angle L1_HEIGHT = Rotations.of(1.325);
         public static final Angle L2_HEIGHT = Rotations.of(1.975);
         public static final Angle L3_HEIGHT = Rotations.of(2.83);
-        public static final Angle L4_HEIGHT = Rotations.of(4.375);
+        public static final Angle L4_HEIGHT = Rotations.of(4.3675);
         public static final Angle INTAKE_HEIGHT = Rotations.of(0.13);
         
         public static final Angle INTAKE_JITTER_AMOUNT = Rotations.of(0.025);
@@ -493,19 +500,19 @@ public class Constants {
     }
 
     public static class LightsConstants {
-        public static final Distance LED_SPACING = Meters.of(1).div(20);
+        public static final Distance LED_SPACING = Meters.of(1).div(144);
 
         public static final int PWM_PORT = 0; // TODO define
 
-        public static final int LED_COUNT_LEFT = 15; // TODO define
-        public static final int LED_COUNT_RIGHT = 15; // TODO define
+        public static final int LED_COUNT_LEFT = 250; // TODO define
+        public static final int LED_COUNT_RIGHT = 250; // TODO define
 
         public static final int HIGH_TIME_0_NS = 400;
         public static final int HIGH_TIME_1_NS = 900;
         public static final int LOW_TIME_0_NS = 900;
         public static final int LOW_TIME_1_NS = 600;
         public static final int SYNC_TIME_US = 280;
-        public static final ColorOrder COLOR_ORDER = ColorOrder.kRGB;
+        public static final ColorOrder COLOR_ORDER = ColorOrder.kGRB;
 
         public static final Dimensionless BRIGHTNESS = Percent.of(35);
         

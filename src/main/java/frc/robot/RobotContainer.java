@@ -34,7 +34,7 @@ import frc.robot.commands.DisabledLightsCommand;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.autos.ApproachCoralStationCommands;
 import frc.robot.commands.autos.FullAutoCommand;
-import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.commands.autos.RemoveAlgaeCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.EndEffectorSubsystem;
 import frc.robot.subsystems.LightsSubsystem;
@@ -48,27 +48,27 @@ public class RobotContainer {
     CommandGenericHID buttonBoardReef = new CommandGenericHID(1);
     CommandGenericHID buttonBoardOther = new CommandGenericHID(2);
     // #endregion
-    
+
     PowerDistribution pdh = new PowerDistribution();
-    
+
     StringEntry reefTeleopAutoEntry = REEF_TELEOP_AUTO_TOPIC.getEntry("A4");
     StringEntry stationTeleopAutoEntry = STATION_TELEOP_AUTO_TOPIC.getEntry("S0");
     StringEntry autoDescriptorEntry = AUTO_DESCRIPTOR_TOPIC.getEntry("");
-    
+
     // #region Subsystems
     Swerve swerve = new Swerve();
     VisionSubsystem visionSubsystem = new VisionSubsystem(swerve);
     ElevatorSubsystem elevatorSubsystem = new ElevatorSubsystem();
     SwerveTelemetry swerveTelemetry = new SwerveTelemetry();
     EndEffectorSubsystem endEffectorSubsystem = new EndEffectorSubsystem();
-    ClimberSubsystem climberSubsystem = new ClimberSubsystem(pdh);
     LightsSubsystem lightsSubsystem = new LightsSubsystem();
     // #endregion
 
     // #region Commands
     TeleopSwerve teleopSwerve = new TeleopSwerve(swerve, primaryController);
 
-    AlignToPoseCommand moveToZero = new AlignToPoseCommand(Pose2d.kZero, SwerveConstants.SCORING_PID_X, SwerveConstants.SCORING_PID_Y, SwerveConstants.SCORING_PID_ANGLE, swerve);
+    AlignToPoseCommand moveToZero = new AlignToPoseCommand(Pose2d.kZero, SwerveConstants.SCORING_PID_X,
+            SwerveConstants.SCORING_PID_Y, SwerveConstants.SCORING_PID_ANGLE, swerve);
 
     Command disabledLightsCommand = new DisabledLightsCommand(lightsSubsystem, visionSubsystem).ignoringDisable(true);
     AlignToPoseCommand reefAlign = AlignToReefCommands.alignToReef(0, 1, swerve);
@@ -79,23 +79,23 @@ public class RobotContainer {
             Set.of(swerve, elevatorSubsystem, lightsSubsystem));
 
     Command stationCommand = Commands.defer(
-        () -> new FullAutoCommand(stationTeleopAutoEntry.get(), swerve, elevatorSubsystem,
-                endEffectorSubsystem, lightsSubsystem),
-        Set.of(swerve, elevatorSubsystem, lightsSubsystem));
+            () -> new FullAutoCommand(stationTeleopAutoEntry.get(), swerve, elevatorSubsystem,
+                    endEffectorSubsystem, lightsSubsystem),
+            Set.of(swerve, elevatorSubsystem, lightsSubsystem));
+
+    Command algaeCommand = Commands.defer(
+            () -> new RemoveAlgaeCommand(swerve, elevatorSubsystem),
+            Set.of(swerve, elevatorSubsystem));
     // #endregion
-    
+
     // #region Triggers
     Trigger fastSpeedTrigger = primaryController.rightTrigger();
     Trigger slowSpeedTrigger = primaryController.leftTrigger();
-    
-    Trigger resetFieldRelative = primaryController.y();
 
     // Trigger elevatorUpTrigger = primaryController.povUp();
     // Trigger elevatorDownTrigger = primaryController.povDown();
     // Trigger elevatorIntakeTrigger = primaryController.povLeft();
     // Trigger elevatorL2Trigger = primaryController.povRight();
-    Trigger climbTrigger = primaryController.povUp();
-    Trigger reverseClimbTrigger = primaryController.povDown();
 
     Trigger moveToZeroTrigger = primaryController.x();
 
@@ -109,32 +109,39 @@ public class RobotContainer {
 
     Trigger reefTrigger = primaryController.a().and(sysIdQuasistatic.or(sysIdDynamic).negate());
     Trigger stationTrigger = primaryController.b().and(sysIdQuasistatic.or(sysIdDynamic).negate());
-    
+    Trigger algaeTrigger = primaryController.y();
+
     Map<Integer, Character> BUTTON_TO_REEF = Map.ofEntries(
-        Map.entry(5, 'A'),
-        Map.entry(7, 'B'),
-        Map.entry(9, 'C'),
-        Map.entry(11, 'D'),
-        Map.entry(12, 'E'),
-        Map.entry(10, 'F'),
-        Map.entry(8, 'G'),
-        Map.entry(6, 'H'),
-        Map.entry(4, 'I'),
-        Map.entry(2, 'J'),
-        Map.entry(1, 'K'),
-        Map.entry(3, 'L')
-    );
+            Map.entry(5, 'A'),
+            Map.entry(7, 'B'),
+            Map.entry(9, 'C'),
+            Map.entry(11, 'D'),
+            Map.entry(12, 'E'),
+            Map.entry(10, 'F'),
+            Map.entry(8, 'G'),
+            Map.entry(6, 'H'),
+            Map.entry(4, 'I'),
+            Map.entry(2, 'J'),
+            Map.entry(1, 'K'),
+            Map.entry(3, 'L'));
+
+    Map<Integer, String> BUTTON_TO_STATION = Map.ofEntries(
+            Map.entry(3, "S1L"),
+            Map.entry(4, "S1C"),
+            Map.entry(5, "S1R"),
+            Map.entry(6, "S0L"),
+            Map.entry(7, "S0C"),
+            Map.entry(8, "S0R"));
 
     Trigger[] reefTriggers = new Trigger[12];
     Trigger[] levelTriggers = new Trigger[] {
-        buttonBoardOther.button(9),
-        buttonBoardOther.button(10),
-        buttonBoardOther.button(11),
-        buttonBoardOther.button(12)
+            buttonBoardOther.button(9),
+            buttonBoardOther.button(10),
+            buttonBoardOther.button(11),
+            buttonBoardOther.button(12)
     };
 
-    Trigger station0Trigger = buttonBoardOther.button(7);
-    Trigger station1Trigger = buttonBoardOther.button(4);
+    Trigger[] stationTriggers = new Trigger[6];
     // #endregion
 
     public RobotContainer() {
@@ -151,8 +158,7 @@ public class RobotContainer {
         reefTeleopAutoEntry.set("A4");
         stationTeleopAutoEntry.set("S0");
 
-        //elevatorSubsystem.disable();
-        climberSubsystem.latchIntake();
+        // elevatorSubsystem.disable();
         configureBindings();
     }
 
@@ -160,16 +166,14 @@ public class RobotContainer {
         fastSpeedTrigger.whileTrue(teleopSwerve.fastSpeedCommand());
         slowSpeedTrigger.whileTrue(teleopSwerve.slowSpeedCommand());
 
-        resetFieldRelative.onTrue(new InstantCommand(swerve::resetOdometry));
-
-        // elevatorUpTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations().plus(Rotations.of(3)))));
-        // elevatorDownTrigger.whileTrue(new InstantCommand(() -> elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations().minus(Rotations.of(3)))));
+        // elevatorUpTrigger.whileTrue(new InstantCommand(() ->
+        // elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations().plus(Rotations.of(3)))));
+        // elevatorDownTrigger.whileTrue(new InstantCommand(() ->
+        // elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations().minus(Rotations.of(3)))));
         // elevatorUpTrigger.whileTrue(elevatorSubsystem.moveUpManualCommand());
         // elevatorDownTrigger.whileTrue(elevatorSubsystem.moveDownManualCommand());
         // elevatorIntakeTrigger.whileTrue(elevatorSubsystem.goToIntakePosCommand(false));
         // elevatorL2Trigger.whileTrue(elevatorSubsystem.goToL2Command(false));
-        climbTrigger.whileTrue(climberSubsystem.climbCommand());
-        reverseClimbTrigger.whileTrue(climberSubsystem.reverseCommand());
 
         moveToZeroTrigger.whileTrue(reefAlign);
 
@@ -177,26 +181,34 @@ public class RobotContainer {
         reverseIntakeTrigger.whileTrue(endEffectorSubsystem.scoreCommand());
 
         reefTrigger.whileTrue(reefCommand);
+        stationTrigger.whileTrue(stationCommand);
+        algaeTrigger.whileTrue(algaeCommand);
 
-        sysIdQuasistatic.and(sysIdForward).whileTrue(swerve.sysIdQuasistatic(Direction.kForward));
-        sysIdQuasistatic.and(sysIdBack).whileTrue(swerve.sysIdQuasistatic(Direction.kReverse));
-        sysIdDynamic.and(sysIdForward).whileTrue(swerve.sysIdDynamic(Direction.kForward));
-        sysIdDynamic.and(sysIdBack).whileTrue(swerve.sysIdDynamic(Direction.kReverse));
+        sysIdQuasistatic.and(sysIdForward).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kForward));
+        sysIdQuasistatic.and(sysIdBack).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kReverse));
+        sysIdDynamic.and(sysIdForward).whileTrue(elevatorSubsystem.sysIdDynamic(Direction.kForward));
+        sysIdDynamic.and(sysIdBack).whileTrue(elevatorSubsystem.sysIdDynamic(Direction.kReverse));
 
-        for(int i = 0; i < reefTriggers.length; i++) {
-            reefTriggers[i] = buttonBoardReef.button(i+1);
+        for (int i = 0; i < reefTriggers.length; i++) {
+            reefTriggers[i] = buttonBoardReef.button(i + 1);
 
-            final char branch = BUTTON_TO_REEF.get(i+1);
-            reefTriggers[i].onTrue(new InstantCommand(() -> setTeleopAutoDescriptorLetter(branch)));
+            final char branch = BUTTON_TO_REEF.get(i + 1);
+            reefTriggers[i]
+                    .onTrue(new InstantCommand(() -> setTeleopAutoDescriptorLetter(branch)).ignoringDisable(true));
         }
 
         for (int i = 0; i < levelTriggers.length; i++) {
             final int level = i + 1;
-            levelTriggers[i].onTrue(new InstantCommand(() -> setTeleopAutoDescriptorLevel(level)));
+            levelTriggers[i]
+                    .onTrue(new InstantCommand(() -> setTeleopAutoDescriptorLevel(level)).ignoringDisable(true));
         }
 
-        station0Trigger.onTrue(new InstantCommand(() -> setTeleopAutoDescriptorStation(0)));
-        station1Trigger.onTrue(new InstantCommand(() -> setTeleopAutoDescriptorStation(1)));
+        for (int i = 0; i < stationTriggers.length; i++) {
+            final int button = i + 3;
+            stationTriggers[i] = buttonBoardOther.button(button);
+            stationTriggers[i]
+                    .onTrue(new InstantCommand(() -> setTeleopAutoDescriptorStation(BUTTON_TO_STATION.get(button))).ignoringDisable(true));
+        }
     }
 
     private void setTeleopAutoDescriptorLetter(char letter) {
@@ -212,8 +224,13 @@ public class RobotContainer {
     private void setTeleopAutoDescriptorStation(int station) {
         stationTeleopAutoEntry.set("S" + station);
     }
+    
+    private void setTeleopAutoDescriptorStation(String station) {
+        stationTeleopAutoEntry.set(station);
+    }
 
     public Command getAutonomousCommand() {
-        return new FullAutoCommand(autoDescriptorEntry.get(), swerve, elevatorSubsystem, endEffectorSubsystem, lightsSubsystem);
+        return new FullAutoCommand(autoDescriptorEntry.get(), swerve, elevatorSubsystem, endEffectorSubsystem,
+                lightsSubsystem);
     }
 }

@@ -58,26 +58,27 @@ public class DisabledLightsCommand extends Command {
         //     return;
         // }
 
-        if (!visionSubsystem.camerasConnected()) {
-            lightsSubsystem.setSolidColor(NO_VISION_COLOR);
-            lightsSubsystem.setShouldFade(false);
-            return;
-        }
+        // if (!visionSubsystem.camerasConnected()) {
+        //     lightsSubsystem.setSolidColor(NO_VISION_COLOR);
+        //     lightsSubsystem.setShouldFade(false);
+        //     return;
+        // }
 
-        if (visionSubsystem.hasTargetFL && !previousHasTargetFL) {
-            lightsSubsystem.resetFadeLeft();
-        }
-        if (visionSubsystem.hasTargetFR && !previousHasTargetFR) {
-            lightsSubsystem.resetFadeRight();
-        }
+        // if (visionSubsystem.hasTargetFL && !previousHasTargetFL) {
+        //     lightsSubsystem.resetFadeLeft();
+        // }
+        // if (visionSubsystem.hasTargetFR && !previousHasTargetFR) {
+        //     lightsSubsystem.resetFadeRight();
+        // }
 
-        previousHasTargetFL = visionSubsystem.hasTargetFL;
-        previousHasTargetFR = visionSubsystem.hasTargetFR;
+        // previousHasTargetFL = visionSubsystem.hasTargetFL;
+        // previousHasTargetFR = visionSubsystem.hasTargetFR;
         
-        lightsSubsystem.setShouldFade(true);
+        // lightsSubsystem.setShouldFade(true);
 
-        lightsSubsystem.setStepsLeft(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionL());
-        lightsSubsystem.setStepsRight(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionR());
+        // lightsSubsystem.setStepsLeft(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionL());
+        // lightsSubsystem.setStepsRight(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionR());
+        lightsSubsystem.setPattern(RAINBOW);
     }
 
     // Called once the command ends or is interrupted.

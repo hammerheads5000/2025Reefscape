@@ -29,7 +29,7 @@ import frc.robot.commands.AlignToReefCommands;
 
 /** Add your docs here. */
 public class Pathfinding {
-        private static int getClosestReefSide(Pose2d pose) {
+    public static int getClosestReefSide(Pose2d pose) {
         int closest = 0;
         double closestDistance = Double.POSITIVE_INFINITY;
         for (int side = 0; side < 6; side++) {

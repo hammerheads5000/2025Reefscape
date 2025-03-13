@@ -14,6 +14,8 @@ import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.ElevatorConstants.*;
 
+import com.ctre.phoenix6.SignalLogger;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -38,6 +40,7 @@ import frc.robot.Constants;
 @Logged
 public class ElevatorSubsystem extends SubsystemBase {
     TalonFX motor1;
+    TalonFX followMotor;
     
     MotionMagicExpoVoltage motorControl;
 
@@ -57,9 +60,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     /** Creates a new ElevatorSubsystem. */
     public ElevatorSubsystem() {
         motor1 = new TalonFX(MOTOR_1_ID, Constants.CAN_FD_BUS);
+        followMotor = new TalonFX(MOTOR_2_ID, Constants.CAN_FD_BUS);
         motor1.getConfigurator().apply(MOTOR_CONFIGS);
 
-        motorControl = new MotionMagicExpoVoltage(0).withEnableFOC(false);
+        motorControl = new MotionMagicExpoVoltage(0).withEnableFOC(true);
+        followMotor.setControl(new Follower(MOTOR_1_ID, OPPOSE_FOLLOWER));
         
         SmartDashboard.putData("Elevator Sim", mech2d);
 
@@ -229,9 +234,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private final SysIdRoutine sysIdRoutine = new SysIdRoutine(
             new SysIdRoutine.Config(
-                    Volts.of(0.75).per(Second),
-                    Volts.of(3), null,
-                    state -> SmartDashboard.putString("SysId_Elevator_State", state.toString())),
+                    Volts.of(0.5).per(Second),
+                    Volts.of(1.5), null,
+                    state -> SignalLogger.writeString("SysId_Elevator_State", state.toString())),
             new SysIdRoutine.Mechanism(output -> 
                 motor1.setVoltage(output.in(Volts)),
                     null, 
