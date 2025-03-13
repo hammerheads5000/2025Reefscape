@@ -5,7 +5,6 @@
 package frc.robot.commands.autos;
 
 import static frc.robot.Constants.INST;
-import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
 import static frc.robot.Constants.FieldConstants.*;
 import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 import static frc.robot.Constants.LightsConstants.PATH_FOLLOWING_COLOR;

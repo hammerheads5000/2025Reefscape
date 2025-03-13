@@ -12,7 +12,6 @@ import static frc.robot.Constants.AutoConstants.MIN_PATH_SPEED;
 import static frc.robot.Constants.AutoConstants.TRAVERSE_DISTANCE;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;

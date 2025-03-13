@@ -5,8 +5,6 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
-import static frc.robot.Constants.ElevatorConstants.GEAR_RATIO;
-import static frc.robot.Constants.FieldConstants.L1_RELATIVE_POS;
 
 import java.util.Map;
 
