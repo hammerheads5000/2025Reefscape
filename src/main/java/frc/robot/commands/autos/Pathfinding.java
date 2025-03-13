@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static frc.robot.Constants.AutoConstants.APPROACH_DISTANCE;
 import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
+import static frc.robot.Constants.AutoConstants.MIN_PATH_SPEED;
 import static frc.robot.Constants.AutoConstants.TRAVERSE_DISTANCE;
 
 import java.util.ArrayList;
@@ -95,7 +96,10 @@ public class Pathfinding {
         // }
         //poses.add(approachEndPose);
         poses.add(endPose);
-        if (DriverStation.isAutonomous()) {
+
+        Translation2d vel = new Translation2d(startSpeeds.vxMetersPerSecond, startSpeeds.vyMetersPerSecond);
+
+        if (DriverStation.isAutonomous() || vel.getNorm() < MIN_PATH_SPEED.in(MetersPerSecond)) {
             poses.add(0, pointPoseTowards(currentPose, poses.get(0)));
         } else {
             poses.add(0, new Pose2d(currentPose.getTranslation(), chassisSpeedsToHeading(startSpeeds)));

@@ -56,7 +56,6 @@ public class Robot extends TimedRobot {
   public void disabledExit() {
     m_robotContainer.elevatorSubsystem.setBrake(true);
     m_robotContainer.elevatorSubsystem.setRotations(m_robotContainer.elevatorSubsystem.getRotations());
-    m_robotContainer.climberSubsystem.latchIntake();
     m_robotContainer.disabledLightsCommand.cancel();
   }
 

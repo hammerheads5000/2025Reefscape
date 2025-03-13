@@ -161,11 +161,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Command moveUpManualCommand() {
-        return this.runEnd(() -> motor1.set(MANUAL_UP_SPEED), this::stop);
+        return this.runEnd(() -> motor1.set(MANUAL_UP_SPEED), this::resetAtPosition);
     }
 
     public Command moveDownManualCommand() {
-        return this.runEnd(() -> motor1.set(MANUAL_DOWN_SPEED), this::stop);
+        return this.runEnd(() -> motor1.set(MANUAL_DOWN_SPEED), this::resetAtPosition);
     }
 
     public Command zeroCommand() {
@@ -184,7 +184,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         if (instant) {
             return this.runOnce(() -> setRotations(height));
         }
-        return this.startEnd(() -> setRotations(height), () -> {}).until(this::atSetpoint);
+        return this.startEnd(() -> setRotations(height), () -> {})
+                .until(this::atSetpoint).handleInterrupt(this::resetAtPosition);
     }
 
     public Command goToL1Command(boolean instant) {

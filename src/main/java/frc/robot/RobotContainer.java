@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.Constants.AutoConstants.AUTO_DESCRIPTOR_TOPIC;
 import static frc.robot.Constants.AutoConstants.REEF_TELEOP_AUTO_TOPIC;
 import static frc.robot.Constants.AutoConstants.STATION_TELEOP_AUTO_TOPIC;
+import static frc.robot.Constants.EndEffectorConstants.INTAKE_SPEED;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -86,14 +87,23 @@ public class RobotContainer {
     Command algaeCommand = Commands.defer(
             () -> new RemoveAlgaeCommand(swerve, elevatorSubsystem),
             Set.of(swerve, elevatorSubsystem));
+
+    Map<Character, Command> ELEVATOR_COMMANDS = Map.ofEntries(
+            Map.entry('1', elevatorSubsystem.goToL1Command(false)),
+            Map.entry('2', elevatorSubsystem.goToL2Command(false)),
+            Map.entry('3', elevatorSubsystem.goToL3Command(false)),
+            Map.entry('4', elevatorSubsystem.goToL4Command(false)));
+
+    Command elevatorCommand = Commands.defer(
+            () -> ELEVATOR_COMMANDS.get(reefTeleopAutoEntry.get().charAt(1)), Set.of(elevatorSubsystem));
     // #endregion
 
     // #region Triggers
     Trigger fastSpeedTrigger = primaryController.rightTrigger();
     Trigger slowSpeedTrigger = primaryController.leftTrigger();
 
-    // Trigger elevatorUpTrigger = primaryController.povUp();
-    // Trigger elevatorDownTrigger = primaryController.povDown();
+    Trigger elevatorUpTrigger = primaryController.povUp();
+    Trigger elevatorDownTrigger = primaryController.povDown();
     // Trigger elevatorIntakeTrigger = primaryController.povLeft();
     // Trigger elevatorL2Trigger = primaryController.povRight();
 
@@ -110,6 +120,8 @@ public class RobotContainer {
     Trigger reefTrigger = primaryController.a().and(sysIdQuasistatic.or(sysIdDynamic).negate());
     Trigger stationTrigger = primaryController.b().and(sysIdQuasistatic.or(sysIdDynamic).negate());
     Trigger algaeTrigger = primaryController.y();
+    Trigger elevatorTrigger = buttonBoardOther.button(1);
+    Trigger elevatorIntakeTrigger = buttonBoardOther.button(2);
 
     Map<Integer, Character> BUTTON_TO_REEF = Map.ofEntries(
             Map.entry(5, 'A'),
@@ -170,24 +182,24 @@ public class RobotContainer {
         // elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations().plus(Rotations.of(3)))));
         // elevatorDownTrigger.whileTrue(new InstantCommand(() ->
         // elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations().minus(Rotations.of(3)))));
-        // elevatorUpTrigger.whileTrue(elevatorSubsystem.moveUpManualCommand());
-        // elevatorDownTrigger.whileTrue(elevatorSubsystem.moveDownManualCommand());
+        elevatorUpTrigger.whileTrue(elevatorSubsystem.moveUpManualCommand());
+        elevatorDownTrigger.whileTrue(elevatorSubsystem.moveDownManualCommand());
         // elevatorIntakeTrigger.whileTrue(elevatorSubsystem.goToIntakePosCommand(false));
         // elevatorL2Trigger.whileTrue(elevatorSubsystem.goToL2Command(false));
 
         moveToZeroTrigger.whileTrue(reefAlign);
 
-        intakeTrigger.whileTrue(endEffectorSubsystem.intakeCommand());
-        reverseIntakeTrigger.whileTrue(endEffectorSubsystem.scoreCommand());
+        intakeTrigger.whileTrue(endEffectorSubsystem.forwardCommand(INTAKE_SPEED));
+        reverseIntakeTrigger.whileTrue(endEffectorSubsystem.forwardCommand(-INTAKE_SPEED));
 
         reefTrigger.whileTrue(reefCommand);
         stationTrigger.whileTrue(stationCommand);
         algaeTrigger.whileTrue(algaeCommand);
 
-        sysIdQuasistatic.and(sysIdForward).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kForward));
-        sysIdQuasistatic.and(sysIdBack).whileTrue(elevatorSubsystem.sysIdQuasistatic(Direction.kReverse));
-        sysIdDynamic.and(sysIdForward).whileTrue(elevatorSubsystem.sysIdDynamic(Direction.kForward));
-        sysIdDynamic.and(sysIdBack).whileTrue(elevatorSubsystem.sysIdDynamic(Direction.kReverse));
+        sysIdQuasistatic.and(sysIdForward).whileTrue(swerve.sysIdQuasistatic(Direction.kForward));
+        sysIdQuasistatic.and(sysIdBack).whileTrue(swerve.sysIdQuasistatic(Direction.kReverse));
+        sysIdDynamic.and(sysIdForward).whileTrue(swerve.sysIdDynamic(Direction.kForward));
+        sysIdDynamic.and(sysIdBack).whileTrue(swerve.sysIdDynamic(Direction.kReverse));
 
         for (int i = 0; i < reefTriggers.length; i++) {
             reefTriggers[i] = buttonBoardReef.button(i + 1);

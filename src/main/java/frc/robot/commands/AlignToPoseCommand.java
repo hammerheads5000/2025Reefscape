@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
+import static frc.robot.Constants.AutoConstants.APPROACH_DISTANCE;
 import static frc.robot.Constants.SwerveConstants.ALIGN_TIME;
 
 import edu.wpi.first.epilogue.Logged;
@@ -110,6 +111,14 @@ public class AlignToPoseCommand extends Command {
 
     public boolean isAligned() {
         return pidControllerX.atGoal() && pidControllerY.atGoal() && pidControllerAngle.atSetpoint();
+    }
+
+    public static boolean withinApproachRange(Pose2d pose, Pose2d target) {
+        return withinRange(pose, target, APPROACH_DISTANCE);
+    }
+
+    public static boolean withinRange(Pose2d pose, Pose2d target, Distance distance) {
+        return pose.getTranslation().getDistance(target.getTranslation()) <= distance.in(Meters);
     }
 
     // Returns true when the command should end.

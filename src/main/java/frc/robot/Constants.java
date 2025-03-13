@@ -114,7 +114,7 @@ public class Constants {
                 .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
         private static final Slot0Configs DRIVE_GAINS = new Slot0Configs()
-                .withKP(0.15).withKI(0.01).withKD(0.0)
+                .withKP(0.25).withKI(0.01).withKD(0.0)
                 .withKS(0.182).withKV(0.124);
 
         private static final ClosedLoopOutputType STEER_CLOSED_LOOP_OUTPUT = ClosedLoopOutputType.TorqueCurrentFOC;
@@ -278,10 +278,10 @@ public class Constants {
 
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
-                .withPID(5, 0.3, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
+                .withPID(5, 0.5, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
                 .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/1);
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(5, 0.4, 0.05).withTolerance(Inches.of(1.0).in(Meters), 0.1)
+                .withPID(4, 0.5, 0.05).withTolerance(Inches.of(1.0).in(Meters), 0.1)
                 .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/1);
 
         public static ControlConstants ALGAE_PID_X = new ControlConstants(SCORING_PID_X)
@@ -322,6 +322,8 @@ public class Constants {
         public static final Distance PULL_DISTANCE = Inches.of(15);
         public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(60);
         public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side
+
+        public static final LinearVelocity MIN_PATH_SPEED = MetersPerSecond.of(1);
 
         public static final Map<Character, Pair<Integer, Integer>> LETTER_TO_SIDE_AND_RELATIVE = Map.ofEntries(
                 Map.entry(Character.valueOf('A'), new Pair<Integer, Integer>(0, 1)),

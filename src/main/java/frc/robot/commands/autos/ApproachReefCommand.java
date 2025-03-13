@@ -26,7 +26,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -68,14 +67,6 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         PPHolonomicDriveController.clearFeedbackOverrides();
     }
 
-    private static boolean withinRange(Pose2d pose, Pose2d target, Distance distance) {
-        return pose.getTranslation().getDistance(target.getTranslation()) <= distance.in(Meters);
-    }
-
-    private static boolean withinApproachRange(Pose2d pose, Pose2d target) {
-        return withinRange(pose, target, APPROACH_DISTANCE);
-    }
-
     /** Creates a new ApproachReefCommand. */
     public ApproachReefCommand(int side, int relativePos, Swerve swerve, LightsSubsystem lightsSubsystem) {
         AlignToPoseCommand alignToReefCommand = AlignToReefCommands.alignToReef(side, relativePos, swerve);
@@ -85,17 +76,20 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         Translation2d shiftApproachTransform = new Translation2d(APPROACH_DISTANCE.unaryMinus(), Meters.zero());
         approachTarget = approachTarget.plus(new Transform2d(shiftApproachTransform, Rotation2d.kZero));
 
-        double relativeApproachX = approachTarget.minus(alignToReefCommand.targetPose).getX();
-        double relativeApproachY = approachTarget.minus(alignToReefCommand.targetPose).getY();
-        Vector<N2> initialPIDVelocity = VecBuilder.fill(relativeApproachX, relativeApproachY);
-        Translation2d direction = new Translation2d(1, 0).rotateBy(alignToReefCommand.targetPose.getRotation());
-        double initialPIDSpeed = initialPIDVelocity.projection(VecBuilder.fill(direction.getX(), direction.getY())).norm();
-        
+        // don't generate too short of paths
+        if (AlignToPoseCommand.withinApproachRange(swerve.getPose(), approachTarget)) {
+            addCommands(
+                    lightsSubsystem.setSolidColorCommand(ALIGNMENT_COLOR),
+                    alignToReefCommand,
+                    lightsSubsystem.setPatternCommand(IDLE_PATTERN)
+            );
+            return;
+        }
+
         Command followPathCommand = AutoBuilder.followPath(Pathfinding.generateReefPath(swerve.getPose(), side, relativePos, swerve.getChassisSpeeds()));
         
         // First follow generated path
-        // When within approach distance while following path, override PP's feedback
-        // Finally, alignToReefCommand to ensure alignment
+        // Then, alignToReefCommand to ensure alignment
         addCommands(
             lightsSubsystem.setSolidColorCommand(PATH_FOLLOWING_COLOR),
             followPathCommand,
@@ -106,12 +100,12 @@ public class ApproachReefCommand extends SequentialCommandGroup {
     }
 
     public static Command waitUntilAligningCommand(int side, int relativePos, Swerve swerve) {
-        return Commands.waitUntil(() -> withinApproachRange(
+        return Commands.waitUntil(() -> AlignToPoseCommand.withinApproachRange(
             swerve.getPose(), AlignToReefCommands.getReefPose(side, relativePos)));
     }
 
     public static Command waitToDeployElevator(int side, int relativePos, Swerve swerve) {
-        return Commands.waitUntil(() -> withinRange(
+        return Commands.waitUntil(() -> AlignToPoseCommand.withinRange(
             swerve.getPose(), AlignToReefCommands.getReefPose(side, relativePos), ELEVATOR_DEPLOY_DISTANCE));
     }
 }
