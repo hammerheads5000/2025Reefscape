@@ -9,6 +9,7 @@ import static frc.robot.Constants.AutoConstants.AUTO_DESCRIPTOR_TOPIC;
 import static frc.robot.Constants.AutoConstants.REEF_TELEOP_AUTO_TOPIC;
 import static frc.robot.Constants.AutoConstants.STATION_TELEOP_AUTO_TOPIC;
 import static frc.robot.Constants.EndEffectorConstants.INTAKE_SPEED;
+import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -77,16 +78,16 @@ public class RobotContainer {
     Command reefCommand = Commands.defer(
             () -> new FullAutoCommand(reefTeleopAutoEntry.get(), swerve, elevatorSubsystem,
                     endEffectorSubsystem, lightsSubsystem),
-            Set.of(swerve, elevatorSubsystem, lightsSubsystem));
+            Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
 
     Command stationCommand = Commands.defer(
             () -> new FullAutoCommand(stationTeleopAutoEntry.get(), swerve, elevatorSubsystem,
                     endEffectorSubsystem, lightsSubsystem),
-            Set.of(swerve, elevatorSubsystem, lightsSubsystem));
+            Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
 
     Command algaeCommand = Commands.defer(
-            () -> new RemoveAlgaeCommand(swerve, elevatorSubsystem),
-            Set.of(swerve, elevatorSubsystem));
+            () -> new RemoveAlgaeCommand(swerve, elevatorSubsystem, lightsSubsystem),
+            Set.of(swerve, elevatorSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
 
     Map<Character, Command> ELEVATOR_COMMANDS = Map.ofEntries(
             Map.entry('1', elevatorSubsystem.goToL1Command(false)),

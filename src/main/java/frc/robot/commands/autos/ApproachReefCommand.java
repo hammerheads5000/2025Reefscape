@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants.LightsConstants;
 import frc.robot.commands.AlignToPoseCommand;
 import frc.robot.commands.AlignToReefCommands;
 import frc.robot.subsystems.LightsSubsystem;

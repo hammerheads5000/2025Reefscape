@@ -7,6 +7,8 @@ package frc.robot.commands.autos;
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.Constants.AutoConstants.PULL_DISTANCE;
 import static frc.robot.Constants.ElevatorConstants.L3_HEIGHT;
+import static frc.robot.Constants.LightsConstants.ALGAE_COLOR;
+import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 import static frc.robot.Constants.SwerveConstants.SCORING_PID_ANGLE;
 import static frc.robot.Constants.SwerveConstants.SCORING_PID_X;
 import static frc.robot.Constants.SwerveConstants.SCORING_PID_Y;
@@ -20,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AlignToPoseCommand;
 import frc.robot.commands.AlignToReefCommands;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.Swerve;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
@@ -32,7 +35,7 @@ public class RemoveAlgaeCommand extends SequentialCommandGroup {
     }
 
     /** Creates a new RemoveAlgaeCommand. */
-    public RemoveAlgaeCommand(Swerve swerve, ElevatorSubsystem elevatorSubsystem) {
+    public RemoveAlgaeCommand(Swerve swerve, ElevatorSubsystem elevatorSubsystem, LightsSubsystem lightsSubsystem) {
         Pose2d pose = swerve.getPose();
         int side = Pathfinding.getClosestReefSide(pose);
         
@@ -42,13 +45,15 @@ public class RemoveAlgaeCommand extends SequentialCommandGroup {
 
 
         addCommands(
+            lightsSubsystem.setSolidColorCommand(ALGAE_COLOR),
             Commands.parallel(
                 new AlignToPoseCommand(algaePose, SCORING_PID_X, SCORING_PID_Y, SCORING_PID_ANGLE, swerve),
                 elevatorSubsystem.goToL4Command(false)
             ),
             elevatorSubsystem.goToIntakePosCommand(true),
             Commands.waitUntil(() -> elevatorSubsystem.getPosition().lt(L3_HEIGHT)),
-            new AlignToPoseCommand(pullPose, SCORING_PID_ANGLE, SCORING_PID_X, SCORING_PID_Y, swerve)
+            new AlignToPoseCommand(pullPose, SCORING_PID_ANGLE, SCORING_PID_X, SCORING_PID_Y, swerve),
+            lightsSubsystem.setPatternCommand(IDLE_PATTERN)
         );
     }
 }

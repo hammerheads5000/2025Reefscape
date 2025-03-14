@@ -519,12 +519,15 @@ public class Constants {
                 .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.15), LED_SPACING);
 
         public static final Color PATH_FOLLOWING_COLOR = Color.kBlue;
-        public static final Color ALIGNMENT_COLOR = Color.kOrange;
+        public static final Color ALIGNMENT_COLOR = Color.kPink;
+        public static final Color ALIGNED_COLOR = Color.kMagenta;
         public static final Color INTAKE_COLOR = Color.kPurple;
+        public static final Color ALGAE_COLOR = Color.kAquamarine;
         public static final LEDPattern IDLE_PATTERN = RAINBOW;
 
-        public static final Color HAS_TARGET_COLOR = Color.kGreen;
-        public static final Color NO_VISION_COLOR = Color.kYellow;
+        public static final Color HAS_TARGET_COLOR = Color.kDarkBlue;
+        public static final Color HAS_NO_TARGET_COLOR = Color.kLightBlue;
+        public static final Color NO_VISION_COLOR = Color.kOrange;
         public static final Color LOW_BATTERY_COLOR = Color.kRed;
 
         public static final Distance MAX_VISION_DISTANCE = Meters.of(1);

@@ -30,13 +30,13 @@ public class LightsSubsystem extends SubsystemBase {
     
     AddressableLEDBufferView frontRightView = buffer.createView(0, LED_SEPARATIONS[0]);
     AddressableLEDBufferView topRightView = buffer.createView(LED_SEPARATIONS[0]+1, LED_SEPARATIONS[1]);
-    AddressableLEDBufferView topBackRightView = buffer.createView(LED_SEPARATIONS[1]+1, LED_SEPARATIONS[2]);
-    AddressableLEDBufferView backRightView = buffer.createView(LED_SEPARATIONS[2]+1, LED_SEPARATIONS[3]);
+    AddressableLEDBufferView topBackRightView = buffer.createView(LED_SEPARATIONS[1]+1, LED_SEPARATIONS[2]).reversed();
+    AddressableLEDBufferView backRightView = buffer.createView(LED_SEPARATIONS[2]+1, LED_SEPARATIONS[3]).reversed();
     
     AddressableLEDBufferView frontLeftView = buffer.createView(LED_SEPARATIONS[3]+1, LED_SEPARATIONS[4]);
     AddressableLEDBufferView topLeftView = buffer.createView(LED_SEPARATIONS[4]+1, LED_SEPARATIONS[5]);
-    AddressableLEDBufferView topBackLeftView = buffer.createView(LED_SEPARATIONS[5]+1, LED_SEPARATIONS[6]);
-    AddressableLEDBufferView backLeftView = buffer.createView(LED_SEPARATIONS[6]+1, LED_SEPARATIONS[7]);
+    AddressableLEDBufferView topBackLeftView = buffer.createView(LED_SEPARATIONS[5]+1, LED_SEPARATIONS[6]).reversed();
+    AddressableLEDBufferView backLeftView = buffer.createView(LED_SEPARATIONS[6]+1, LED_SEPARATIONS[7]).reversed();
 
     Map<String, AddressableLEDBufferView> views = Map.of(
         "Left", leftView,
@@ -99,6 +99,14 @@ public class LightsSubsystem extends SubsystemBase {
         setPattern(LEDPattern.solid(color));
     }
 
+    public void setColorLeft(Color color) {
+        setPatterns(LEDPattern.solid(color), currentPatternRight);
+    }
+
+    public void setColorRight(Color color) {
+        setPatterns(currentPatternLeft, LEDPattern.solid(color));
+    }
+
     public void setStepsLeft(Color color1, Color color2, double proportion) {
         setPatterns(LEDPattern.steps(Map.of(0, color1, proportion, color2)), currentPatternRight);
     }
@@ -114,6 +122,15 @@ public class LightsSubsystem extends SubsystemBase {
 
     public void setRainbow() {
         setPattern(RAINBOW);
+    }
+
+    public void setSegmentPattern(String segment, LEDPattern pattern) {
+        AddressableLEDBufferView view = views.get(segment);
+        pattern.applyTo(view);
+    }
+
+    public void setSegmentColor(String segment, Color color) {
+        setSegmentPattern(segment, LEDPattern.solid(color));
     }
 
     public Command setSolidColorCommand(Color color) {

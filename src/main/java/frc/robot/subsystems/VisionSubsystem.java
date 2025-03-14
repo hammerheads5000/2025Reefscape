@@ -96,8 +96,11 @@ public class VisionSubsystem extends SubsystemBase {
         //camBSim.enableDrawWireframe(true);
     }
 
-    public boolean camerasConnected() {
-        return camFL.isConnected() && camFR.isConnected();// && camB.isConnected();
+    public boolean flConnected() {
+        return camFL.isConnected();
+    }
+    public boolean frConnected() {
+        return camFR.isConnected();
     }
 
     public Distance getDistanceToEstimatedFL() {

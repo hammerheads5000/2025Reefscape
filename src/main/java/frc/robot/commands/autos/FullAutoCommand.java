@@ -6,6 +6,8 @@ package frc.robot.commands.autos;
 
 import static frc.robot.Constants.AutoConstants.*;
 import static frc.robot.Constants.FieldConstants.L1_RELATIVE_POS;
+import static frc.robot.Constants.LightsConstants.ALIGNED_COLOR;
+import static frc.robot.Constants.LightsConstants.ALIGNMENT_COLOR;
 import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 import static frc.robot.Constants.LightsConstants.INTAKE_COLOR;
 
@@ -75,6 +77,18 @@ public class FullAutoCommand extends SequentialCommandGroup {
                 System.err.println("ERROR: Invalid auto level token " + level);
                 break;
         }
+
+        elevatorPosCommand = elevatorPosCommand.beforeStarting(() -> {
+            lightsSubsystem.setSegmentColor("Top Left", ALIGNMENT_COLOR);
+            lightsSubsystem.setSegmentColor("Top Right", ALIGNMENT_COLOR);
+            lightsSubsystem.setSegmentColor("Top Back Left", ALIGNMENT_COLOR);
+            lightsSubsystem.setSegmentColor("Top Back Right", ALIGNMENT_COLOR);
+        }, lightsSubsystem).andThen(() -> {
+            lightsSubsystem.setSegmentColor("Top Left", ALIGNED_COLOR);
+            lightsSubsystem.setSegmentColor("Top Right", ALIGNED_COLOR);
+            lightsSubsystem.setSegmentColor("Top Back Left", ALIGNED_COLOR);
+            lightsSubsystem.setSegmentColor("Top Back Right", ALIGNED_COLOR);            
+        }, lightsSubsystem);
 
         commandToAdd = new ApproachReefCommand(side, relativePos, swerve, lightsSubsystem);
         if (Robot.isReal()) {
