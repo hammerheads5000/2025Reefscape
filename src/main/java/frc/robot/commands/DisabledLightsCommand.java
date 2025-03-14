@@ -52,33 +52,36 @@ public class DisabledLightsCommand extends Command {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        // if (RobotController.getMeasureBatteryVoltage().lte(LOW_BATTERY_VOLTAGE)) {
-        //     lightsSubsystem.setSolidColor(LOW_BATTERY_COLOR);
-        //     lightsSubsystem.setShouldFade(false);
-        //     return;
-        // }
+        if (!DriverStation.isFMSAttached()) {
+            lightsSubsystem.setRainbow();
+            return;
+        }
+        if (RobotController.getMeasureBatteryVoltage().lte(LOW_BATTERY_VOLTAGE)) {
+            lightsSubsystem.setSolidColor(LOW_BATTERY_COLOR);
+            lightsSubsystem.setShouldFade(false);
+            return;
+        }
 
-        // if (!visionSubsystem.camerasConnected()) {
-        //     lightsSubsystem.setSolidColor(NO_VISION_COLOR);
-        //     lightsSubsystem.setShouldFade(false);
-        //     return;
-        // }
+        if (!visionSubsystem.camerasConnected()) {
+            lightsSubsystem.setSolidColor(NO_VISION_COLOR);
+            lightsSubsystem.setShouldFade(false);
+            return;
+        }
 
-        // if (visionSubsystem.hasTargetFL && !previousHasTargetFL) {
-        //     lightsSubsystem.resetFadeLeft();
-        // }
-        // if (visionSubsystem.hasTargetFR && !previousHasTargetFR) {
-        //     lightsSubsystem.resetFadeRight();
-        // }
+        if (visionSubsystem.hasTargetFL && !previousHasTargetFL) {
+            lightsSubsystem.resetFadeLeft();
+        }
+        if (visionSubsystem.hasTargetFR && !previousHasTargetFR) {
+            lightsSubsystem.resetFadeRight();
+        }
 
-        // previousHasTargetFL = visionSubsystem.hasTargetFL;
-        // previousHasTargetFR = visionSubsystem.hasTargetFR;
+        previousHasTargetFL = visionSubsystem.hasTargetFL;
+        previousHasTargetFR = visionSubsystem.hasTargetFR;
         
-        // lightsSubsystem.setShouldFade(true);
+        lightsSubsystem.setShouldFade(true);
 
-        // lightsSubsystem.setStepsLeft(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionL());
-        // lightsSubsystem.setStepsRight(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionR());
-        lightsSubsystem.setPattern(RAINBOW);
+        lightsSubsystem.setStepsLeft(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionL());
+        lightsSubsystem.setStepsRight(HAS_TARGET_COLOR, Color.kBlack, getVisionProportionR());
     }
 
     // Called once the command ends or is interrupted.

@@ -23,9 +23,34 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LightsSubsystem extends SubsystemBase {
     AddressableLED ledStrip = new AddressableLED(PWM_PORT);
-    AddressableLEDBuffer buffer = new AddressableLEDBuffer(LED_COUNT_LEFT + LED_COUNT_RIGHT);
-    AddressableLEDBufferView leftView = buffer.createView(0, LED_COUNT_LEFT-1);
-    AddressableLEDBufferView rightView = buffer.createView(LED_COUNT_LEFT, LED_COUNT_LEFT + LED_COUNT_RIGHT-1);
+    AddressableLEDBuffer buffer = new AddressableLEDBuffer(LED_SEPARATIONS[7]+1);
+    
+    AddressableLEDBufferView rightView = buffer.createView(0, LED_SEPARATIONS[3]);
+    AddressableLEDBufferView leftView = buffer.createView(LED_SEPARATIONS[3]+1, LED_SEPARATIONS[7]);
+    
+    AddressableLEDBufferView frontRightView = buffer.createView(0, LED_SEPARATIONS[0]);
+    AddressableLEDBufferView topRightView = buffer.createView(LED_SEPARATIONS[0]+1, LED_SEPARATIONS[1]);
+    AddressableLEDBufferView topBackRightView = buffer.createView(LED_SEPARATIONS[1]+1, LED_SEPARATIONS[2]);
+    AddressableLEDBufferView backRightView = buffer.createView(LED_SEPARATIONS[2]+1, LED_SEPARATIONS[3]);
+    
+    AddressableLEDBufferView frontLeftView = buffer.createView(LED_SEPARATIONS[3]+1, LED_SEPARATIONS[4]);
+    AddressableLEDBufferView topLeftView = buffer.createView(LED_SEPARATIONS[4]+1, LED_SEPARATIONS[5]);
+    AddressableLEDBufferView topBackLeftView = buffer.createView(LED_SEPARATIONS[5]+1, LED_SEPARATIONS[6]);
+    AddressableLEDBufferView backLeftView = buffer.createView(LED_SEPARATIONS[6]+1, LED_SEPARATIONS[7]);
+
+    Map<String, AddressableLEDBufferView> views = Map.of(
+        "Left", leftView,
+        "Right", rightView,
+        "Front Right", frontRightView,
+        "Top Right", topRightView,
+        "Top Back Right", topBackRightView,
+        "Back Right", backRightView,
+        "Front Left", frontLeftView,
+        "Top Left", topLeftView,
+        "Top Back Left", topBackLeftView,
+        "Back Left", backLeftView
+    );
+
 
     private LEDPattern currentPatternLeft = LEDPattern.kOff;
     private LEDPattern currentPatternRight = LEDPattern.kOff;

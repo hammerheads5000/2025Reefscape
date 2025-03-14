@@ -156,7 +156,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
                 System.err.println("ERROR: Invalid auto token length " + token);
                 continue;
             }
-            addCommands(commandFromToken(token));
+            addCommands(Commands.defer(() -> commandFromToken(token), Set.of(swerve, elevatorSubsystem)));
         }
     }
 }
