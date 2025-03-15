@@ -87,7 +87,7 @@ public class RobotContainer {
 
     Command algaeCommand = Commands.defer(
             () -> new RemoveAlgaeCommand(swerve, elevatorSubsystem, lightsSubsystem),
-            Set.of(swerve, elevatorSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
+            Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
 
     Map<Character, Command> ELEVATOR_COMMANDS = Map.ofEntries(
             Map.entry('1', elevatorSubsystem.goToL1Command(false)),

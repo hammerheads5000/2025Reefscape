@@ -83,12 +83,12 @@ public class FullAutoCommand extends SequentialCommandGroup {
             lightsSubsystem.setSegmentColor("Top Right", ALIGNMENT_COLOR);
             lightsSubsystem.setSegmentColor("Top Back Left", ALIGNMENT_COLOR);
             lightsSubsystem.setSegmentColor("Top Back Right", ALIGNMENT_COLOR);
-        }, lightsSubsystem).andThen(() -> {
+        }).andThen(() -> {
             lightsSubsystem.setSegmentColor("Top Left", ALIGNED_COLOR);
             lightsSubsystem.setSegmentColor("Top Right", ALIGNED_COLOR);
             lightsSubsystem.setSegmentColor("Top Back Left", ALIGNED_COLOR);
             lightsSubsystem.setSegmentColor("Top Back Right", ALIGNED_COLOR);            
-        }, lightsSubsystem);
+        });
 
         commandToAdd = new ApproachReefCommand(side, relativePos, swerve, lightsSubsystem);
         if (Robot.isReal()) {

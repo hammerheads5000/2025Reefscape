@@ -6,6 +6,7 @@ package frc.robot.commands.autos;
 
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.Constants.AutoConstants.PULL_DISTANCE;
+import static frc.robot.Constants.ElevatorConstants.L1_HEIGHT;
 import static frc.robot.Constants.ElevatorConstants.L3_HEIGHT;
 import static frc.robot.Constants.LightsConstants.ALGAE_COLOR;
 import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
@@ -51,7 +52,7 @@ public class RemoveAlgaeCommand extends SequentialCommandGroup {
                 elevatorSubsystem.goToL4Command(false)
             ),
             elevatorSubsystem.goToIntakePosCommand(true),
-            Commands.waitUntil(() -> elevatorSubsystem.getPosition().lt(L3_HEIGHT)),
+            Commands.waitUntil(() -> elevatorSubsystem.getPosition().lt(L1_HEIGHT)),
             new AlignToPoseCommand(pullPose, SCORING_PID_ANGLE, SCORING_PID_X, SCORING_PID_Y, swerve),
             lightsSubsystem.setPatternCommand(IDLE_PATTERN)
         );

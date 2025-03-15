@@ -32,7 +32,7 @@ public class Robot extends TimedRobot {
     DataLogManager.start();
     DriverStation.startDataLog(DataLogManager.getLog());
     Epilogue.bind(this);
-    SignalLogger.start();
+    SignalLogger.enableAutoLogging(false);
     
     FollowPathCommand.warmupCommand().schedule();
   }

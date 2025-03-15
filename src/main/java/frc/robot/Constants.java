@@ -264,7 +264,7 @@ public class Constants {
         public static final Frequency ODOMETRY_UPDATE_FREQ = Hertz.of(0); // 0 Hz = default 250 Hz for CAN FD
         public static final Matrix<N3, N1> ODOMETRY_STD_DEV = VecBuilder.fill(0.02, 0.02, 0.01);
         public static final Matrix<N3, N1> VISION_STD_DEV_0M = VecBuilder.fill(0.06, 0.06, 0.5);
-        public static final Matrix<N3, N1> VISION_STD_DEV_5M = VecBuilder.fill(4, 4, 2);
+        public static final Matrix<N3, N1> VISION_STD_DEV_5M = VecBuilder.fill(2, 2, 3);
 
         public static final DriveRequestType DRIVE_REQUEST_TYPE = DriveRequestType.Velocity;
         public static final SteerRequestType STEER_REQUEST_TYPE = SteerRequestType.MotionMagicExpo;
@@ -296,7 +296,7 @@ public class Constants {
 
 
 
-        public static final Time ALIGN_TIME = Seconds.of(0.3); // amount to wait to make sure aligned
+        public static final Time ALIGN_TIME = Seconds.of(0.15); // amount to wait to make sure aligned
 
         // output: m/s, measure: m
         public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(3, 0.5, 0.5);
@@ -522,7 +522,7 @@ public class Constants {
         public static final Color ALIGNMENT_COLOR = Color.kPink;
         public static final Color ALIGNED_COLOR = Color.kMagenta;
         public static final Color INTAKE_COLOR = Color.kPurple;
-        public static final Color ALGAE_COLOR = Color.kAquamarine;
+        public static final Color ALGAE_COLOR = Color.kMediumAquamarine;
         public static final LEDPattern IDLE_PATTERN = RAINBOW;
 
         public static final Color HAS_TARGET_COLOR = Color.kDarkBlue;

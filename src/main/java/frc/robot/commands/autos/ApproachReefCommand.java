@@ -64,13 +64,10 @@ public class ApproachReefCommand extends SequentialCommandGroup {
     public ApproachReefCommand(int side, int relativePos, Swerve swerve, LightsSubsystem lightsSubsystem) {
         AlignToPoseCommand alignToReefCommand = AlignToReefCommands.alignToReef(side, relativePos, swerve);
         
-        Pose2d approachTarget = AlignToReefCommands.getReefPose(side, relativePos);
-        
-        Translation2d shiftApproachTransform = new Translation2d(APPROACH_DISTANCE.unaryMinus(), Meters.zero());
-        approachTarget = approachTarget.plus(new Transform2d(shiftApproachTransform, Rotation2d.kZero));
+        Pose2d target = AlignToReefCommands.getReefPose(side, relativePos);
 
         // don't generate too short of paths
-        if (AlignToPoseCommand.withinApproachRange(swerve.getPose(), approachTarget)) {
+        if (AlignToPoseCommand.withinApproachRange(swerve.getPose(), target)) {
             addCommands(
                     lightsSubsystem.setSolidColorCommand(ALIGNMENT_COLOR),
                     alignToReefCommand,

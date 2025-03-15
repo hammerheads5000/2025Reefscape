@@ -69,7 +69,7 @@ public class AlignToReefCommands {
         return reefPose;
     }
 
-    private static Pose2d flipPose(Pose2d pose) {
+    public static Pose2d flipPose(Pose2d pose) {
         Translation2d center = REEF_CENTER_BLUE.interpolate(REEF_CENTER_RED, 0.5);
         Translation2d poseTranslation = pose.getTranslation();
         poseTranslation = poseTranslation.rotateAround(center, Rotation2d.k180deg);
