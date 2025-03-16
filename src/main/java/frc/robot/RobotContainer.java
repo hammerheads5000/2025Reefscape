@@ -85,9 +85,9 @@ public class RobotContainer {
                     endEffectorSubsystem, lightsSubsystem),
             Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
 
-    Command algaeCommand = Commands.defer(
-            () -> new RemoveAlgaeCommand(swerve, elevatorSubsystem, lightsSubsystem),
-            Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
+//     Command algaeCommand = Commands.defer(
+//             () -> new RemoveAlgaeCommand(swerve, elevatorSubsystem, lightsSubsystem),
+//             Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
 
     Map<Character, Command> ELEVATOR_COMMANDS = Map.ofEntries(
             Map.entry('1', elevatorSubsystem.goToL1Command(false)),
@@ -120,7 +120,7 @@ public class RobotContainer {
 
     Trigger reefTrigger = primaryController.a().and(sysIdQuasistatic.or(sysIdDynamic).negate());
     Trigger stationTrigger = primaryController.b().and(sysIdQuasistatic.or(sysIdDynamic).negate());
-    Trigger algaeTrigger = primaryController.y();
+//     Trigger algaeTrigger = primaryController.y();
     Trigger elevatorTrigger = buttonBoardOther.button(1);
     Trigger elevatorIntakeTrigger = buttonBoardOther.button(2);
 
@@ -195,7 +195,7 @@ public class RobotContainer {
 
         reefTrigger.whileTrue(reefCommand);
         stationTrigger.whileTrue(stationCommand);
-        algaeTrigger.whileTrue(algaeCommand);
+        //algaeTrigger.whileTrue(algaeCommand);
 
         sysIdQuasistatic.and(sysIdForward).whileTrue(swerve.sysIdQuasistatic(Direction.kForward));
         sysIdQuasistatic.and(sysIdBack).whileTrue(swerve.sysIdQuasistatic(Direction.kReverse));
