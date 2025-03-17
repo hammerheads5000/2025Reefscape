@@ -138,8 +138,10 @@ public class Pathfinding {
         endPose = endPose.rotateAround(endPose.getTranslation(), Rotation2d.k180deg);
         poses.add(endPose);
         
+        Translation2d vel = new Translation2d(startSpeeds.vxMetersPerSecond, startSpeeds.vyMetersPerSecond);
+
         Pose2d startPose;
-        if (DriverStation.isAutonomous()) {
+        if (DriverStation.isAutonomous() || vel.getNorm() < MIN_PATH_SPEED.in(MetersPerSecond)) {
             Pose2d closestReefSide = AlignToReefCommands.getReefPose(getClosestReefSide(currentPose), 0);
             if (closestReefSide.getTranslation().getDistance(currentPose.getTranslation()) < APPROACH_DISTANCE.in(Meters)) {
                 startPose = new Pose2d(currentPose.getTranslation(), closestReefSide.getRotation().rotateBy(Rotation2d.k180deg));

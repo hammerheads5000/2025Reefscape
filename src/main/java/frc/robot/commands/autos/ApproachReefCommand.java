@@ -76,7 +76,7 @@ public class ApproachReefCommand extends SequentialCommandGroup {
             return;
         }
 
-        Command followPathCommand = AutoBuilder.followPath(Pathfinding.generateReefPath(swerve.getPose(), side, relativePos, swerve.getChassisSpeeds()));
+        Command followPathCommand = AutoBuilder.followPath(Pathfinding.generateReefPath(swerve.getPose(), side, relativePos, swerve.getFieldSpeeds()));
         
         // First follow generated path
         // Then, alignToReefCommand to ensure alignment

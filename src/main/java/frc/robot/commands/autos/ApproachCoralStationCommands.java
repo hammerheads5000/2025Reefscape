@@ -67,7 +67,7 @@ public class ApproachCoralStationCommands {
             return Commands.none();
         }
         
-        PathPlannerPath path = Pathfinding.generateStationPath(swerve.getPose(), station, relativePos, swerve.getChassisSpeeds());
+        PathPlannerPath path = Pathfinding.generateStationPath(swerve.getPose(), station, relativePos, swerve.getFieldSpeeds());
         
         return Commands.sequence(
                 lightsSubsystem.setSolidColorCommand(PATH_FOLLOWING_COLOR),

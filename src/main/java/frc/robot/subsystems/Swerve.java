@@ -235,6 +235,11 @@ public class Swerve extends SubsystemBase {
         return drivetrain.getState().Speeds;
     }
 
+    public ChassisSpeeds getFieldSpeeds() {
+        SwerveDriveState state = drivetrain.getState();
+        return ChassisSpeeds.fromRobotRelativeSpeeds(state.Speeds, state.Pose.getRotation());
+    }
+
     /**
      * Applies vision measurement
      * 
