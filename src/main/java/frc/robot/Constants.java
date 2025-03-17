@@ -58,6 +58,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StringEntry;
 import edu.wpi.first.networktables.StringTopic;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.DistanceUnit;
@@ -341,6 +342,8 @@ public class Constants {
         public static final StringTopic AUTO_DESCRIPTOR_TOPIC = INST.getStringTopic("Auto Descriptor");
         public static final StringTopic REEF_TELEOP_AUTO_TOPIC = INST.getStringTopic("Reef Descriptor");
         public static final StringTopic STATION_TELEOP_AUTO_TOPIC = INST.getStringTopic("Station Descriptor");
+        public static final StringEntry REEF_TELEOP_AUTO_ENTRY = REEF_TELEOP_AUTO_TOPIC.getEntry("A4");
+        public static final StringEntry STATION_TELEOP_AUTO_ENTRY = STATION_TELEOP_AUTO_TOPIC.getEntry("S0C");
     }
 
     public static class VisionConstants {

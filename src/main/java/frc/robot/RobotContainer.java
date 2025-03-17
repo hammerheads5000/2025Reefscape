@@ -4,14 +4,12 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.Constants.AutoConstants.AUTO_DESCRIPTOR_TOPIC;
-import static frc.robot.Constants.AutoConstants.REEF_TELEOP_AUTO_TOPIC;
-import static frc.robot.Constants.AutoConstants.STATION_TELEOP_AUTO_TOPIC;
+import static frc.robot.Constants.AutoConstants.REEF_TELEOP_AUTO_ENTRY;
+import static frc.robot.Constants.AutoConstants.STATION_TELEOP_AUTO_ENTRY;
 import static frc.robot.Constants.EndEffectorConstants.INTAKE_SPEED;
 import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -53,8 +51,6 @@ public class RobotContainer {
 
     PowerDistribution pdh = new PowerDistribution();
 
-    StringEntry reefTeleopAutoEntry = REEF_TELEOP_AUTO_TOPIC.getEntry("A4");
-    StringEntry stationTeleopAutoEntry = STATION_TELEOP_AUTO_TOPIC.getEntry("S0");
     StringEntry autoDescriptorEntry = AUTO_DESCRIPTOR_TOPIC.getEntry("");
 
     // #region Subsystems
@@ -76,12 +72,12 @@ public class RobotContainer {
     AlignToPoseCommand reefAlign = AlignToReefCommands.alignToReef(0, 1, swerve);
 
     Command reefCommand = Commands.defer(
-            () -> new FullAutoCommand(reefTeleopAutoEntry.get(), swerve, elevatorSubsystem,
+            () -> new FullAutoCommand(REEF_TELEOP_AUTO_ENTRY.get(), swerve, elevatorSubsystem,
                     endEffectorSubsystem, lightsSubsystem),
             Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
 
     Command stationCommand = Commands.defer(
-            () -> new FullAutoCommand(stationTeleopAutoEntry.get(), swerve, elevatorSubsystem,
+            () -> new FullAutoCommand(STATION_TELEOP_AUTO_ENTRY.get(), swerve, elevatorSubsystem,
                     endEffectorSubsystem, lightsSubsystem),
             Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
 
@@ -96,7 +92,7 @@ public class RobotContainer {
             Map.entry('4', elevatorSubsystem.goToL4Command(false)));
 
     Command elevatorCommand = Commands.defer(
-            () -> ELEVATOR_COMMANDS.get(reefTeleopAutoEntry.get().charAt(1)), Set.of(elevatorSubsystem));
+            () -> ELEVATOR_COMMANDS.get(REEF_TELEOP_AUTO_ENTRY.get().charAt(1)), Set.of(elevatorSubsystem));
     // #endregion
 
     // #region Triggers
@@ -168,8 +164,8 @@ public class RobotContainer {
         });
 
         autoDescriptorEntry.set("");
-        reefTeleopAutoEntry.set("A4");
-        stationTeleopAutoEntry.set("S0");
+        REEF_TELEOP_AUTO_ENTRY.set("A4");
+        STATION_TELEOP_AUTO_ENTRY.set("S0");
 
         // elevatorSubsystem.disable();
         configureBindings();
@@ -225,21 +221,17 @@ public class RobotContainer {
     }
 
     private void setTeleopAutoDescriptorLetter(char letter) {
-        String descriptor = reefTeleopAutoEntry.get();
-        reefTeleopAutoEntry.set(letter + descriptor.substring(1));
+        String descriptor = REEF_TELEOP_AUTO_ENTRY.get();
+        REEF_TELEOP_AUTO_ENTRY.set(letter + descriptor.substring(1));
     }
 
     private void setTeleopAutoDescriptorLevel(int level) {
-        String descriptor = reefTeleopAutoEntry.get();
-        reefTeleopAutoEntry.set(descriptor.substring(0, 1) + level);
-    }
-
-    private void setTeleopAutoDescriptorStation(int station) {
-        stationTeleopAutoEntry.set("S" + station);
+        String descriptor = REEF_TELEOP_AUTO_ENTRY.get();
+        REEF_TELEOP_AUTO_ENTRY.set(descriptor.substring(0, 1) + level);
     }
     
     private void setTeleopAutoDescriptorStation(String station) {
-        stationTeleopAutoEntry.set(station);
+        STATION_TELEOP_AUTO_ENTRY.set(station);
     }
 
     public Command getAutonomousCommand() {

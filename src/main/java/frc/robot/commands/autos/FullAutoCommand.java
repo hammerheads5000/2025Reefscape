@@ -14,6 +14,7 @@ import static frc.robot.Constants.LightsConstants.INTAKE_COLOR;
 import java.util.Set;
 
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.networktables.StringEntry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
@@ -50,32 +51,33 @@ public class FullAutoCommand extends SequentialCommandGroup {
         return getStationCommand(station, 0);
     }
 
+    private Command getElevatorPosCommand() {
+        int level = REEF_TELEOP_AUTO_ENTRY.get().charAt(1) - '0';
+        switch (level) {
+            case 1:
+                return elevatorSubsystem.goToL1Command(false);
+            case 2:
+                return elevatorSubsystem.goToL2Command(false);
+            case 3:
+                return elevatorSubsystem.goToL3Command(false);
+            case 4:
+                return elevatorSubsystem.goToL4Command(false);
+            default:
+                System.err.println("ERROR: Invalid auto level token " + level);
+                return elevatorSubsystem.goToL4Command(false);
+        }
+    }
+
     private Command getReefCommand(int side, int relativePos, char level) {
         Command commandToAdd;
 
-        Command elevatorPosCommand;
+        Command elevatorPosCommand = Commands.defer(this::getElevatorPosCommand, Set.of(elevatorSubsystem));
         Command endEffectorCommand = endEffectorSubsystem.scoreCommand();
-        switch (level) {
-            case '1':
-                elevatorPosCommand = elevatorSubsystem.goToL1Command(false);
-                endEffectorCommand = relativePos == 1 ? endEffectorSubsystem.troughLeftCommand()
-                        : endEffectorSubsystem.troughRightCommand();
-                    
-                relativePos *= L1_RELATIVE_POS;
-                break;
-            case '2':
-                elevatorPosCommand = elevatorSubsystem.goToL2Command(false);
-                break;
-            case '3':
-                elevatorPosCommand = elevatorSubsystem.goToL3Command(false);
-                break;
-            case '4':
-                elevatorPosCommand = elevatorSubsystem.goToL4Command(false);
-                break;
-            default:
-                elevatorPosCommand = elevatorSubsystem.goToL4Command(false);
-                System.err.println("ERROR: Invalid auto level token " + level);
-                break;
+        if(level == '1') {
+            endEffectorCommand = relativePos == 1 ? endEffectorSubsystem.troughLeftCommand()
+                    : endEffectorSubsystem.troughRightCommand();
+                
+            relativePos *= L1_RELATIVE_POS;
         }
 
         elevatorPosCommand = elevatorPosCommand.beforeStarting(() -> {
