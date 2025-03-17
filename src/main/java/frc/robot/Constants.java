@@ -89,7 +89,7 @@ public class Constants {
 
     public static final double CONTROLLER_DEADBAND = .225;
     
-    public static final Distance BUMPER_THICKNESS = Inches.of(4);
+    public static final Distance BUMPER_THICKNESS = Inches.of(3.5);
 
     public static class SwerveConstants {
         public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(2.5);//define later
@@ -278,24 +278,30 @@ public class Constants {
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
                 .withPID(5, 0.5, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
-                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/1);
+                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(4, 0.5, 0.05).withTolerance(Inches.of(1.0).in(Meters), 0.1)
-                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/1);
+                .withPID(5, 0.5, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
+                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
 
         public static ControlConstants ALGAE_PID_X = new ControlConstants(SCORING_PID_X)
                 .withTolerance(Inches.of(2).in(Meters));
         public static ControlConstants ALGAE_PID_Y = new ControlConstants(SCORING_PID_Y)
+                .withTolerance(Inches.of(2).in(Meters));
+
+        public static ControlConstants SWEEP_PID_X = new ControlConstants(SCORING_PID_X)
                 .withTolerance(Inches.of(4).in(Meters));
-        
+        public static ControlConstants SWEEP_PID_Y = new ControlConstants(SCORING_PID_Y)
+                .withTolerance(Inches.of(4).in(Meters));
+
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
-                .withPID(6, 2.0, 0.0).withTolerance(1.5);
+                .withPID(3, 3.0, 0.0).withTolerance(1.5);
         
         public static ControlConstants ALGAE_PID_ANGLE = new ControlConstants(SCORING_PID_ANGLE)
+                .withTolerance(2.5);
+        
+        public static ControlConstants SWEEP_PID_ANGLE = new ControlConstants(SCORING_PID_ANGLE)
                 .withTolerance(5);
-
-
 
         public static final Time ALIGN_TIME = Seconds.of(0.15); // amount to wait to make sure aligned
 
@@ -576,6 +582,9 @@ public class Constants {
         // translation to move from centered on a side to scoring position for the left branch
         public static final Translation2d CENTERED_TO_LEFT_BRANCH = new Translation2d(Meters.of(0),
                 Inches.of(12.94 / 2));
+
+        public static final Distance SWEEP_SIDE_DISTANCE = Inches.of(40);
+        public static final double SWEEP_RELATIVE_POS = SWEEP_SIDE_DISTANCE.div(CENTERED_TO_LEFT_BRANCH.getMeasureY()).magnitude();
 
         public static final Distance L1_SIDE_DISTANCE = Inches.of(18);
         public static final double L1_RELATIVE_POS = L1_SIDE_DISTANCE.div(CENTERED_TO_LEFT_BRANCH.getMeasureY()).magnitude();

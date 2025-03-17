@@ -68,7 +68,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
         }
     }
 
-    private Command getReefCommand(int side, int relativePos, char level) {
+    private Command getReefCommand(int side, double relativePos, char level) {
         Command commandToAdd;
 
         Command elevatorPosCommand = Commands.defer(this::getElevatorPosCommand, Set.of(elevatorSubsystem));

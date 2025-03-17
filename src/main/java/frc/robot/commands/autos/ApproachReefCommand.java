@@ -61,7 +61,7 @@ public class ApproachReefCommand extends SequentialCommandGroup {
     }
 
     /** Creates a new ApproachReefCommand. */
-    public ApproachReefCommand(int side, int relativePos, Swerve swerve, LightsSubsystem lightsSubsystem) {
+    public ApproachReefCommand(int side, double relativePos, Swerve swerve, LightsSubsystem lightsSubsystem) {
         AlignToPoseCommand alignToReefCommand = AlignToReefCommands.alignToReef(side, relativePos, swerve);
         
         Pose2d target = AlignToReefCommands.getReefPose(side, relativePos);
@@ -94,7 +94,7 @@ public class ApproachReefCommand extends SequentialCommandGroup {
             swerve.getPose(), AlignToReefCommands.getReefPose(side, relativePos)));
     }
 
-    public static Command waitToDeployElevator(int side, int relativePos, Swerve swerve) {
+    public static Command waitToDeployElevator(int side, double relativePos, Swerve swerve) {
         return Commands.waitUntil(() -> AlignToPoseCommand.withinRange(
             swerve.getPose(), AlignToReefCommands.getReefPose(side, relativePos), ELEVATOR_DEPLOY_DISTANCE));
     }

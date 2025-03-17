@@ -111,6 +111,7 @@ public class AlignToPoseCommand extends Command {
     @Override
     public void end(boolean interrupted) {
         SmartDashboard.putBoolean("Aligned", true);
+        swerve.stop();
     }
 
     private Pose2d getPose() {

@@ -30,7 +30,7 @@ public class AlignToReefCommands {
      * @param relativePos The relative position on the reef (-1 for right branch, 0 for center, 1 for left branch).
      * @return The calculated Pose2d for scoring.
      */
-    public static Pose2d getReefPose(int side, int relativePos) {
+    public static Pose2d getReefPose(int side, double relativePos) {
         // determine whether to use red or blue reef position
         boolean isRed = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
 
@@ -44,7 +44,7 @@ public class AlignToReefCommands {
      * @param relativePos The relative position on the reef (-1 for right branch, 0 for center, 1 for left branch).
      * @return The calculated Pose2d for scoring.
      */
-    public static Pose2d getReefPose(int side, int relativePos, boolean isRed) {
+    public static Pose2d getReefPose(int side, double relativePos, boolean isRed) {
         // determine whether to use red or blue reef position
         flipToRed = isRed;
 
@@ -76,7 +76,7 @@ public class AlignToReefCommands {
         return new Pose2d(poseTranslation, pose.getRotation().rotateBy(Rotation2d.k180deg));
     }
 
-    public static AlignToPoseCommand alignToReef(int side, int relativePos, Swerve swerve) {
+    public static AlignToPoseCommand alignToReef(int side, double relativePos, Swerve swerve) {
         return new AlignToPoseCommand(getReefPose(side, relativePos), SCORING_PID_X, SCORING_PID_Y, SCORING_PID_ANGLE, swerve);
     }
 

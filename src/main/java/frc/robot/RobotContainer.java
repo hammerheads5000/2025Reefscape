@@ -35,6 +35,7 @@ import frc.robot.commands.TeleopSwerve;
 import frc.robot.commands.autos.ApproachCoralStationCommands;
 import frc.robot.commands.autos.FullAutoCommand;
 import frc.robot.commands.autos.RemoveAlgaeCommand;
+import frc.robot.commands.autos.SweepCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.EndEffectorSubsystem;
 import frc.robot.subsystems.LightsSubsystem;
@@ -81,9 +82,12 @@ public class RobotContainer {
                     endEffectorSubsystem, lightsSubsystem),
             Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
 
-//     Command algaeCommand = Commands.defer(
-//             () -> new RemoveAlgaeCommand(swerve, elevatorSubsystem, lightsSubsystem),
-//             Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
+    Command algaeCommand = Commands.defer(
+            () -> new RemoveAlgaeCommand(swerve, elevatorSubsystem, lightsSubsystem),
+            Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
+
+    Command sweepCommand = Commands.defer(
+        () -> new SweepCommand(swerve), Set.of(swerve));
 
     Map<Character, Command> ELEVATOR_COMMANDS = Map.ofEntries(
             Map.entry('1', elevatorSubsystem.goToL1Command(false)),
@@ -104,7 +108,7 @@ public class RobotContainer {
     // Trigger elevatorIntakeTrigger = primaryController.povLeft();
     // Trigger elevatorL2Trigger = primaryController.povRight();
 
-    Trigger moveToZeroTrigger = primaryController.x();
+    // Trigger moveToZeroTrigger = primaryController.x();
 
     Trigger intakeTrigger = primaryController.rightBumper();
     Trigger reverseIntakeTrigger = primaryController.leftBumper();
@@ -116,7 +120,8 @@ public class RobotContainer {
 
     Trigger reefTrigger = primaryController.a().and(sysIdQuasistatic.or(sysIdDynamic).negate());
     Trigger stationTrigger = primaryController.b().and(sysIdQuasistatic.or(sysIdDynamic).negate());
-//     Trigger algaeTrigger = primaryController.y();
+    Trigger algaeTrigger = primaryController.y();
+    Trigger sweepTrigger = primaryController.x();
     Trigger elevatorTrigger = buttonBoardOther.button(1);
     Trigger elevatorIntakeTrigger = buttonBoardOther.button(2);
 
@@ -184,14 +189,15 @@ public class RobotContainer {
         // elevatorIntakeTrigger.whileTrue(elevatorSubsystem.goToIntakePosCommand(false));
         // elevatorL2Trigger.whileTrue(elevatorSubsystem.goToL2Command(false));
 
-        moveToZeroTrigger.whileTrue(reefAlign);
+        // moveToZeroTrigger.whileTrue(reefAlign);
 
         intakeTrigger.whileTrue(endEffectorSubsystem.forwardCommand(INTAKE_SPEED));
         reverseIntakeTrigger.whileTrue(endEffectorSubsystem.forwardCommand(-INTAKE_SPEED));
 
         reefTrigger.whileTrue(reefCommand);
         stationTrigger.whileTrue(stationCommand);
-        //algaeTrigger.whileTrue(algaeCommand);
+        algaeTrigger.whileTrue(algaeCommand);
+        sweepTrigger.whileTrue(sweepCommand);
 
         sysIdQuasistatic.and(sysIdForward).whileTrue(swerve.sysIdQuasistatic(Direction.kForward));
         sysIdQuasistatic.and(sysIdBack).whileTrue(swerve.sysIdQuasistatic(Direction.kReverse));
