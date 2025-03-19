@@ -489,7 +489,7 @@ public class Constants {
     }
 
     public static class ClimberConstants {
-        public static final int MOTOR_ID = 13;
+        public static final int MOTOR_ID = 14;
         public static final CurrentLimitsConfigs CURRENT_LIMITS_CONFIGS = new CurrentLimitsConfigs()
                 .withStatorCurrentLimit(Amps.of(40));
         

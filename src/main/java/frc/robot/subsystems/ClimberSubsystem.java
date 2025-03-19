@@ -22,16 +22,14 @@ import frc.robot.Constants;
 public class ClimberSubsystem extends SubsystemBase {
     private TalonFX motor = new TalonFX(MOTOR_ID, Constants.CAN_FD_BUS);
     private Angle zeroPos = Degrees.of(0);
-    private PowerDistribution pdh;
 
     /** Creates a new ClimberSubsystem. */
-    public ClimberSubsystem(PowerDistribution pdh) {
-        this.pdh = pdh;
+    public ClimberSubsystem() {
 
         SmartDashboard.putData("Climb", climbCommand());
         SmartDashboard.putData("Unclimb", reverseCommand());
-        SmartDashboard.putData("Release Electromagnet", releaseIntakeCommand());
-        SmartDashboard.putData("Latch Electromagnet", latchIntakeCommand());
+        // SmartDashboard.putData("Release Electromagnet", releaseIntakeCommand());
+        // SmartDashboard.putData("Latch Electromagnet", latchIntakeCommand());
     }
 
     public Angle getRawAngle() {
@@ -50,21 +48,21 @@ public class ClimberSubsystem extends SubsystemBase {
         motor.setControl(new NeutralOut());
     }
 
-    public void releaseIntake() {
-        pdh.setSwitchableChannel(false);
-    }
+    // public void releaseIntake() {
+    //     pdh.setSwitchableChannel(false);
+    // }
 
-    public void latchIntake() {
-        pdh.setSwitchableChannel(true);
-    }
+    // public void latchIntake() {
+    //     pdh.setSwitchableChannel(true);
+    // }
 
-    public Command releaseIntakeCommand() {
-        return this.runOnce(this::releaseIntake);
-    }
+    // public Command releaseIntakeCommand() {
+    //     return this.runOnce(this::releaseIntake);
+    // }
 
-    public Command latchIntakeCommand() {
-        return this.runOnce(this::latchIntake);
-    }
+    // public Command latchIntakeCommand() {
+    //     return this.runOnce(this::latchIntake);
+    // }
 
     public Command climbCommand() {
         return this.startEnd(() -> motor.setVoltage(CLIMB_SPEED.in(Volts)), this::stop);
