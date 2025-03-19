@@ -10,13 +10,20 @@ import static frc.robot.Constants.AutoConstants.APPROACH_DISTANCE;
 import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
 import static frc.robot.Constants.AutoConstants.MIN_PATH_SPEED;
 import static frc.robot.Constants.AutoConstants.TRAVERSE_DISTANCE;
+import static frc.robot.Constants.FieldConstants.REEF_CENTER_BLUE;
+import static frc.robot.Constants.FieldConstants.REEF_CENTER_RED;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.ConstraintsZone;
+import com.pathplanner.lib.path.EventMarker;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.IdealStartingState;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PointTowardsZone;
+import com.pathplanner.lib.path.RotationTarget;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -49,9 +56,13 @@ public class Pathfinding {
         return Math.min(diff, 6 - diff);
     }
 
-    private static Pose2d pointPoseTowards(Pose2d pose, Pose2d other) {
-        Translation2d translation = other.getTranslation().minus(pose.getTranslation());
+    private static Pose2d pointPoseTowards(Pose2d pose, Translation2d other) {
+        Translation2d translation = other.minus(pose.getTranslation());
         return new Pose2d(pose.getTranslation(), translation.getAngle());
+    }
+
+    private static Pose2d pointPoseTowards(Pose2d pose, Pose2d other) {
+        return pointPoseTowards(pose, other.getTranslation());
     }
 
     private static int getNextSide(int currentSide, int targetSide) {
@@ -104,11 +115,20 @@ public class Pathfinding {
             poses.add(0, new Pose2d(currentPose.getTranslation(), chassisSpeedsToHeading(startSpeeds)));
         }
 
+        ArrayList<PointTowardsZone> pointTowardsZones = new ArrayList<>();
+        Translation2d reefCenter = AutoBuilder.shouldFlip() ? REEF_CENTER_RED : REEF_CENTER_BLUE;
+        pointTowardsZones.add(new PointTowardsZone("Point At Reef", reefCenter, 0, poses.size()-2));
+
         PathPlannerPath path = new PathPlannerPath(
-                PathPlannerPath.waypointsFromPoses(poses), 
+                PathPlannerPath.waypointsFromPoses(poses),
+                new ArrayList<RotationTarget>(),
+                pointTowardsZones,
+                new ArrayList<ConstraintsZone>(),
+                new ArrayList<EventMarker>(),
                 CONSTRAINTS,
                 new IdealStartingState(chassisSpeedsToVelocity(startSpeeds), currentPose.getRotation()),
-                new GoalEndState(0, endPose.getRotation())
+                new GoalEndState(0, endPose.getRotation()),
+                false
         );
 
         if (AutoBuilder.shouldFlip()) {
