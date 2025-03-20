@@ -24,6 +24,7 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
   DigitalInput frontLidar;
   DigitalInput backLidar;
+  DigitalInput intakeLidar;
 
   /** Creates a new EndEffectorSubsystem. */
   public EndEffectorSubsystem() {
@@ -35,6 +36,8 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
     frontLidar = new DigitalInput(FRONT_LIDAR_ID);
     backLidar = new DigitalInput(BACK_LIDAR_ID);
+    intakeLidar = new DigitalInput(INTAKE_LIDAR_ID);
+
     SmartDashboard.putData("End Effector Intake", intakeCommand());
     SmartDashboard.putData("End Effector Shoot", scoreCommand());
     SmartDashboard.putData("End Effector Trough Left", troughLeftCommand());
@@ -48,6 +51,10 @@ public class EndEffectorSubsystem extends SubsystemBase {
 
   public boolean getBackLidar() {
     return backLidar.get();
+  }
+  
+  public boolean getIntakeLidar() {
+    return intakeLidar.get();
   }
 
   public void forward(double speedDutyCycle) {

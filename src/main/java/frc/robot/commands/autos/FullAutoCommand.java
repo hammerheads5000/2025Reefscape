@@ -41,7 +41,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
             command = command.alongWith(elevatorSubsystem.goToIntakePosCommand(false))
                     .alongWith(new ScheduleCommand(endEffectorSubsystem.intakeCommand()))
                     .andThen(lightsSubsystem.setSolidColorCommand(INTAKE_COLOR))
-                    .andThen(Commands.waitUntil(() -> !endEffectorSubsystem.getBackLidar()))
+                    .andThen(Commands.waitUntil(() -> !endEffectorSubsystem.getIntakeLidar() || !endEffectorSubsystem.getBackLidar()))
                     .andThen(lightsSubsystem.setPatternCommand(IDLE_PATTERN));
         }
         return command;

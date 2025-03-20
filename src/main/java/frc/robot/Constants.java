@@ -265,7 +265,7 @@ public class Constants {
         public static final Frequency ODOMETRY_UPDATE_FREQ = Hertz.of(0); // 0 Hz = default 250 Hz for CAN FD
         public static final Matrix<N3, N1> ODOMETRY_STD_DEV = VecBuilder.fill(0.02, 0.02, 0.01);
         public static final Matrix<N3, N1> VISION_STD_DEV_0M = VecBuilder.fill(0.06, 0.06, 0.5);
-        public static final Matrix<N3, N1> VISION_STD_DEV_5M = VecBuilder.fill(2, 2, 3);
+        public static final Matrix<N3, N1> VISION_STD_DEV_5M = VecBuilder.fill(1, 1, 3);
 
         public static final DriveRequestType DRIVE_REQUEST_TYPE = DriveRequestType.Velocity;
         public static final SteerRequestType STEER_REQUEST_TYPE = SteerRequestType.MotionMagicExpo;
@@ -458,7 +458,7 @@ public class Constants {
         public static final Angle L2_HEIGHT = Rotations.of(1.975);
         public static final Angle L3_HEIGHT = Rotations.of(2.83);
         public static final Angle L4_HEIGHT = Rotations.of(4.3675);
-        public static final Angle INTAKE_HEIGHT = Rotations.of(0.13);
+        public static final Angle INTAKE_HEIGHT = Rotations.of(0.015);
         
         public static final Angle INTAKE_JITTER_AMOUNT = Rotations.of(0.025);
         public static final Time INTAKE_JITTER_PERIOD = Seconds.of(0.75);
@@ -484,8 +484,8 @@ public class Constants {
         public static final double INTAKE_SPEED = 0.25;
         public static final double SLOW_INTAKE_SPEED = 0.15;
         public static final double SCORE_SPEED = 0.15;
-        public static final double FAST_TROUGH_SPEED = 0.6;
-        public static final double SLOW_TROUGH_SPEED = 0.25;
+        public static final double FAST_TROUGH_SPEED = 0.3;
+        public static final double SLOW_TROUGH_SPEED = 0.1;
     }
 
     public static class ClimberConstants {
@@ -586,7 +586,7 @@ public class Constants {
         public static final Distance SWEEP_SIDE_DISTANCE = Inches.of(40);
         public static final double SWEEP_RELATIVE_POS = SWEEP_SIDE_DISTANCE.div(CENTERED_TO_LEFT_BRANCH.getMeasureY()).magnitude();
 
-        public static final Distance L1_SIDE_DISTANCE = Inches.of(18);
+        public static final Distance L1_SIDE_DISTANCE = Inches.of(16);
         public static final double L1_RELATIVE_POS = L1_SIDE_DISTANCE.div(CENTERED_TO_LEFT_BRANCH.getMeasureY()).magnitude();
     }
 }
