@@ -87,7 +87,9 @@ public class Constants {
 
     public static final NetworkTableInstance INST = NetworkTableInstance.getDefault();
 
-    public static final double CONTROLLER_DEADBAND = .225;
+    public static final double CONTROLLER_DEADBAND = 0.225;
+    public static final double CONTROLLER_RUMBLE = 0.3;
+    public static final Time SCORE_RUMBLE_TIME = Seconds.of(1);
     
     public static final Distance BUMPER_THICKNESS = Inches.of(3.5);
 
@@ -479,6 +481,7 @@ public class Constants {
         // Lidar
         public static final int FRONT_LIDAR_ID = 9;
         public static final int BACK_LIDAR_ID = 8;
+        public static final int INTAKE_LIDAR_ID = 7;
 
         // Speed (duty cycle)
         public static final double INTAKE_SPEED = 0.25;

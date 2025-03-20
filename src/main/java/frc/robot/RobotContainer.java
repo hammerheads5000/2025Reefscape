@@ -20,6 +20,7 @@ import edu.wpi.first.networktables.StringEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -74,10 +75,15 @@ public class RobotContainer {
     Command disabledLightsCommand = new DisabledLightsCommand(lightsSubsystem, visionSubsystem).ignoringDisable(true);
     AlignToPoseCommand reefAlign = AlignToReefCommands.alignToReef(0, 1, swerve);
 
+    Command rumbleCommand = Commands.startEnd(
+            () -> primaryController.setRumble(RumbleType.kBothRumble, Constants.CONTROLLER_RUMBLE), 
+            () -> primaryController.setRumble(RumbleType.kBothRumble, 0));
+
     Command reefCommand = Commands.defer(
             () -> new FullAutoCommand(REEF_TELEOP_AUTO_ENTRY.get(), swerve, elevatorSubsystem,
                     endEffectorSubsystem, lightsSubsystem),
-            Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
+            Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN))
+            .andThen(rumbleCommand.withTimeout(Constants.SCORE_RUMBLE_TIME));
 
     Command stationCommand = Commands.defer(
             () -> new FullAutoCommand(STATION_TELEOP_AUTO_ENTRY.get(), swerve, elevatorSubsystem,
@@ -160,6 +166,8 @@ public class RobotContainer {
     };
 
     Trigger[] stationTriggers = new Trigger[6];
+
+    Trigger hasCoralTrigger = new Trigger(() -> !endEffectorSubsystem.getIntakeLidar() || !endEffectorSubsystem.getBackLidar());
     // #endregion
 
     public RobotContainer() {
@@ -231,6 +239,8 @@ public class RobotContainer {
             stationTriggers[i]
                     .onTrue(new InstantCommand(() -> setTeleopAutoDescriptorStation(BUTTON_TO_STATION.get(button))).ignoringDisable(true));
         }
+
+        hasCoralTrigger.whileTrue(rumbleCommand); // rumble while has coral
     }
 
     private void setTeleopAutoDescriptorLetter(char letter) {
