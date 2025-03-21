@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Constants.EndEffectorConstants.*;
 
 import com.ctre.phoenix6.controls.NeutralOut;
@@ -11,92 +12,114 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 
 @Logged
 public class EndEffectorSubsystem extends SubsystemBase {
 
-  TalonFX motorLeft;
-  TalonFX motorRight;
+    TalonFX motorLeft;
+    TalonFX motorRight;
 
-  DigitalInput frontLidar;
-  DigitalInput backLidar;
-  DigitalInput intakeLidar;
+    DigitalInput frontLidar;
+    DigitalInput backLidar;
+    DigitalInput intakeLidar;
 
-  /** Creates a new EndEffectorSubsystem. */
-  public EndEffectorSubsystem() {
-    motorLeft = new TalonFX(MOTOR_LEFT_ID, Constants.CAN_FD_BUS);
-    motorRight = new TalonFX(MOTOR_RIGHT_ID, Constants.CAN_FD_BUS);
+    Timer stallTime;
+    Trigger stallTrigger;
 
-    motorLeft.getConfigurator().apply(MOTOR_LEFT_CONFIGS);
-    motorRight.getConfigurator().apply(MOTOR_RIGHT_CONFIGS);
+    /** Creates a new EndEffectorSubsystem. */
+    public EndEffectorSubsystem() {
+        motorLeft = new TalonFX(MOTOR_LEFT_ID, Constants.CAN_FD_BUS);
+        motorRight = new TalonFX(MOTOR_RIGHT_ID, Constants.CAN_FD_BUS);
 
-    frontLidar = new DigitalInput(FRONT_LIDAR_ID);
-    backLidar = new DigitalInput(BACK_LIDAR_ID);
-    intakeLidar = new DigitalInput(INTAKE_LIDAR_ID);
+        motorLeft.getConfigurator().apply(MOTOR_LEFT_CONFIGS);
+        motorRight.getConfigurator().apply(MOTOR_RIGHT_CONFIGS);
 
-    SmartDashboard.putData("End Effector Intake", intakeCommand());
-    SmartDashboard.putData("End Effector Shoot", scoreCommand());
-    SmartDashboard.putData("End Effector Trough Left", troughLeftCommand());
-    SmartDashboard.putData("End Effector Trough Right", troughRightCommand());
-    SmartDashboard.putData("End Effector Reverse", forwardCommand(-INTAKE_SPEED));
-  }
+        frontLidar = new DigitalInput(FRONT_LIDAR_ID);
+        backLidar = new DigitalInput(BACK_LIDAR_ID);
+        intakeLidar = new DigitalInput(INTAKE_LIDAR_ID);
 
-  public boolean getFrontLidar() {
-    return frontLidar.get();
-  }
+        stallTime = new Timer();
+        stallTrigger = new Trigger(this::isStalled);
+        stallTrigger.onTrue(Commands.runOnce(stallTime::restart));
 
-  public boolean getBackLidar() {
-    return backLidar.get();
-  }
-  
-  public boolean getIntakeLidar() {
-    return intakeLidar.get();
-  }
+        SmartDashboard.putData("End Effector Intake", coolerIntakeCommand());
+        SmartDashboard.putData("End Effector Shoot", scoreCommand());
+        SmartDashboard.putData("End Effector Trough Left", troughLeftCommand());
+        SmartDashboard.putData("End Effector Trough Right", troughRightCommand());
+        SmartDashboard.putData("End Effector Reverse", forwardCommand(-INTAKE_SPEED));
+    }
 
-  public void forward(double speedDutyCycle) {
-    motorLeft.set(speedDutyCycle);
-    motorRight.set(speedDutyCycle);
-  }
+    public boolean getFrontLidar() {
+        return frontLidar.get();
+    }
 
-  public void setMotors(double left, double right) {
-    motorLeft.set(left);
-    motorRight.set(right);
-  }
+    public boolean getBackLidar() {
+        return backLidar.get();
+    }
 
-  public void stop() {
-    motorLeft.setControl(new NeutralOut());
-    motorRight.setControl(new NeutralOut());
-  }
+    public boolean getIntakeLidar() {
+        return intakeLidar.get();
+    }
 
-  public Command forwardCommand(double speedDutyCycle) {
-    return this.startEnd(() -> forward(speedDutyCycle), () -> stop());
-  }
+    public boolean isStalled() {
+        return motorLeft.getVelocity().getValue().magnitude() <= MIN_VEL.magnitude()
+                || motorRight.getVelocity().getValue().magnitude() <= MIN_VEL.magnitude();
+    }
 
-  public Command intakeCommand() {
-    return this.forwardCommand(INTAKE_SPEED).until(() -> !backLidar.get())
-        .andThen(this.forwardCommand(SLOW_INTAKE_SPEED).until(() -> backLidar.get() && !frontLidar.get()));
-  }
+    public void forward(double speedDutyCycle) {
+        motorLeft.set(speedDutyCycle);
+        motorRight.set(speedDutyCycle);
+    }
 
-  public Command scoreCommand() {
-    return this.forwardCommand(SCORE_SPEED).until(() -> frontLidar.get());
-  }
+    public void setMotors(double left, double right) {
+        motorLeft.set(left);
+        motorRight.set(right);
+    }
 
-  public Command troughLeftCommand() {
-    return this.startEnd(() -> setMotors(SLOW_TROUGH_SPEED, FAST_TROUGH_SPEED), this::stop)
-        .until(() -> frontLidar.get());
-  }
+    public void stop() {
+        motorLeft.setControl(new NeutralOut());
+        motorRight.setControl(new NeutralOut());
+    }
 
-  public Command troughRightCommand() {
-    return this.startEnd(() -> setMotors(FAST_TROUGH_SPEED, SLOW_TROUGH_SPEED), this::stop)
-        .until(() -> frontLidar.get());
-  }
+    public Command forwardCommand(double speedDutyCycle) {
+        return this.startEnd(() -> forward(speedDutyCycle), () -> stop());
+    }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-  }
+    public Command intakeCommand() {
+        return this.forwardCommand(INTAKE_SPEED).until(() -> !backLidar.get())
+                .andThen(this.forwardCommand(SLOW_INTAKE_SPEED).until(() -> backLidar.get() && !frontLidar.get()));
+    }
+
+    public Command coolerIntakeCommand() {
+        return Commands.repeatingSequence(this.forwardCommand(INTAKE_SPEED).beforeStarting(stallTime::restart)
+                .until(() -> isStalled() && stallTime.hasElapsed(STALL_TIME.in(Seconds))
+                ), Commands.waitTime(COOLER_INTAKE_CYCLE)
+        ).until(() -> backLidar.get() && !frontLidar.get());
+    }
+
+    public Command scoreCommand() {
+        return this.forwardCommand(SCORE_SPEED).until(() -> frontLidar.get());
+    }
+
+    public Command troughLeftCommand() {
+        return this.startEnd(() -> setMotors(SLOW_TROUGH_SPEED, FAST_TROUGH_SPEED), this::stop)
+                .until(() -> frontLidar.get());
+    }
+
+    public Command troughRightCommand() {
+        return this.startEnd(() -> setMotors(FAST_TROUGH_SPEED, SLOW_TROUGH_SPEED), this::stop)
+                .until(() -> frontLidar.get());
+    }
+
+    @Override
+    public void periodic() {
+        // This method will be called once per scheduler run
+    }
 }

@@ -95,7 +95,7 @@ public class Constants {
 
     public static class SwerveConstants {
         public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(2.5);//define later
-        public static final AngularVelocity DEFAULT_ROT_SPEED = RotationsPerSecond.of(1.5);
+        public static final AngularVelocity DEFAULT_ROT_SPEED = RotationsPerSecond.of(1.25);
 
         public static final LinearVelocity FAST_DRIVE_SPEED = MetersPerSecond.of(5);//find values later
         public static final AngularVelocity FAST_ROT_SPEED = RotationsPerSecond.of(4);
@@ -308,7 +308,7 @@ public class Constants {
         public static final Time ALIGN_TIME = Seconds.of(0.15); // amount to wait to make sure aligned
 
         // output: m/s, measure: m
-        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(3, 0.5, 0.5);
+        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(3.5, 0.5, 0.5);
         // output: rad/s, measure: rad
         public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(2, 0, 0.5);
     }
@@ -317,7 +317,7 @@ public class Constants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
                 SwerveConstants.FAST_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(0.675)),
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(0.6)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
                 SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
 
@@ -327,7 +327,7 @@ public class Constants {
 
         public static final Distance APPROACH_DISTANCE = Inches.of(15); // *extra* distance to reef when approaching
         public static final Distance PULL_DISTANCE = Inches.of(15);
-        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(60);
+        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(40);
         public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side
 
         public static final LinearVelocity MIN_PATH_SPEED = MetersPerSecond.of(1);
@@ -484,11 +484,15 @@ public class Constants {
         public static final int INTAKE_LIDAR_ID = 7;
 
         // Speed (duty cycle)
-        public static final double INTAKE_SPEED = 0.25;
-        public static final double SLOW_INTAKE_SPEED = 0.15;
+        public static final double INTAKE_SPEED = 0.3;
+        public static final double SLOW_INTAKE_SPEED = 0.3;
         public static final double SCORE_SPEED = 0.15;
         public static final double FAST_TROUGH_SPEED = 0.3;
         public static final double SLOW_TROUGH_SPEED = 0.1;
+        
+        public static final Time COOLER_INTAKE_CYCLE = Seconds.of(0.1);
+        public static final AngularVelocity MIN_VEL = RotationsPerSecond.of(5);
+        public static final Time STALL_TIME = Seconds.of(0.3);
     }
 
     public static class ClimberConstants {

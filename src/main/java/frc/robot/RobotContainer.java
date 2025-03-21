@@ -83,7 +83,7 @@ public class RobotContainer {
             () -> new FullAutoCommand(REEF_TELEOP_AUTO_ENTRY.get(), swerve, elevatorSubsystem,
                     endEffectorSubsystem, lightsSubsystem),
             Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN))
-            .andThen(rumbleCommand.withTimeout(Constants.SCORE_RUMBLE_TIME));
+            .andThen(rumbleCommand.asProxy().withTimeout(Constants.SCORE_RUMBLE_TIME));
 
     Command stationCommand = Commands.defer(
             () -> new FullAutoCommand(STATION_TELEOP_AUTO_ENTRY.get(), swerve, elevatorSubsystem,
@@ -240,7 +240,7 @@ public class RobotContainer {
                     .onTrue(new InstantCommand(() -> setTeleopAutoDescriptorStation(BUTTON_TO_STATION.get(button))).ignoringDisable(true));
         }
 
-        hasCoralTrigger.whileTrue(rumbleCommand); // rumble while has coral
+        hasCoralTrigger.whileTrue(rumbleCommand.asProxy()); // rumble while has coral
     }
 
     private void setTeleopAutoDescriptorLetter(char letter) {

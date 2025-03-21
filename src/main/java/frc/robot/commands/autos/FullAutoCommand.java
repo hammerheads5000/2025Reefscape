@@ -39,7 +39,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
                 
         if (Robot.isReal()) {
             command = command.alongWith(elevatorSubsystem.goToIntakePosCommand(false))
-                    .alongWith(new ScheduleCommand(endEffectorSubsystem.intakeCommand()))
+                    .alongWith(new ScheduleCommand(endEffectorSubsystem.coolerIntakeCommand()))
                     .andThen(lightsSubsystem.setSolidColorCommand(INTAKE_COLOR))
                     .andThen(Commands.waitUntil(() -> !endEffectorSubsystem.getIntakeLidar() || !endEffectorSubsystem.getBackLidar()))
                     .andThen(lightsSubsystem.setPatternCommand(IDLE_PATTERN));
