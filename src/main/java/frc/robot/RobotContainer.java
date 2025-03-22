@@ -176,9 +176,7 @@ public class RobotContainer {
         AlignToReefCommands.testReefPoses(); // publishes all reef target poses to networktables
         ApproachCoralStationCommands.testStationPoses();
 
-        DriverStation.getAlliance().ifPresent(alliance -> {
-            swerve.setOperatorPerspective(alliance == Alliance.Blue ? Rotation2d.kZero : Rotation2d.k180deg);
-        });
+        configureAlliance();
 
         autoDescriptorEntry.set("");
         REEF_TELEOP_AUTO_ENTRY.set("A4");
@@ -186,6 +184,12 @@ public class RobotContainer {
 
         // elevatorSubsystem.disable();
         configureBindings();
+    }
+
+    public void configureAlliance() {
+        DriverStation.getAlliance().ifPresent(alliance -> {
+                swerve.setOperatorPerspective(alliance == Alliance.Blue ? Rotation2d.kZero : Rotation2d.k180deg);
+        });
     }
 
     private void configureBindings() {

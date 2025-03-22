@@ -100,7 +100,7 @@ public class AlignToPoseCommand extends Command {
         //     yVel = yVel.unaryMinus();
         //     System.out.println("Hi");
         // }
-        swerve.driveFieldCentric(xVel, yVel, angleVel);
+        swerve.driveFieldCentricAbsolute(xVel, yVel, angleVel);
 
         SmartDashboard.putNumber("Align X Setpoint", pidControllerX.getSetpoint().position);
         SmartDashboard.putNumber("Align Y Setpoint", pidControllerY.getSetpoint().position);

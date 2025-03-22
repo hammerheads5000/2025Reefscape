@@ -98,6 +98,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
                     .andThen(Commands.waitUntil(() -> !endEffectorSubsystem.getFrontLidar()))
                     .andThen(elevatorPosCommand))
                     .andThen(endEffectorCommand.asProxy())
+                    .andThen(Commands.waitTime(AFTER_WAIT_TIME))
                     .andThen(elevatorSubsystem.goToIntakePosCommand(true));
         }
         return commandToAdd;

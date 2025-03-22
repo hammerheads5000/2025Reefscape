@@ -85,8 +85,8 @@ public class TeleopSwerve extends Command {
     double speedX = processJoystick(-controller.getLeftY());
     double speedY = processJoystick(-controller.getLeftX());
 
-    speedX *= isRed ? -1 : 1;
-    speedY *= isRed ? -1 : 1;
+    // speedX *= isRed ? -1 : 1;
+    // speedY *= isRed ? -1 : 1;
 
     // raw speed
     speedX = driveSpeed.times(speedX).in(MetersPerSecond);

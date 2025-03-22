@@ -15,6 +15,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.ctre.phoenix6.swerve.SwerveRequest.ForwardPerspectiveValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -35,6 +36,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -196,6 +198,7 @@ public class Swerve extends SubsystemBase {
      *  </ul>
      */
     public void setOperatorPerspective(Rotation2d perspective) {
+        SmartDashboard.putNumber("VLKNEIO", perspective.getDegrees());
         drivetrain.setOperatorPerspectiveForward(perspective);
     }
 
@@ -204,7 +207,12 @@ public class Swerve extends SubsystemBase {
     }
 
     public void driveFieldCentric(LinearVelocity xVel, LinearVelocity yVel, AngularVelocity rotVel) {
-        drivetrain.setControl(fieldCentricRequest
+        drivetrain.setControl(fieldCentricRequest.withForwardPerspective(ForwardPerspectiveValue.OperatorPerspective)
+                .withVelocityX(xVel).withVelocityY(yVel).withRotationalRate(rotVel));
+    }
+
+    public void driveFieldCentricAbsolute(LinearVelocity xVel, LinearVelocity yVel, AngularVelocity rotVel) {
+        drivetrain.setControl(fieldCentricRequest.withForwardPerspective(ForwardPerspectiveValue.BlueAlliance)
                 .withVelocityX(xVel).withVelocityY(yVel).withRotationalRate(rotVel));
     }
 
