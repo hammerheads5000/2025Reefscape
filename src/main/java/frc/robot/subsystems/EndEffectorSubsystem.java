@@ -93,8 +93,7 @@ public class EndEffectorSubsystem extends SubsystemBase {
     }
 
     public Command intakeCommand() {
-        return this.forwardCommand(INTAKE_SPEED).until(() -> !backLidar.get())
-                .andThen(this.forwardCommand(SLOW_INTAKE_SPEED).until(() -> backLidar.get() && !frontLidar.get()));
+        return this.forwardCommand(INTAKE_SPEED).until(() -> backLidar.get() && !frontLidar.get());
     }
 
     public Command coolerIntakeCommand() {

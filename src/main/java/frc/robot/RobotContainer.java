@@ -13,6 +13,7 @@ import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 import java.util.Map;
 import java.util.Set;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -113,7 +114,7 @@ public class RobotContainer {
 
     Trigger elevatorUpTrigger = primaryController.povUp();
     Trigger elevatorDownTrigger = primaryController.povDown();
-    // Trigger elevatorIntakeTrigger = primaryController.povLeft();
+    Trigger elevatorIntakeTrigger = primaryController.povLeft();
     // Trigger elevatorL2Trigger = primaryController.povRight();
 
     // Trigger moveToZeroTrigger = primaryController.x();
@@ -131,7 +132,7 @@ public class RobotContainer {
     Trigger algaeTrigger = primaryController.y();
     Trigger sweepTrigger = primaryController.x();
     Trigger elevatorTrigger = buttonBoardOther.button(1);
-    Trigger elevatorIntakeTrigger = buttonBoardOther.button(2);
+    //Trigger elevatorIntakeTrigger = buttonBoardOther.button(2);
     Trigger climbTrigger = primaryController.start();
     Trigger unclimbTrigger = primaryController.back();
 
@@ -175,6 +176,7 @@ public class RobotContainer {
         swerve.setDefaultCommand(teleopSwerve);
         AlignToReefCommands.testReefPoses(); // publishes all reef target poses to networktables
         ApproachCoralStationCommands.testStationPoses();
+        CameraServer.startAutomaticCapture();
 
         configureAlliance();
 
@@ -202,7 +204,7 @@ public class RobotContainer {
         // elevatorSubsystem.setRotations(elevatorSubsystem.getMotorRotations().minus(Rotations.of(3)))));
         elevatorUpTrigger.whileTrue(elevatorSubsystem.moveUpManualCommand());
         elevatorDownTrigger.whileTrue(elevatorSubsystem.moveDownManualCommand());
-        // elevatorIntakeTrigger.whileTrue(elevatorSubsystem.goToIntakePosCommand(false));
+        elevatorIntakeTrigger.whileTrue(elevatorSubsystem.goToIntakePosCommand(false));
         // elevatorL2Trigger.whileTrue(elevatorSubsystem.goToL2Command(false));
 
         // moveToZeroTrigger.whileTrue(reefAlign);

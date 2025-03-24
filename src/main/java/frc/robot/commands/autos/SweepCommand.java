@@ -4,12 +4,17 @@
 
 package frc.robot.commands.autos;
 
+import static edu.wpi.first.units.Units.Meters;
+import static frc.robot.Constants.FieldConstants.SWEEP_OFFSET;
 import static frc.robot.Constants.FieldConstants.SWEEP_RELATIVE_POS;
 import static frc.robot.Constants.SwerveConstants.SWEEP_PID_ANGLE;
 import static frc.robot.Constants.SwerveConstants.SWEEP_PID_X;
 import static frc.robot.Constants.SwerveConstants.SWEEP_PID_Y;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AlignToPoseCommand;
 import frc.robot.commands.AlignToReefCommands;
@@ -33,6 +38,7 @@ public class SweepCommand extends SequentialCommandGroup {
         } else {
             pose1 = rightPose;
         }
+        pose1 = pose1.transformBy(new Transform2d(new Translation2d(SWEEP_OFFSET.unaryMinus(), Meters.zero()), Rotation2d.kZero));
         addCommands(
             new AlignToPoseCommand(pose1, SWEEP_PID_X, SWEEP_PID_Y, SWEEP_PID_ANGLE, swerve),
             new AlignToPoseCommand(centerPose, SWEEP_PID_X, SWEEP_PID_Y, SWEEP_PID_ANGLE, swerve)            

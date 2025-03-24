@@ -280,10 +280,10 @@ public class Constants {
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
                 .withPID(5, 0.5, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
-                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
+                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.6);
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
                 .withPID(5, 0.5, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
-                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
+                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.6);
 
         public static ControlConstants ALGAE_PID_X = new ControlConstants(SCORING_PID_X)
                 .withTolerance(Inches.of(2).in(Meters));
@@ -317,7 +317,7 @@ public class Constants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
                 SwerveConstants.FAST_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(0.6)),
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(0.75)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
                 SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
 
@@ -593,6 +593,7 @@ public class Constants {
                 Inches.of(12.94 / 2));
 
         public static final Distance SWEEP_SIDE_DISTANCE = Inches.of(40);
+        public static final Distance SWEEP_OFFSET = Inches.of(2);
         public static final double SWEEP_RELATIVE_POS = SWEEP_SIDE_DISTANCE.div(CENTERED_TO_LEFT_BRANCH.getMeasureY()).magnitude();
 
         public static final Distance L1_SIDE_DISTANCE = Inches.of(16);
