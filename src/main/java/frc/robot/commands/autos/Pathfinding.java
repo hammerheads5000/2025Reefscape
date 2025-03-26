@@ -14,7 +14,6 @@ import static frc.robot.Constants.FieldConstants.REEF_CENTER_BLUE;
 import static frc.robot.Constants.FieldConstants.REEF_CENTER_RED;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.ConstraintsZone;

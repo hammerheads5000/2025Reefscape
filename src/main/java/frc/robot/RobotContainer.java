@@ -8,6 +8,7 @@ import static frc.robot.Constants.AutoConstants.AUTO_DESCRIPTOR_TOPIC;
 import static frc.robot.Constants.AutoConstants.REEF_TELEOP_AUTO_ENTRY;
 import static frc.robot.Constants.AutoConstants.STATION_TELEOP_AUTO_ENTRY;
 import static frc.robot.Constants.EndEffectorConstants.INTAKE_SPEED;
+import static frc.robot.Constants.FieldConstants.FIELD;
 import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 
 import java.util.Map;
@@ -22,13 +23,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.AlignToPoseCommand;
 import frc.robot.commands.AlignToReefCommands;
@@ -183,6 +184,7 @@ public class RobotContainer {
         autoDescriptorEntry.set("");
         REEF_TELEOP_AUTO_ENTRY.set("A4");
         STATION_TELEOP_AUTO_ENTRY.set("S0");
+        SmartDashboard.putData(FIELD);
 
         // elevatorSubsystem.disable();
         configureBindings();

@@ -8,24 +8,20 @@ import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
-import static frc.robot.Constants.INST;
 import static frc.robot.Constants.AutoConstants.APPROACH_DISTANCE;
+import static frc.robot.Constants.FieldConstants.ALIGNMENT_FIELD_OBJECT_NAME;
+import static frc.robot.Constants.FieldConstants.FIELD;
 import static frc.robot.Constants.SwerveConstants.ALIGN_TIME;
-
-import javax.swing.plaf.TreeUI;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.ControlConstants;
@@ -41,8 +37,6 @@ public class AlignToPoseCommand extends Command {
     private Timer alignedTimer;
 
     private Swerve swerve;
-
-    private BooleanEntry idfk = INST.getBooleanTopic("IDFK").getEntry(true);
 
     /** Creates a new AlignToPoseCommand. */
     public AlignToPoseCommand(Pose2d targetPose, ControlConstants pidConstantsX,
@@ -64,8 +58,7 @@ public class AlignToPoseCommand extends Command {
         SmartDashboard.putData("Align X PID", pidControllerX);
         SmartDashboard.putData("Align Y PID", pidControllerY);
         SmartDashboard.putData("Align Angle PID", pidControllerAngle);
-        INST.getStructTopic("DLKSFJ", Pose2d.struct).publish().set(targetPose);
-        idfk.set(true);
+
         addRequirements(swerve);
     }
 
@@ -81,6 +74,8 @@ public class AlignToPoseCommand extends Command {
         pidControllerX.setGoal(targetPose.getX());
         pidControllerY.setGoal(targetPose.getY());
         pidControllerAngle.setSetpoint(targetPose.getRotation().getDegrees());
+
+        FIELD.getObject(ALIGNMENT_FIELD_OBJECT_NAME).setPose(targetPose);
 
         alignedTimer.reset();
         SmartDashboard.putBoolean("Aligned", false);
