@@ -12,6 +12,7 @@ import static frc.robot.Constants.INST;
 import static frc.robot.Constants.FieldConstants.APRIL_TAGS;
 import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_0M;
 import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_5M;
+import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_MULTITAG;
 import static frc.robot.Constants.VisionConstants.*;
 
 import org.photonvision.EstimatedRobotPose;
@@ -130,10 +131,14 @@ public class VisionSubsystem extends SubsystemBase {
         return VecBuilder.fill(xDev, yDev, rotDev);
     }
 
+    private Distance targetDistance(PhotonTrackedTarget target) {
+        return Meters.of(target.getBestCameraToTarget().getTranslation().getNorm());
+    }
+
     private Distance avgTargetDistance(List<PhotonTrackedTarget> targets) {
         double total = 0;
         for (PhotonTrackedTarget target : targets) {
-            total += target.getBestCameraToTarget().getTranslation().getNorm();
+            total += targetDistance(target).in(Meters);
         }
         return Meters.of(total/targets.size());
     }
@@ -156,26 +161,60 @@ public class VisionSubsystem extends SubsystemBase {
         return false;
     }
 
+    private boolean isPoseInField(Pose2d pose) {
+        return (pose.getX() < 0 || pose.getX() > APRIL_TAGS.getFieldLength()
+                || pose.getY() < 0 || pose.getY() > APRIL_TAGS.getFieldWidth());
+    }
+
+    private boolean processResult(PhotonPipelineResult result, PhotonPoseEstimator poseEstimator) {
+        Optional<EstimatedRobotPose> estimatedPoseOptional = poseEstimator.update(result);
+
+        if (estimatedPoseOptional.isEmpty()) return false;
+
+        EstimatedRobotPose estimatedPose = estimatedPoseOptional.get();
+        Pose2d pose2d = estimatedPose.estimatedPose.toPose2d();
+
+        Matrix<N3, N1> stdDevs;
+        if (result.getMultiTagResult().isPresent()) { // multi-tag result
+            stdDevs = VISION_STD_DEV_MULTITAG;
+        } else { // single tag result
+            PhotonTrackedTarget bestTarget = result.getBestTarget();
+
+            // check that target isn't ambiguous and pose is in field
+            if (bestTarget.poseAmbiguity > MAX_AMBIGUITY || !isPoseInField(pose2d)) return false;
+
+            stdDevs = calculateStdDevs(targetDistance(bestTarget));
+        }
+
+        swerve.addVisionMeasurement(estimatedPose, stdDevs);
+
+        if (poseEstimator == poseEstimatorFL) fieldFL.set(pose2d);
+        if (poseEstimator == poseEstimatorFR) fieldFR.set(pose2d);
+
+        return true;
+    }
+
     private boolean updatePoseEstimator(PhotonPoseEstimator poseEstimator, PhotonCamera cam) {
         List<PhotonPipelineResult> results = cam.getAllUnreadResults();
         
-        hasTarget = false;
+        boolean camHasTarget = false;
 
         for (PhotonPipelineResult result : results) {
-            EstimatedRobotPose estimatedRobotPose = estimatedPoseFromResult(result, poseEstimator);
-            if (estimatedRobotPose == null || isResultAmbiguous(estimatedRobotPose)) {
-                continue;
-            }
+            // EstimatedRobotPose estimatedRobotPose = estimatedPoseFromResult(result, poseEstimator);
+            // if (estimatedRobotPose == null || isResultAmbiguous(estimatedRobotPose)) {
+            //     continue;
+            // }
             
-            Matrix<N3, N1> stdDevs = calculateStdDevs(avgTargetDistance(estimatedRobotPose.targetsUsed));
+            // Matrix<N3, N1> stdDevs = calculateStdDevs(avgTargetDistance(estimatedRobotPose.targetsUsed));
             
-            hasTarget = true;
-            if (poseEstimator == poseEstimatorFL) fieldFL.set(estimatedRobotPose.estimatedPose.toPose2d());
-            if (poseEstimator == poseEstimatorFR) fieldFR.set(estimatedRobotPose.estimatedPose.toPose2d());
-            swerve.addVisionMeasurement(estimatedRobotPose, stdDevs);
+            // hasTarget = true;
+            // if (poseEstimator == poseEstimatorFL) fieldFL.set(estimatedRobotPose.estimatedPose.toPose2d());
+            // if (poseEstimator == poseEstimatorFR) fieldFR.set(estimatedRobotPose.estimatedPose.toPose2d());
+            // swerve.addVisionMeasurement(estimatedRobotPose, stdDevs);
+            camHasTarget = camHasTarget || processResult(result, poseEstimator);
         }
 
-        return hasTarget;
+        return camHasTarget;
     }
 
     public boolean hasAprilTag() {

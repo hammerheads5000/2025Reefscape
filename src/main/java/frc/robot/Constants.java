@@ -267,6 +267,7 @@ public class Constants {
         public static final Frequency ODOMETRY_UPDATE_FREQ = Hertz.of(0); // 0 Hz = default 250 Hz for CAN FD
         public static final Matrix<N3, N1> ODOMETRY_STD_DEV = VecBuilder.fill(0.02, 0.02, 0.01);
         public static final Matrix<N3, N1> VISION_STD_DEV_0M = VecBuilder.fill(0.06, 0.06, 0.5);
+        public static final Matrix<N3, N1> VISION_STD_DEV_MULTITAG = VecBuilder.fill(0.06, 0.06, 0.5);
         public static final Matrix<N3, N1> VISION_STD_DEV_5M = VecBuilder.fill(1.5, 1.5, 3);
 
         public static final DriveRequestType DRIVE_REQUEST_TYPE = DriveRequestType.Velocity;
@@ -325,9 +326,9 @@ public class Constants {
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
 
-        public static final Distance APPROACH_DISTANCE = Inches.of(15); // *extra* distance to reef when approaching
+        public static final Distance APPROACH_DISTANCE = Inches.of(20); // *extra* distance to reef when approaching
         public static final Distance PULL_DISTANCE = Inches.of(15);
-        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(40);
+        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(20);
         public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side
 
         public static final Time AFTER_WAIT_TIME = Seconds.of(0.1);
