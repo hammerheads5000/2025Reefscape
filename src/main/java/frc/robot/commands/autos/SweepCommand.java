@@ -31,7 +31,7 @@ public class SweepCommand extends SequentialCommandGroup {
         Pose2d leftPose = AlignToReefCommands.getReefPose(side, SWEEP_RELATIVE_POS);
         Pose2d rightPose = AlignToReefCommands.getReefPose(side, -SWEEP_RELATIVE_POS);
         Pose2d centerPose = AlignToReefCommands.getReefPose(side, 0);
-        Pose2d pose1, pose2;
+        Pose2d pose1;
         if (leftPose.getTranslation().getDistance(pose.getTranslation())
             < rightPose.getTranslation().getDistance(pose.getTranslation())) {
             pose1 = leftPose;

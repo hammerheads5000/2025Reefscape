@@ -78,7 +78,6 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.util.Color;
 
 public class Constants {

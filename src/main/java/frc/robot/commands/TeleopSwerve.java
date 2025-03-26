@@ -11,8 +11,6 @@ import static frc.robot.Constants.CONTROLLER_DEADBAND;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -31,8 +29,6 @@ public class TeleopSwerve extends Command {
   private Swerve swerve;
   private CommandXboxController controller;
 
-  private boolean isRed;
-
   /** Creates a new TeleopSwerve. */
   public TeleopSwerve(Swerve swerve, CommandXboxController controller) {
     this.swerve = swerve;
@@ -44,7 +40,6 @@ public class TeleopSwerve extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    isRed = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
   }
 
   // Applies deadband and normalizes input to [0,1] (not [deadband,1])

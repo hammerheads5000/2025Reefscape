@@ -14,7 +14,6 @@ import static frc.robot.Constants.LightsConstants.INTAKE_COLOR;
 import java.util.Set;
 
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.networktables.StringEntry;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;

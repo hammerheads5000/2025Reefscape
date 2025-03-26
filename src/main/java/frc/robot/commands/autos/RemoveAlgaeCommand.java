@@ -7,16 +7,11 @@ package frc.robot.commands.autos;
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.Constants.AutoConstants.PULL_DISTANCE;
 import static frc.robot.Constants.ElevatorConstants.L1_HEIGHT;
-import static frc.robot.Constants.ElevatorConstants.L3_HEIGHT;
 import static frc.robot.Constants.LightsConstants.ALGAE_COLOR;
 import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 import static frc.robot.Constants.SwerveConstants.ALGAE_PID_ANGLE;
 import static frc.robot.Constants.SwerveConstants.ALGAE_PID_X;
 import static frc.robot.Constants.SwerveConstants.ALGAE_PID_Y;
-import static frc.robot.Constants.SwerveConstants.SCORING_PID_ANGLE;
-import static frc.robot.Constants.SwerveConstants.SCORING_PID_X;
-import static frc.robot.Constants.SwerveConstants.SCORING_PID_Y;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
