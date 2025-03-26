@@ -4,15 +4,14 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.Constants.INST;
-import static frc.robot.Constants.FieldConstants.APRIL_TAGS;
-import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_0M;
-import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_5M;
-import static frc.robot.Constants.SwerveConstants.VISION_STD_DEV_MULTITAG;
+import static frc.robot.Constants.FieldConstants.*;
+import static frc.robot.Constants.SwerveConstants.*;
 import static frc.robot.Constants.VisionConstants.*;
 
 import org.photonvision.EstimatedRobotPose;
@@ -36,6 +35,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.StructEntry;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FieldConstants;
 
@@ -59,6 +59,10 @@ public class VisionSubsystem extends SubsystemBase {
 
     private StructEntry<Pose2d> fieldFL = INST.getStructTopic("Vision/FL Pose", Pose2d.struct).getEntry(new Pose2d());
     private StructEntry<Pose2d> fieldFR = INST.getStructTopic("Vision/FR Pose", Pose2d.struct).getEntry(new Pose2d());
+    private FieldObject2d fieldObjectFL = FIELD.getObject(FL_FIELD_OBJECT_NAME);
+    private FieldObject2d fieldObjectFR = FIELD.getObject(FR_FIELD_OBJECT_NAME);
+    private FieldObject2d fieldObjectFLTargets = FIELD.getObject(FL_TARGETS_FIELD_OBJECT_NAME);
+    private FieldObject2d fieldObjectFRTargets = FIELD.getObject(FR_TARGETS_FIELD_OBJECT_NAME);
 
     private Swerve swerve;
 
@@ -166,6 +170,15 @@ public class VisionSubsystem extends SubsystemBase {
                 || pose.getY() < 0 || pose.getY() > APRIL_TAGS.getFieldWidth());
     }
 
+    private List<Pose2d> posesFromTargets(List<PhotonTrackedTarget> targets) {
+        List<Pose2d> poses = new ArrayList<Pose2d>();
+        for (PhotonTrackedTarget target : targets) {
+            poses.add(fieldLayout.getTagPose(target.fiducialId).get().toPose2d());
+        }
+
+        return poses;
+    }
+
     private boolean processResult(PhotonPipelineResult result, PhotonPoseEstimator poseEstimator) {
         Optional<EstimatedRobotPose> estimatedPoseOptional = poseEstimator.update(result);
 
@@ -188,8 +201,14 @@ public class VisionSubsystem extends SubsystemBase {
 
         swerve.addVisionMeasurement(estimatedPose, stdDevs);
 
-        if (poseEstimator == poseEstimatorFL) fieldFL.set(pose2d);
-        if (poseEstimator == poseEstimatorFR) fieldFR.set(pose2d);
+        if (poseEstimator == poseEstimatorFL) {
+            fieldObjectFL.setPose(pose2d);
+            fieldObjectFLTargets.setPoses(posesFromTargets(result.targets));
+        };
+        if (poseEstimator == poseEstimatorFR) {
+            fieldObjectFR.setPose(pose2d);
+            fieldObjectFRTargets.setPoses(posesFromTargets(result.targets));
+        };
 
         return true;
     }

@@ -77,6 +77,8 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.util.Color;
 
 public class Constants {
@@ -599,5 +601,13 @@ public class Constants {
 
         public static final Distance L1_SIDE_DISTANCE = Inches.of(16);
         public static final double L1_RELATIVE_POS = L1_SIDE_DISTANCE.div(CENTERED_TO_LEFT_BRANCH.getMeasureY()).magnitude();
+
+        public static final Field2d FIELD = new Field2d();
+        public static final String FL_FIELD_OBJECT_NAME = "Front Left Vision Estimate";
+        public static final String FR_FIELD_OBJECT_NAME = "Front Right Vision Estimate";
+        public static final String TRAJECTORY_FIELD_OBJECT_NAME = "Current Trajectory";
+        public static final String ALIGNMENT_FIELD_OBJECT_NAME = "Alignment Pose";
+        public static final String FL_TARGETS_FIELD_OBJECT_NAME = "FL Targets";
+        public static final String FR_TARGETS_FIELD_OBJECT_NAME = "FR Targets";
     }
 }
