@@ -78,6 +78,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.util.Color;
 
 public class Constants {
@@ -127,7 +128,7 @@ public class Constants {
 
         private static final SteerFeedbackType STEER_FEEDBACK_TYPE = SteerFeedbackType.FusedCANcoder;
 
-        private static final Current SLIP_CURRENT = Amps.of(120.0); // NEEDS TUNING
+        private static final Current SLIP_CURRENT = Amps.of(80.0); // NEEDS TUNING
 
         private static final TalonFXConfiguration DRIVE_CONFIGS = new TalonFXConfiguration()
                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -282,10 +283,10 @@ public class Constants {
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_X = new ControlConstants()
                 .withPID(5, 0.5, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
-                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.6);
+                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
         public static final ControlConstants SCORING_PID_Y = new ControlConstants()
                 .withPID(5, 0.5, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
-                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.6);
+                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
 
         public static ControlConstants ALGAE_PID_X = new ControlConstants(SCORING_PID_X)
                 .withTolerance(Inches.of(2).in(Meters));
@@ -310,7 +311,7 @@ public class Constants {
         public static final Time ALIGN_TIME = Seconds.of(0.15); // amount to wait to make sure aligned
 
         // output: m/s, measure: m
-        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(3.5, 0.5, 0.5);
+        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(5.5, 0.75, 0.5);
         // output: rad/s, measure: rad
         public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(2, 0, 0.5);
     }
@@ -319,7 +320,7 @@ public class Constants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
                 SwerveConstants.FAST_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(0.75)),
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(0.45)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
                 SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
 
@@ -327,9 +328,9 @@ public class Constants {
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
 
-        public static final Distance APPROACH_DISTANCE = Inches.of(20); // *extra* distance to reef when approaching
+        public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching
         public static final Distance PULL_DISTANCE = Inches.of(15);
-        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(20);
+        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(50);
         public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side
 
         public static final Time AFTER_WAIT_TIME = Seconds.of(0.1);
@@ -410,13 +411,13 @@ public class Constants {
                 .withRotorToSensorRatio(GEAR_RATIO);
 
         public static final Slot0Configs GAINS = new Slot0Configs()
-                .withKP(20).withKI(15).withKD(1)
+                .withKP(20).withKI(15).withKD(0.8)
                 .withKV(0.74).withKA(0.0)
                 .withKS(0.09).withKG(0.48);
 
         public static final MotionMagicConfigs MOTION_MAGIC_CONFIGS = new MotionMagicConfigs()
-                .withMotionMagicExpo_kV(Volts.of(0.6).per(RotationsPerSecond))
-                .withMotionMagicExpo_kA(Volts.of(0.75).per(RotationsPerSecondPerSecond));
+                .withMotionMagicExpo_kV(Volts.of(0.2).per(RotationsPerSecond))
+                .withMotionMagicExpo_kA(Volts.of(0.55).per(RotationsPerSecondPerSecond));
 
         public static final TalonFXConfiguration MOTOR_CONFIGS = new TalonFXConfiguration()
                 .withCurrentLimits(CURRENT_LIMITS_CONFIGS)
@@ -602,11 +603,11 @@ public class Constants {
         public static final double L1_RELATIVE_POS = L1_SIDE_DISTANCE.div(CENTERED_TO_LEFT_BRANCH.getMeasureY()).magnitude();
 
         public static final Field2d FIELD = new Field2d();
-        public static final String FL_FIELD_OBJECT_NAME = "Front Left Vision Estimate";
-        public static final String FR_FIELD_OBJECT_NAME = "Front Right Vision Estimate";
-        public static final String TRAJECTORY_FIELD_OBJECT_NAME = "Current Trajectory";
-        public static final String ALIGNMENT_FIELD_OBJECT_NAME = "Alignment Pose";
-        public static final String FL_TARGETS_FIELD_OBJECT_NAME = "FL Targets";
-        public static final String FR_TARGETS_FIELD_OBJECT_NAME = "FR Targets";
+        public static final FieldObject2d FL_FIELD_OBJECT = FIELD.getObject("Front Left Vision Estimate");
+        public static final FieldObject2d FR_FIELD_OBJECT = FIELD.getObject("Front Right Vision Estimate");
+        public static final FieldObject2d TRAJECTORY_FIELD_OBJECT = FIELD.getObject("Current Trajectory");
+        public static final FieldObject2d ALIGNMENT_FIELD_OBJECT = FIELD.getObject("Alignment Pose");
+        public static final FieldObject2d FL_TARGETS_FIELD_OBJECT = FIELD.getObject("FL Targets");
+        public static final FieldObject2d FR_TARGETS_FIELD_OBJECT = FIELD.getObject("FR Targets");
     }
 }

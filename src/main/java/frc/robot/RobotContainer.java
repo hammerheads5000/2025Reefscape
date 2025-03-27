@@ -177,7 +177,6 @@ public class RobotContainer {
         swerve.setDefaultCommand(teleopSwerve);
         AlignToReefCommands.testReefPoses(); // publishes all reef target poses to networktables
         ApproachCoralStationCommands.testStationPoses();
-        CameraServer.startAutomaticCapture();
 
         configureAlliance();
 

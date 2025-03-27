@@ -9,7 +9,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 import static frc.robot.Constants.AutoConstants.APPROACH_DISTANCE;
-import static frc.robot.Constants.FieldConstants.ALIGNMENT_FIELD_OBJECT_NAME;
+import static frc.robot.Constants.FieldConstants.ALIGNMENT_FIELD_OBJECT;
 import static frc.robot.Constants.FieldConstants.FIELD;
 import static frc.robot.Constants.SwerveConstants.ALIGN_TIME;
 
@@ -17,6 +17,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
@@ -55,9 +56,9 @@ public class AlignToPoseCommand extends Command {
 
         alignedTimer = new Timer();
 
-        SmartDashboard.putData("Align X PID", pidControllerX);
-        SmartDashboard.putData("Align Y PID", pidControllerY);
-        SmartDashboard.putData("Align Angle PID", pidControllerAngle);
+        // SmartDashboard.putData("Align X PID", pidControllerX);
+        // SmartDashboard.putData("Align Y PID", pidControllerY);
+        // SmartDashboard.putData("Align Angle PID", pidControllerAngle);
 
         addRequirements(swerve);
     }
@@ -75,7 +76,7 @@ public class AlignToPoseCommand extends Command {
         pidControllerY.setGoal(targetPose.getY());
         pidControllerAngle.setSetpoint(targetPose.getRotation().getDegrees());
 
-        FIELD.getObject(ALIGNMENT_FIELD_OBJECT_NAME).setPose(targetPose);
+        ALIGNMENT_FIELD_OBJECT.setPose(targetPose);
 
         alignedTimer.reset();
         SmartDashboard.putBoolean("Aligned", false);
@@ -89,7 +90,7 @@ public class AlignToPoseCommand extends Command {
         LinearVelocity yVel = MetersPerSecond.of(pidControllerY.calculate(pose.getY()));
         AngularVelocity angleVel = DegreesPerSecond
                 .of(pidControllerAngle.calculate(pose.getRotation().getDegrees()));
-
+        
         // if (DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red && idfk.get()) {
         //     xVel = xVel.unaryMinus();
         //     yVel = yVel.unaryMinus();

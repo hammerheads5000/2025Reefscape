@@ -59,10 +59,6 @@ public class VisionSubsystem extends SubsystemBase {
 
     private StructEntry<Pose2d> fieldFL = INST.getStructTopic("Vision/FL Pose", Pose2d.struct).getEntry(new Pose2d());
     private StructEntry<Pose2d> fieldFR = INST.getStructTopic("Vision/FR Pose", Pose2d.struct).getEntry(new Pose2d());
-    private FieldObject2d fieldObjectFL = FIELD.getObject(FL_FIELD_OBJECT_NAME);
-    private FieldObject2d fieldObjectFR = FIELD.getObject(FR_FIELD_OBJECT_NAME);
-    private FieldObject2d fieldObjectFLTargets = FIELD.getObject(FL_TARGETS_FIELD_OBJECT_NAME);
-    private FieldObject2d fieldObjectFRTargets = FIELD.getObject(FR_TARGETS_FIELD_OBJECT_NAME);
 
     private Swerve swerve;
 
@@ -166,7 +162,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     private boolean isPoseInField(Pose2d pose) {
-        return (pose.getX() < 0 || pose.getX() > APRIL_TAGS.getFieldLength()
+        return !(pose.getX() < 0 || pose.getX() > APRIL_TAGS.getFieldLength()
                 || pose.getY() < 0 || pose.getY() > APRIL_TAGS.getFieldWidth());
     }
 
@@ -181,7 +177,6 @@ public class VisionSubsystem extends SubsystemBase {
 
     private boolean processResult(PhotonPipelineResult result, PhotonPoseEstimator poseEstimator) {
         Optional<EstimatedRobotPose> estimatedPoseOptional = poseEstimator.update(result);
-
         if (estimatedPoseOptional.isEmpty()) return false;
 
         EstimatedRobotPose estimatedPose = estimatedPoseOptional.get();
@@ -202,12 +197,12 @@ public class VisionSubsystem extends SubsystemBase {
         swerve.addVisionMeasurement(estimatedPose, stdDevs);
 
         if (poseEstimator == poseEstimatorFL) {
-            fieldObjectFL.setPose(pose2d);
-            fieldObjectFLTargets.setPoses(posesFromTargets(result.targets));
+            FL_FIELD_OBJECT.setPose(pose2d);
+            FL_TARGETS_FIELD_OBJECT.setPoses(posesFromTargets(result.targets));
         };
         if (poseEstimator == poseEstimatorFR) {
-            fieldObjectFR.setPose(pose2d);
-            fieldObjectFRTargets.setPoses(posesFromTargets(result.targets));
+            FR_FIELD_OBJECT.setPose(pose2d);
+            FR_TARGETS_FIELD_OBJECT.setPoses(posesFromTargets(result.targets));
         };
 
         return true;
