@@ -22,34 +22,34 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LightsSubsystem extends SubsystemBase {
-    AddressableLED ledStrip = new AddressableLED(PWM_PORT);
-    AddressableLEDBuffer buffer = new AddressableLEDBuffer(LED_SEPARATIONS[7]+1);
+    // AddressableLED ledStrip = new AddressableLED(PWM_PORT);
+    // AddressableLEDBuffer buffer = new AddressableLEDBuffer(LED_SEPARATIONS[7]+1);
     
-    AddressableLEDBufferView rightView = buffer.createView(0, LED_SEPARATIONS[3]);
-    AddressableLEDBufferView leftView = buffer.createView(LED_SEPARATIONS[3]+1, LED_SEPARATIONS[7]);
+    // AddressableLEDBufferView rightView = buffer.createView(0, LED_SEPARATIONS[3]);
+    // AddressableLEDBufferView leftView = buffer.createView(LED_SEPARATIONS[3]+1, LED_SEPARATIONS[7]);
     
-    AddressableLEDBufferView frontRightView = buffer.createView(0, LED_SEPARATIONS[0]);
-    AddressableLEDBufferView topRightView = buffer.createView(LED_SEPARATIONS[0]+1, LED_SEPARATIONS[1]);
-    AddressableLEDBufferView topBackRightView = buffer.createView(LED_SEPARATIONS[1]+1, LED_SEPARATIONS[2]).reversed();
-    AddressableLEDBufferView backRightView = buffer.createView(LED_SEPARATIONS[2]+1, LED_SEPARATIONS[3]).reversed();
+    // AddressableLEDBufferView frontRightView = buffer.createView(0, LED_SEPARATIONS[0]);
+    // AddressableLEDBufferView topRightView = buffer.createView(LED_SEPARATIONS[0]+1, LED_SEPARATIONS[1]);
+    // AddressableLEDBufferView topBackRightView = buffer.createView(LED_SEPARATIONS[1]+1, LED_SEPARATIONS[2]).reversed();
+    // AddressableLEDBufferView backRightView = buffer.createView(LED_SEPARATIONS[2]+1, LED_SEPARATIONS[3]).reversed();
     
-    AddressableLEDBufferView frontLeftView = buffer.createView(LED_SEPARATIONS[3]+1, LED_SEPARATIONS[4]);
-    AddressableLEDBufferView topLeftView = buffer.createView(LED_SEPARATIONS[4]+1, LED_SEPARATIONS[5]);
-    AddressableLEDBufferView topBackLeftView = buffer.createView(LED_SEPARATIONS[5]+1, LED_SEPARATIONS[6]).reversed();
-    AddressableLEDBufferView backLeftView = buffer.createView(LED_SEPARATIONS[6]+1, LED_SEPARATIONS[7]).reversed();
+    // AddressableLEDBufferView frontLeftView = buffer.createView(LED_SEPARATIONS[3]+1, LED_SEPARATIONS[4]);
+    // AddressableLEDBufferView topLeftView = buffer.createView(LED_SEPARATIONS[4]+1, LED_SEPARATIONS[5]);
+    // AddressableLEDBufferView topBackLeftView = buffer.createView(LED_SEPARATIONS[5]+1, LED_SEPARATIONS[6]).reversed();
+    // AddressableLEDBufferView backLeftView = buffer.createView(LED_SEPARATIONS[6]+1, LED_SEPARATIONS[7]).reversed();
 
-    Map<String, AddressableLEDBufferView> views = Map.of(
-        "Left", leftView,
-        "Right", rightView,
-        "Front Right", frontRightView,
-        "Top Right", topRightView,
-        "Top Back Right", topBackRightView,
-        "Back Right", backRightView,
-        "Front Left", frontLeftView,
-        "Top Left", topLeftView,
-        "Top Back Left", topBackLeftView,
-        "Back Left", backLeftView
-    );
+    // Map<String, AddressableLEDBufferView> views = Map.of(
+    //     "Left", leftView,
+    //     "Right", rightView,
+    //     "Front Right", frontRightView,
+    //     "Top Right", topRightView,
+    //     "Top Back Right", topBackRightView,
+    //     "Back Right", backRightView,
+    //     "Front Left", frontLeftView,
+    //     "Top Left", topLeftView,
+    //     "Top Back Left", topBackLeftView,
+    //     "Back Left", backLeftView
+    // );
 
 
     private LEDPattern currentPatternLeft = LEDPattern.kOff;
@@ -62,11 +62,11 @@ public class LightsSubsystem extends SubsystemBase {
 
     /** Creates a new LightsSubsystem. */
     public LightsSubsystem() {
-        ledStrip.setBitTiming(HIGH_TIME_0_NS, LOW_TIME_0_NS, HIGH_TIME_1_NS, LOW_TIME_1_NS);
-        ledStrip.setSyncTime(SYNC_TIME_US);
-        ledStrip.setColorOrder(COLOR_ORDER);
-        ledStrip.setLength(buffer.getLength());
-        ledStrip.start();
+        // ledStrip.setBitTiming(HIGH_TIME_0_NS, LOW_TIME_0_NS, HIGH_TIME_1_NS, LOW_TIME_1_NS);
+        // ledStrip.setSyncTime(SYNC_TIME_US);
+        // ledStrip.setColorOrder(COLOR_ORDER);
+        // ledStrip.setLength(buffer.getLength());
+        // ledStrip.start();
     }
 
     public void resetFadeLeft() {
@@ -125,8 +125,8 @@ public class LightsSubsystem extends SubsystemBase {
     }
 
     public void setSegmentPattern(String segment, LEDPattern pattern) {
-        AddressableLEDBufferView view = views.get(segment);
-        pattern.applyTo(view);
+        // AddressableLEDBufferView view = views.get(segment);
+        // pattern.applyTo(view);
     }
 
     public void setSegmentColor(String segment, Color color) {
@@ -167,10 +167,10 @@ public class LightsSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        currentPatternLeft.atBrightness(BRIGHTNESS.times(getFadeLeft())).applyTo(leftView);
-        currentPatternRight.atBrightness(BRIGHTNESS.times(getFadeRight())).applyTo(rightView);
+        // currentPatternLeft.atBrightness(BRIGHTNESS.times(getFadeLeft())).applyTo(leftView);
+        // currentPatternRight.atBrightness(BRIGHTNESS.times(getFadeRight())).applyTo(rightView);
         
-        ledStrip.setData(buffer);
+        // ledStrip.setData(buffer);
         
     }
 }

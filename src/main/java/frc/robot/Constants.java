@@ -300,7 +300,7 @@ public class Constants {
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
-                .withPID(3, 3.0, 0.0).withTolerance(1.5);
+                .withPID(6, 0.0, 0.0).withTolerance(1.);
         
         public static ControlConstants ALGAE_PID_ANGLE = new ControlConstants(SCORING_PID_ANGLE)
                 .withTolerance(2.5);
@@ -311,24 +311,31 @@ public class Constants {
         public static final Time ALIGN_TIME = Seconds.of(0.15); // amount to wait to make sure aligned
 
         // output: m/s, measure: m
-        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(5.5, 0.75, 0.5);
+        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(5.5, 0.75, 0.75);
         // output: rad/s, measure: rad
-        public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(2, 0, 0.5);
+        public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(3, 0, 0.5);
     }
 
     public static class AutoConstants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
                 SwerveConstants.FAST_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(0.45)),
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(0.55)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
                 SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
+
+        public static final PathConstraints APPROACH_CONSTRAINTS = new PathConstraints(
+                SwerveConstants.SLOW_DRIVE_SPEED,
+                SwerveConstants.SLOW_DRIVE_SPEED.div(Seconds.of(1)),
+                SwerveConstants.DEFAULT_ROT_SPEED,
+                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
+
 
         public static final Distance SIDE_DISTANCE = Meters.of(3);
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
 
-        public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching
+        public static final Distance APPROACH_DISTANCE = Inches.of(24); // *extra* distance to reef when approaching
         public static final Distance PULL_DISTANCE = Inches.of(15);
         public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(50);
         public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side

@@ -6,6 +6,7 @@ package frc.robot.commands.autos;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static frc.robot.Constants.AutoConstants.APPROACH_CONSTRAINTS;
 import static frc.robot.Constants.AutoConstants.APPROACH_DISTANCE;
 import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
 import static frc.robot.Constants.AutoConstants.MIN_PATH_SPEED;
@@ -98,8 +99,9 @@ public class Pathfinding {
     public static PathPlannerPath generateReefPath(Pose2d currentPose, int side, double relativePos, ChassisSpeeds startSpeeds) {
         ArrayList<Pose2d> poses = generateApproachPoses(currentPose, side);
         Pose2d endPose = AlignToReefCommands.getReefPose(side, relativePos);
+        Pose2d approachEndPose = AlignToReefCommands.getReefPose(side, 0);
         Transform2d shiftApproachTransform = new Transform2d(new Translation2d(APPROACH_DISTANCE.unaryMinus(), Meters.zero()), Rotation2d.kZero);
-        Pose2d approachEndPose = endPose.transformBy(shiftApproachTransform);
+        approachEndPose = approachEndPose.transformBy(shiftApproachTransform);
         // if (poses.size() > 0) {
         //     poses.set(poses.size()-1, pointPoseTowards(poses.get(poses.size()-1), endPose)); 
         // }
@@ -118,11 +120,14 @@ public class Pathfinding {
         Translation2d reefCenter = AutoBuilder.shouldFlip() ? REEF_CENTER_RED : REEF_CENTER_BLUE;
         pointTowardsZones.add(new PointTowardsZone("Point At Reef", reefCenter, 0, poses.size()-2));
 
+        ArrayList<ConstraintsZone> constraintsZones = new ArrayList<>();
+        constraintsZones.add(new ConstraintsZone(poses.size()-2, poses.size(), APPROACH_CONSTRAINTS));
+
         PathPlannerPath path = new PathPlannerPath(
                 PathPlannerPath.waypointsFromPoses(poses),
                 new ArrayList<RotationTarget>(),
                 pointTowardsZones,
-                new ArrayList<ConstraintsZone>(),
+                constraintsZones,
                 new ArrayList<EventMarker>(),
                 CONSTRAINTS,
                 new IdealStartingState(chassisSpeedsToVelocity(startSpeeds), currentPose.getRotation()),

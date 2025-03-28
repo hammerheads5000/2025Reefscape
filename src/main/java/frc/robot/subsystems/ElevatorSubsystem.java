@@ -46,16 +46,16 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     boolean enabled = true;
 
-    DCMotor elevatorGearbox = DCMotor.getKrakenX60(1);
-    ElevatorSim elevatorSim = new ElevatorSim(elevatorGearbox,
-        GEAR_RATIO, CARRIAGE_MASS.in(Kilograms), DRUM_RADIUS.in(Meters), 
-        MIN_HEIGHT.in(Meters), MAX_HEIGHT.in(Meters), true, MIN_HEIGHT.in(Meters));
+    // DCMotor elevatorGearbox = DCMotor.getKrakenX60(1);
+    // ElevatorSim elevatorSim = new ElevatorSim(elevatorGearbox,
+    //     GEAR_RATIO, CARRIAGE_MASS.in(Kilograms), DRUM_RADIUS.in(Meters), 
+    //     MIN_HEIGHT.in(Meters), MAX_HEIGHT.in(Meters), true, MIN_HEIGHT.in(Meters));
 
-    Mechanism2d mech2d = new Mechanism2d(CANVAS_WIDTH.in(Meters), CANVAS_HEIGHT.in(Meters));
-    MechanismRoot2d mechRoot2d = mech2d.getRoot("Elevator Root", ROOT.getX(), ROOT.getY());
-    MechanismLigament2d ligament2d = mechRoot2d.append(
-        new MechanismLigament2d("Elevator", elevatorSim.getPositionMeters(), 90)
-    );
+    // Mechanism2d mech2d = new Mechanism2d(CANVAS_WIDTH.in(Meters), CANVAS_HEIGHT.in(Meters));
+    // MechanismRoot2d mechRoot2d = mech2d.getRoot("Elevator Root", ROOT.getX(), ROOT.getY());
+    // MechanismLigament2d ligament2d = mechRoot2d.append(
+    //     new MechanismLigament2d("Elevator", elevatorSim.getPositionMeters(), 90)
+    // );
 
     /** Creates a new ElevatorSubsystem. */
     public ElevatorSubsystem() {
@@ -66,7 +66,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         motorControl = new MotionMagicExpoVoltage(0).withEnableFOC(true);
         followMotor.setControl(new Follower(MOTOR_1_ID, OPPOSE_FOLLOWER));
         
-        SmartDashboard.putData("Elevator Sim", mech2d);
+        //SmartDashboard.putData("Elevator Sim", mech2d);
 
         SmartDashboard.putData("Reset Elevator Position", resetPositionCommand());
         SmartDashboard.putData("L1", goToL1Command(true));
@@ -133,7 +133,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        ligament2d.setLength(elevatorSim.getPositionMeters());
+        //ligament2d.setLength(elevatorSim.getPositionMeters());
     }
 
     @Override
@@ -142,8 +142,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         motor1sim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-        elevatorSim.setInput(motor1sim.getMotorVoltage());
-        elevatorSim.update(Constants.SIM_LOOP_PERIOD.in(Seconds));
+        //elevatorSim.setInput(motor1sim.getMotorVoltage());
+        //elevatorSim.update(Constants.SIM_LOOP_PERIOD.in(Seconds));
         
         // double rotations = heightToMotorRotations(Meters.of(elevatorSim.getPositionMeters())).in(Rotations);
         // double angularVel = heightToMotorRotations(Meters.of(elevatorSim.getVelocityMetersPerSecond())).in(Rotations);
