@@ -112,7 +112,7 @@ public class Constants {
         private static final Distance MODULE_DISTANCE = Inches.of(23.75);
 
         private static final Slot0Configs STEER_GAINS = new Slot0Configs()
-                .withKP(200).withKI(5).withKD(8)
+                .withKP(250).withKI(5).withKD(8)
                 .withKS(0.5).withKV(2.54).withKA(0.09)
                 .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign);
 
@@ -268,8 +268,8 @@ public class Constants {
 
         public static final Frequency ODOMETRY_UPDATE_FREQ = Hertz.of(0); // 0 Hz = default 250 Hz for CAN FD
         public static final Matrix<N3, N1> ODOMETRY_STD_DEV = VecBuilder.fill(0.02, 0.02, 0.01);
-        public static final Matrix<N3, N1> VISION_STD_DEV_0M = VecBuilder.fill(0.06, 0.06, 0.5);
-        public static final Matrix<N3, N1> VISION_STD_DEV_MULTITAG = VecBuilder.fill(0.06, 0.06, 0.5);
+        public static final Matrix<N3, N1> VISION_STD_DEV_0M = VecBuilder.fill(0.03, 0.03, 0.3);
+        public static final Matrix<N3, N1> VISION_STD_DEV_MULTITAG = VecBuilder.fill(0.03, 0.03, 0.3);
         public static final Matrix<N3, N1> VISION_STD_DEV_5M = VecBuilder.fill(1.5, 1.5, 3);
 
         public static final DriveRequestType DRIVE_REQUEST_TYPE = DriveRequestType.Velocity;
@@ -281,26 +281,19 @@ public class Constants {
         // Aligning to the reef to score coral
 
         // output: m/s, measure: m
-        public static final ControlConstants SCORING_PID_X = new ControlConstants()
-                .withPID(5, 0.5, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
-                .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
-        public static final ControlConstants SCORING_PID_Y = new ControlConstants()
-                .withPID(5, 0.5, 0.05).withTolerance(Inches.of(2).in(Meters), 0.1)
+        public static final ControlConstants SCORING_PID_TRANSLATION = new ControlConstants()
+                .withPID(5, 0.75, 0.0).withTolerance(Inches.of(2).in(Meters), 0.1)
                 .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
 
-        public static ControlConstants ALGAE_PID_X = new ControlConstants(SCORING_PID_X)
-                .withTolerance(Inches.of(2).in(Meters));
-        public static ControlConstants ALGAE_PID_Y = new ControlConstants(SCORING_PID_Y)
+        public static ControlConstants ALGAE_PID_TRANSLATION = new ControlConstants(SCORING_PID_TRANSLATION)
                 .withTolerance(Inches.of(2).in(Meters));
 
-        public static ControlConstants SWEEP_PID_X = new ControlConstants(SCORING_PID_X)
-                .withTolerance(Inches.of(4).in(Meters));
-        public static ControlConstants SWEEP_PID_Y = new ControlConstants(SCORING_PID_Y)
+        public static ControlConstants SWEEP_PID_TRANSLATION = new ControlConstants(SCORING_PID_TRANSLATION)
                 .withTolerance(Inches.of(4).in(Meters));
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
-                .withPID(6, 0.0, 0.0).withTolerance(1.);
+                .withPID(3, 0.7, 0.0).withTolerance(2);
         
         public static ControlConstants ALGAE_PID_ANGLE = new ControlConstants(SCORING_PID_ANGLE)
                 .withTolerance(2.5);
@@ -308,12 +301,12 @@ public class Constants {
         public static ControlConstants SWEEP_PID_ANGLE = new ControlConstants(SCORING_PID_ANGLE)
                 .withTolerance(5);
 
-        public static final Time ALIGN_TIME = Seconds.of(0.15); // amount to wait to make sure aligned
+        public static final Time ALIGN_TIME = Seconds.of(0.1); // amount to wait to make sure aligned
 
         // output: m/s, measure: m
-        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(5.5, 0.75, 0.75);
+        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(10, 0.5, 1.0);
         // output: rad/s, measure: rad
-        public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(3, 0, 0.5);
+        public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(3, 0.1, 0.5);
     }
 
     public static class AutoConstants {
@@ -337,10 +330,11 @@ public class Constants {
 
         public static final Distance APPROACH_DISTANCE = Inches.of(24); // *extra* distance to reef when approaching
         public static final Distance PULL_DISTANCE = Inches.of(15);
-        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(50);
+        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(15);
         public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side
 
         public static final Time AFTER_WAIT_TIME = Seconds.of(0.1);
+        public static final Time INTAKE_WAIT_TIME = Seconds.of(0.5);
 
         public static final LinearVelocity MIN_PATH_SPEED = MetersPerSecond.of(1);
 
@@ -375,13 +369,13 @@ public class Constants {
 
         // Transforms from robot to cameras, (x forward, y left, z up), (roll, pitch, yaw)
         public static final Transform3d FRONT_LEFT_CAM_POS = new Transform3d(
-            new Translation3d(SwerveConstants.MODULE_DISTANCE.div(2), SwerveConstants.MODULE_DISTANCE.div(2), Inches.of(10)),
-            new Rotation3d(Degrees.of(0), Degrees.of(-20), Degrees.of(-45))
+            new Translation3d(Inches.of(29.0/2 - 6.1217198), Inches.of(29.0/2 - 2.30154063), Inches.of(7.74638805)),
+            new Rotation3d(Degrees.of(0), Degrees.of(-22), Degrees.of(-31))
         );
 
         public static final Transform3d FRONT_RIGHT_CAM_POS = new Transform3d(
-            new Translation3d(SwerveConstants.MODULE_DISTANCE.div(2), SwerveConstants.MODULE_DISTANCE.div(-2), Inches.of(10)),
-            new Rotation3d(Degrees.zero(), Degrees.of(-20), Degrees.of(45))
+            new Translation3d(Inches.of(29.0/2 - 6.1217198), Inches.of(-29.0/2 + 2.30154063), Inches.of(7.74638805)),
+            new Rotation3d(Degrees.zero(), Degrees.of(-22), Degrees.of(31))
         );
 
         public static final Transform3d BACK_CAM_POS = new Transform3d(
@@ -418,7 +412,7 @@ public class Constants {
                 .withRotorToSensorRatio(GEAR_RATIO);
 
         public static final Slot0Configs GAINS = new Slot0Configs()
-                .withKP(20).withKI(15).withKD(0.8)
+                .withKP(20).withKI(15).withKD(0.75)
                 .withKV(0.74).withKA(0.0)
                 .withKS(0.09).withKG(0.48);
 

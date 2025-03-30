@@ -36,12 +36,14 @@ public class FullAutoCommand extends SequentialCommandGroup {
 
     private Command getStationCommand(int station, int relativePos) {
         Command command = ApproachCoralStationCommands.pathfindCommand(station, relativePos, swerve, lightsSubsystem);
-                
+        
         if (Robot.isReal()) {
             command = command.alongWith(elevatorSubsystem.goToIntakePosCommand(false))
-                    .alongWith(new ScheduleCommand(endEffectorSubsystem.coolerIntakeCommand()))
+                    .alongWith(new ScheduleCommand(endEffectorSubsystem.coolerIntakeCommand() // use ScheduleCommand to branch off
+                            .beforeStarting(Commands.waitTime(INTAKE_WAIT_TIME)))) // wait slightly to start intake to avoid stopping early
                     .andThen(lightsSubsystem.setSolidColorCommand(INTAKE_COLOR))
-                    .andThen(Commands.waitUntil(() -> !endEffectorSubsystem.getIntakeLidar() || !endEffectorSubsystem.getBackLidar() || !endEffectorSubsystem.getFrontLidar()))
+                    .until(() -> !endEffectorSubsystem.getIntakeLidar() 
+                                                   || !endEffectorSubsystem.getBackLidar())
                     .andThen(lightsSubsystem.setPatternCommand(IDLE_PATTERN));
         }
         return command;

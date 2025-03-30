@@ -10,8 +10,7 @@ import static frc.robot.Constants.ElevatorConstants.L1_HEIGHT;
 import static frc.robot.Constants.LightsConstants.ALGAE_COLOR;
 import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 import static frc.robot.Constants.SwerveConstants.ALGAE_PID_ANGLE;
-import static frc.robot.Constants.SwerveConstants.ALGAE_PID_X;
-import static frc.robot.Constants.SwerveConstants.ALGAE_PID_Y;
+import static frc.robot.Constants.SwerveConstants.ALGAE_PID_TRANSLATION;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -46,12 +45,12 @@ public class RemoveAlgaeCommand extends SequentialCommandGroup {
         addCommands(
             lightsSubsystem.setSolidColorCommand(ALGAE_COLOR),
             Commands.parallel(
-                new AlignToPoseCommand(algaePose, ALGAE_PID_X, ALGAE_PID_Y, ALGAE_PID_ANGLE, swerve),
+                new AlignToPoseCommand(algaePose, ALGAE_PID_TRANSLATION, ALGAE_PID_ANGLE, swerve),
                 elevatorSubsystem.goToL4Command(false)
             ),
             elevatorSubsystem.goToIntakePosCommand(true),
             Commands.waitUntil(() -> elevatorSubsystem.getPosition().lt(L1_HEIGHT)),
-            new AlignToPoseCommand(pullPose, ALGAE_PID_X, ALGAE_PID_Y, ALGAE_PID_ANGLE, swerve),
+            new AlignToPoseCommand(pullPose, ALGAE_PID_TRANSLATION, ALGAE_PID_ANGLE, swerve),
             lightsSubsystem.setPatternCommand(IDLE_PATTERN)
         );
     }

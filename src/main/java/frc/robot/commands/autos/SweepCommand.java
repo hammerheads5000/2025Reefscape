@@ -8,8 +8,8 @@ import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.Constants.FieldConstants.SWEEP_OFFSET;
 import static frc.robot.Constants.FieldConstants.SWEEP_RELATIVE_POS;
 import static frc.robot.Constants.SwerveConstants.SWEEP_PID_ANGLE;
-import static frc.robot.Constants.SwerveConstants.SWEEP_PID_X;
-import static frc.robot.Constants.SwerveConstants.SWEEP_PID_Y;
+import static frc.robot.Constants.SwerveConstants.SWEEP_PID_TRANSLATION;
+import static frc.robot.Constants.SwerveConstants.SWEEP_PID_TRANSLATION;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -40,8 +40,8 @@ public class SweepCommand extends SequentialCommandGroup {
         }
         pose1 = pose1.transformBy(new Transform2d(new Translation2d(SWEEP_OFFSET.unaryMinus(), Meters.zero()), Rotation2d.kZero));
         addCommands(
-            new AlignToPoseCommand(pose1, SWEEP_PID_X, SWEEP_PID_Y, SWEEP_PID_ANGLE, swerve),
-            new AlignToPoseCommand(centerPose, SWEEP_PID_X, SWEEP_PID_Y, SWEEP_PID_ANGLE, swerve)            
+            new AlignToPoseCommand(pose1, SWEEP_PID_TRANSLATION, SWEEP_PID_ANGLE, swerve),
+            new AlignToPoseCommand(centerPose, SWEEP_PID_TRANSLATION, SWEEP_PID_ANGLE, swerve)            
         );
     }
 }

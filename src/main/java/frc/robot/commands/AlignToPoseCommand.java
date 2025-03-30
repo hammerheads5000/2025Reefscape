@@ -40,13 +40,12 @@ public class AlignToPoseCommand extends Command {
     private Swerve swerve;
 
     /** Creates a new AlignToPoseCommand. */
-    public AlignToPoseCommand(Pose2d targetPose, ControlConstants pidConstantsX,
-            ControlConstants pidConstantsY, ControlConstants pidConstantsAngle, Swerve swerve) {
+    public AlignToPoseCommand(Pose2d targetPose, ControlConstants pidConstantsTrans, ControlConstants pidConstantsAngle, Swerve swerve) {
         this.targetPose = targetPose;
         this.swerve = swerve;
 
-        pidControllerX = pidConstantsX.getProfiledPIDController();
-        pidControllerY = pidConstantsY.getProfiledPIDController();
+        pidControllerX = pidConstantsTrans.getProfiledPIDController();
+        pidControllerY = pidConstantsTrans.getProfiledPIDController();
         pidControllerAngle = pidConstantsAngle.getPIDController();
         pidControllerAngle.enableContinuousInput(-180, 180);
 

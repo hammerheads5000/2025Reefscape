@@ -14,7 +14,6 @@ import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 import java.util.Map;
 import java.util.Set;
 
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -71,8 +70,7 @@ public class RobotContainer {
     // #region Commands
     TeleopSwerve teleopSwerve = new TeleopSwerve(swerve, primaryController);
 
-    AlignToPoseCommand moveToZero = new AlignToPoseCommand(Pose2d.kZero, SwerveConstants.SCORING_PID_X,
-            SwerveConstants.SCORING_PID_Y, SwerveConstants.SCORING_PID_ANGLE, swerve);
+    AlignToPoseCommand moveToZero = new AlignToPoseCommand(Pose2d.kZero, SwerveConstants.SCORING_PID_TRANSLATION, SwerveConstants.SCORING_PID_ANGLE, swerve);
 
     Command disabledLightsCommand = new DisabledLightsCommand(lightsSubsystem, visionSubsystem).ignoringDisable(true);
     AlignToPoseCommand reefAlign = AlignToReefCommands.alignToReef(0, 1, swerve);

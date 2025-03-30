@@ -99,7 +99,7 @@ public class Pathfinding {
     public static PathPlannerPath generateReefPath(Pose2d currentPose, int side, double relativePos, ChassisSpeeds startSpeeds) {
         ArrayList<Pose2d> poses = generateApproachPoses(currentPose, side);
         Pose2d endPose = AlignToReefCommands.getReefPose(side, relativePos);
-        Pose2d approachEndPose = AlignToReefCommands.getReefPose(side, 0);
+        Pose2d approachEndPose = AlignToReefCommands.getReefPose(side, relativePos);
         Transform2d shiftApproachTransform = new Transform2d(new Translation2d(APPROACH_DISTANCE.unaryMinus(), Meters.zero()), Rotation2d.kZero);
         approachEndPose = approachEndPose.transformBy(shiftApproachTransform);
         // if (poses.size() > 0) {
@@ -178,11 +178,19 @@ public class Pathfinding {
         }
         poses.add(0, startPose);
         
+        ArrayList<ConstraintsZone> constraintsZones = new ArrayList<>();
+        constraintsZones.add(new ConstraintsZone(poses.size()-1.15, poses.size(), APPROACH_CONSTRAINTS));
+
         PathPlannerPath path = new PathPlannerPath(
-                PathPlannerPath.waypointsFromPoses(poses), 
+                PathPlannerPath.waypointsFromPoses(poses),
+                new ArrayList<RotationTarget>(),
+                new ArrayList<PointTowardsZone>(),
+                constraintsZones,
+                new ArrayList<EventMarker>(),
                 CONSTRAINTS,
                 new IdealStartingState(chassisSpeedsToVelocity(startSpeeds), currentPose.getRotation()),
-                new GoalEndState(0, endPose.getRotation().rotateBy(Rotation2d.k180deg))
+                new GoalEndState(0, endPose.getRotation().rotateBy(Rotation2d.k180deg)),
+                false
         );
             
         if (AutoBuilder.shouldFlip()) {

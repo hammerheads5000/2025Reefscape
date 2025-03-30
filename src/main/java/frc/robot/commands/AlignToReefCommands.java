@@ -77,7 +77,7 @@ public class AlignToReefCommands {
     }
 
     public static AlignToPoseCommand alignToReef(int side, double relativePos, Swerve swerve) {
-        return new AlignToPoseCommand(getReefPose(side, relativePos), SCORING_PID_X, SCORING_PID_Y, SCORING_PID_ANGLE, swerve);
+        return new AlignToPoseCommand(getReefPose(side, relativePos), SCORING_PID_TRANSLATION, SCORING_PID_ANGLE, swerve);
     }
 
     public static void testReefPoses() {
