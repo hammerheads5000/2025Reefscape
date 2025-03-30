@@ -4,115 +4,75 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Value;
 import static frc.robot.Constants.LightsConstants.*;
 
 import java.util.Map;
 
-import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.units.measure.Dimensionless;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.AddressableLEDBufferView;
 import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.LightsPattern;
 
 public class LightsSubsystem extends SubsystemBase {
-    // AddressableLED ledStrip = new AddressableLED(PWM_PORT);
-    // AddressableLEDBuffer buffer = new AddressableLEDBuffer(LED_SEPARATIONS[7]+1);
-    
-    // AddressableLEDBufferView rightView = buffer.createView(0, LED_SEPARATIONS[3]);
-    // AddressableLEDBufferView leftView = buffer.createView(LED_SEPARATIONS[3]+1, LED_SEPARATIONS[7]);
-    
-    // AddressableLEDBufferView frontRightView = buffer.createView(0, LED_SEPARATIONS[0]);
-    // AddressableLEDBufferView topRightView = buffer.createView(LED_SEPARATIONS[0]+1, LED_SEPARATIONS[1]);
-    // AddressableLEDBufferView topBackRightView = buffer.createView(LED_SEPARATIONS[1]+1, LED_SEPARATIONS[2]).reversed();
-    // AddressableLEDBufferView backRightView = buffer.createView(LED_SEPARATIONS[2]+1, LED_SEPARATIONS[3]).reversed();
-    
-    // AddressableLEDBufferView frontLeftView = buffer.createView(LED_SEPARATIONS[3]+1, LED_SEPARATIONS[4]);
-    // AddressableLEDBufferView topLeftView = buffer.createView(LED_SEPARATIONS[4]+1, LED_SEPARATIONS[5]);
-    // AddressableLEDBufferView topBackLeftView = buffer.createView(LED_SEPARATIONS[5]+1, LED_SEPARATIONS[6]).reversed();
-    // AddressableLEDBufferView backLeftView = buffer.createView(LED_SEPARATIONS[6]+1, LED_SEPARATIONS[7]).reversed();
+    AddressableLED ledStrip = new AddressableLED(PWM_PORT);
+    AddressableLEDBuffer buffer = new AddressableLEDBuffer(LEDS_LEFT + LEDS_RIGHT);
 
-    // Map<String, AddressableLEDBufferView> views = Map.of(
-    //     "Left", leftView,
-    //     "Right", rightView,
-    //     "Front Right", frontRightView,
-    //     "Top Right", topRightView,
-    //     "Top Back Right", topBackRightView,
-    //     "Back Right", backRightView,
-    //     "Front Left", frontLeftView,
-    //     "Top Left", topLeftView,
-    //     "Top Back Left", topBackLeftView,
-    //     "Back Left", backLeftView
-    // );
+    AddressableLEDBufferView rightView = buffer.createView(0, LEDS_RIGHT);
+    AddressableLEDBufferView leftView = buffer.createView(LEDS_RIGHT + 1, LEDS_LEFT + LEDS_RIGHT - 1);
 
-
-    private LEDPattern currentPatternLeft = LEDPattern.kOff;
-    private LEDPattern currentPatternRight = LEDPattern.kOff;
-
-    private Time lastUpdateLeft = RobotController.getMeasureTime();
-    private Time lastUpdateRight = RobotController.getMeasureTime();
-
-    private boolean shouldFade = false;
+    private LightsPattern currentPatternLeft = LightsPattern.off;
+    private LightsPattern currentPatternRight = LightsPattern.off;
 
     /** Creates a new LightsSubsystem. */
     public LightsSubsystem() {
-        // ledStrip.setBitTiming(HIGH_TIME_0_NS, LOW_TIME_0_NS, HIGH_TIME_1_NS, LOW_TIME_1_NS);
-        // ledStrip.setSyncTime(SYNC_TIME_US);
-        // ledStrip.setColorOrder(COLOR_ORDER);
-        // ledStrip.setLength(buffer.getLength());
-        // ledStrip.start();
+        ledStrip.setBitTiming(HIGH_TIME_0_NS, LOW_TIME_0_NS, HIGH_TIME_1_NS, LOW_TIME_1_NS);
+        ledStrip.setSyncTime(SYNC_TIME_US);
+        ledStrip.setColorOrder(COLOR_ORDER);
+        ledStrip.setLength(buffer.getLength());
+        ledStrip.start();
     }
 
-    public void resetFadeLeft() {
-        lastUpdateLeft = RobotController.getMeasureTime();
+    public void setLeftPattern(LightsPattern pattern) {
+        currentPatternLeft = pattern;
     }
     
-    public void resetFadeRight() {
-        lastUpdateRight = RobotController.getMeasureTime();
+    public void setRightPattern(LightsPattern pattern) {
+        currentPatternRight = pattern;
     }
     
-    public void resetFade() {
-        resetFadeLeft();
-        resetFadeRight();
+    public void setPatterns(LightsPattern patternLeft, LightsPattern patternRight) {
+        setLeftPattern(patternLeft);
+        setRightPattern(patternRight);
     }
-
-    public void setShouldFade(boolean shouldFade) {
-        this.shouldFade = shouldFade;
-    }
-
-    public void setPatterns(LEDPattern patternLeft, LEDPattern patternRight) {
-        currentPatternLeft = patternLeft;
-        currentPatternRight = patternRight;
-    }
-
-    public void setPattern(LEDPattern pattern) {
+    
+    public void setPattern(LightsPattern pattern) {
         setPatterns(pattern, pattern);
     }
 
     public void setSolidColor(Color color) {
-        setPattern(LEDPattern.solid(color));
+        setColorLeft(color);
+        setColorRight(color);
     }
 
     public void setColorLeft(Color color) {
-        setPatterns(LEDPattern.solid(color), currentPatternRight);
+        setLeftPattern(new LightsPattern(LEDPattern.solid(color).atBrightness(BRIGHTNESS)));
     }
 
     public void setColorRight(Color color) {
-        setPatterns(currentPatternLeft, LEDPattern.solid(color));
+        setRightPattern(new LightsPattern(LEDPattern.solid(color).atBrightness(BRIGHTNESS)));
     }
 
     public void setStepsLeft(Color color1, Color color2, double proportion) {
-        setPatterns(LEDPattern.steps(Map.of(0, color1, proportion, color2)), currentPatternRight);
+        setLeftPattern(new LightsPattern(LEDPattern.steps(Map.of(0, color1, proportion, color2)).atBrightness(BRIGHTNESS)));
     }
 
     public void setStepsRight(Color color1, Color color2, double proportion) {
-        setPatterns(currentPatternLeft, LEDPattern.steps(Map.of(0, color1, proportion, color2)));
+        setPatterns(currentPatternLeft,
+                new LightsPattern(LEDPattern.steps(Map.of(0, color1, proportion, color2)).atBrightness(BRIGHTNESS)));
     }
 
     public void setSteps(Color color1, Color color2, double proportion) {
@@ -122,15 +82,6 @@ public class LightsSubsystem extends SubsystemBase {
 
     public void setRainbow() {
         setPattern(RAINBOW);
-    }
-
-    public void setSegmentPattern(String segment, LEDPattern pattern) {
-        // AddressableLEDBufferView view = views.get(segment);
-        // pattern.applyTo(view);
-    }
-
-    public void setSegmentColor(String segment, Color color) {
-        setSegmentPattern(segment, LEDPattern.solid(color));
     }
 
     public Command setSolidColorCommand(Color color) {
@@ -145,32 +96,15 @@ public class LightsSubsystem extends SubsystemBase {
         return this.runOnce(() -> this.setRainbow());
     }
 
-    public Command setPatternCommand(LEDPattern pattern) {
+    public Command setPatternCommand(LightsPattern pattern) {
         return this.runOnce(() -> this.setPattern(pattern));
     }
 
-    @Logged
-    public Dimensionless getFadeLeft() {
-        if (!shouldFade) return Value.of(1);
-
-        Time fadeTime = RobotController.getMeasureTime().minus(lastUpdateLeft);
-        return Value.of(1).minus(fadeTime.minus(FADE_START).div(FADE_DURATION));
-    } 
-
-    @Logged
-    public Dimensionless getFadeRight() {
-        if (!shouldFade) return Value.of(1);
-
-        Time fadeTime = RobotController.getMeasureTime().minus(lastUpdateRight);
-        return Value.of(1).minus(fadeTime.minus(FADE_START).div(FADE_DURATION));
-    } 
-
     @Override
     public void periodic() {
-        // currentPatternLeft.atBrightness(BRIGHTNESS.times(getFadeLeft())).applyTo(leftView);
-        // currentPatternRight.atBrightness(BRIGHTNESS.times(getFadeRight())).applyTo(rightView);
-        
-        // ledStrip.setData(buffer);
-        
+        currentPatternLeft.getPattern().applyTo(leftView);
+        currentPatternRight.getPattern().applyTo(rightView);
+
+        ledStrip.setData(buffer);
     }
 }

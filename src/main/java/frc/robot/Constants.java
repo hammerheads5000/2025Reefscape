@@ -128,7 +128,7 @@ public class Constants {
 
         private static final SteerFeedbackType STEER_FEEDBACK_TYPE = SteerFeedbackType.FusedCANcoder;
 
-        private static final Current SLIP_CURRENT = Amps.of(80.0); // NEEDS TUNING
+        private static final Current SLIP_CURRENT = Amps.of(70.0); // NEEDS TUNING
 
         private static final TalonFXConfiguration DRIVE_CONFIGS = new TalonFXConfiguration()
                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -282,7 +282,7 @@ public class Constants {
 
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_TRANSLATION = new ControlConstants()
-                .withPID(5, 0.75, 0.0).withTolerance(Inches.of(2).in(Meters), 0.1)
+                .withPID(5, 0.75, 0.05).withTolerance(Inches.of(1.5).in(Meters), 0.1)
                 .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
 
         public static ControlConstants ALGAE_PID_TRANSLATION = new ControlConstants(SCORING_PID_TRANSLATION)
@@ -293,7 +293,7 @@ public class Constants {
 
         // output: deg/s, measure: deg
         public static final ControlConstants SCORING_PID_ANGLE = new ControlConstants()
-                .withPID(3, 0.7, 0.0).withTolerance(2);
+                .withPID(5, 0.5, 0.0).withTolerance(1.75);
         
         public static ControlConstants ALGAE_PID_ANGLE = new ControlConstants(SCORING_PID_ANGLE)
                 .withTolerance(2.5);
@@ -304,16 +304,16 @@ public class Constants {
         public static final Time ALIGN_TIME = Seconds.of(0.1); // amount to wait to make sure aligned
 
         // output: m/s, measure: m
-        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(10, 0.5, 1.0);
+        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(10, 1, 0.5);
         // output: rad/s, measure: rad
-        public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(3, 0.1, 0.5);
+        public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(3, 0.1, 0.1);
     }
 
     public static class AutoConstants {
         // Test Autos
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
-                SwerveConstants.FAST_DRIVE_SPEED,
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(0.55)),
+                SwerveConstants.FAST_DRIVE_SPEED.times(1.3),
+                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(0.75)),
                 SwerveConstants.DEFAULT_ROT_SPEED,
                 SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
 
@@ -330,7 +330,7 @@ public class Constants {
 
         public static final Distance APPROACH_DISTANCE = Inches.of(24); // *extra* distance to reef when approaching
         public static final Distance PULL_DISTANCE = Inches.of(15);
-        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(15);
+        public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(10);
         public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side
 
         public static final Time AFTER_WAIT_TIME = Seconds.of(0.1);
@@ -466,7 +466,7 @@ public class Constants {
         public static final Angle L2_HEIGHT = Rotations.of(1.975);
         public static final Angle L3_HEIGHT = Rotations.of(2.83);
         public static final Angle L4_HEIGHT = Rotations.of(4.3675);
-        public static final Angle INTAKE_HEIGHT = Rotations.of(0.015);
+        public static final Angle INTAKE_HEIGHT = Rotations.of(0.017);
         
         public static final Angle INTAKE_JITTER_AMOUNT = Rotations.of(0.025);
         public static final Time INTAKE_JITTER_PERIOD = Seconds.of(0.75);
@@ -526,7 +526,8 @@ public class Constants {
 
         public static final int PWM_PORT = 0; // TODO define
 
-        public static final int[] LED_SEPARATIONS = {90, 153, 175, 255, 335, 354, 415, 500};
+        public static final int LEDS_LEFT = 50;
+        public static final int LEDS_RIGHT = 50;
 
         public static final int HIGH_TIME_0_NS = 400;
         public static final int HIGH_TIME_1_NS = 900;
@@ -535,19 +536,19 @@ public class Constants {
         public static final int SYNC_TIME_US = 280;
         public static final ColorOrder COLOR_ORDER = ColorOrder.kGRB;
 
-        public static final Dimensionless BRIGHTNESS = Percent.of(35);
+        public static final Dimensionless BRIGHTNESS = Percent.of(15);
         
-        public static final LEDPattern RAINBOW = LEDPattern.rainbow(255, 128)
-                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.15), LED_SPACING);
+        public static final LightsPattern RAINBOW = new LightsPattern(LEDPattern.rainbow(255, 128)
+                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.15), LED_SPACING));
 
         public static final Color PATH_FOLLOWING_COLOR = Color.kBlue;
         public static final Color ALIGNMENT_COLOR = Color.kPink;
         public static final Color ALIGNED_COLOR = Color.kMagenta;
         public static final Color INTAKE_COLOR = Color.kPurple;
         public static final Color ALGAE_COLOR = Color.kMediumAquamarine;
-        public static final LEDPattern IDLE_PATTERN = RAINBOW;
+        public static final LightsPattern IDLE_PATTERN = RAINBOW;
 
-        public static final Color HAS_TARGET_COLOR = Color.kDarkBlue;
+        public static final Color HAS_TARGET_COLOR = Color.lerpRGB(Color.kBlack, Color.kWhite, BRIGHTNESS.in(Value));
         public static final Color HAS_NO_TARGET_COLOR = Color.kLightBlue;
         public static final Color NO_VISION_COLOR = Color.kOrange;
         public static final Color LOW_BATTERY_COLOR = Color.kRed;

@@ -91,15 +91,9 @@ public class FullAutoCommand extends SequentialCommandGroup {
         }
 
         elevatorPosCommand = elevatorPosCommand.beforeStarting(() -> {
-            lightsSubsystem.setSegmentColor("Top Left", ALIGNMENT_COLOR);
-            lightsSubsystem.setSegmentColor("Top Right", ALIGNMENT_COLOR);
-            lightsSubsystem.setSegmentColor("Top Back Left", ALIGNMENT_COLOR);
-            lightsSubsystem.setSegmentColor("Top Back Right", ALIGNMENT_COLOR);
+            lightsSubsystem.setSolidColor(ALIGNMENT_COLOR);
         }).andThen(() -> {
-            lightsSubsystem.setSegmentColor("Top Left", ALIGNED_COLOR);
-            lightsSubsystem.setSegmentColor("Top Right", ALIGNED_COLOR);
-            lightsSubsystem.setSegmentColor("Top Back Left", ALIGNED_COLOR);
-            lightsSubsystem.setSegmentColor("Top Back Right", ALIGNED_COLOR);            
+            lightsSubsystem.setSolidColor(ALIGNED_COLOR);
         });
 
         commandToAdd = new ApproachReefCommand(side, relativePos, swerve, lightsSubsystem);

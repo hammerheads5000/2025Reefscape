@@ -116,16 +116,21 @@ public class Pathfinding {
             poses.add(0, new Pose2d(currentPose.getTranslation(), chassisSpeedsToHeading(startSpeeds)));
         }
 
+        ArrayList<RotationTarget> rotationTargets = new ArrayList<>();
+        rotationTargets.add(new RotationTarget(1, endPose.getRotation()));
+
         ArrayList<PointTowardsZone> pointTowardsZones = new ArrayList<>();
-        Translation2d reefCenter = AutoBuilder.shouldFlip() ? REEF_CENTER_RED : REEF_CENTER_BLUE;
-        pointTowardsZones.add(new PointTowardsZone("Point At Reef", reefCenter, 0, poses.size()-2));
+        //Translation2d reefCenter = AutoBuilder.shouldFlip() ? REEF_CENTER_RED : REEF_CENTER_BLUE;
+        //pointTowardsZones.add(new PointTowardsZone("Point At Reef", reefCenter, 0, poses.size()-2));
 
         ArrayList<ConstraintsZone> constraintsZones = new ArrayList<>();
-        constraintsZones.add(new ConstraintsZone(poses.size()-2, poses.size(), APPROACH_CONSTRAINTS));
+        double slowAmount;
+        
+        constraintsZones.add(new ConstraintsZone(poses.size()-2, poses.size()-1, APPROACH_CONSTRAINTS));
 
         PathPlannerPath path = new PathPlannerPath(
                 PathPlannerPath.waypointsFromPoses(poses),
-                new ArrayList<RotationTarget>(),
+                rotationTargets,
                 pointTowardsZones,
                 constraintsZones,
                 new ArrayList<EventMarker>(),

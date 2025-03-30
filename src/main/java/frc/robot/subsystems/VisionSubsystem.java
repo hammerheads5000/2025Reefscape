@@ -57,9 +57,6 @@ public class VisionSubsystem extends SubsystemBase {
     public boolean hasHadTargetFR = false;
     public boolean hasTarget = false;
 
-    private StructEntry<Pose2d> fieldFL = INST.getStructTopic("Vision/FL Pose", Pose2d.struct).getEntry(new Pose2d());
-    private StructEntry<Pose2d> fieldFR = INST.getStructTopic("Vision/FR Pose", Pose2d.struct).getEntry(new Pose2d());
-
     private Swerve swerve;
 
     // Simulation
@@ -105,11 +102,11 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public Distance getDistanceToEstimatedFL() {
-        return Meters.of(swerve.getPose().getTranslation().getDistance(fieldFL.get().getTranslation()));
+        return Meters.of(swerve.getPose().getTranslation().getDistance(FL_FIELD_OBJECT.getPose().getTranslation()));
     }
 
     public Distance getDistanceToEstimatedFR() {
-        return Meters.of(swerve.getPose().getTranslation().getDistance(fieldFR.get().getTranslation()));
+        return Meters.of(swerve.getPose().getTranslation().getDistance(FR_FIELD_OBJECT.getPose().getTranslation()));
     }
 
     private EstimatedRobotPose estimatedPoseFromResult(PhotonPipelineResult result, PhotonPoseEstimator poseEstimator) {

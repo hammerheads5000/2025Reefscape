@@ -72,7 +72,7 @@ public class RobotContainer {
 
     AlignToPoseCommand moveToZero = new AlignToPoseCommand(Pose2d.kZero, SwerveConstants.SCORING_PID_TRANSLATION, SwerveConstants.SCORING_PID_ANGLE, swerve);
 
-    Command disabledLightsCommand = new DisabledLightsCommand(lightsSubsystem, visionSubsystem).ignoringDisable(true);
+    DisabledLightsCommand disabledLightsCommand = new DisabledLightsCommand(lightsSubsystem, visionSubsystem);
     AlignToPoseCommand reefAlign = AlignToReefCommands.alignToReef(0, 1, swerve);
 
     Command rumbleCommand = Commands.startEnd(
@@ -82,17 +82,17 @@ public class RobotContainer {
     Command reefCommand = Commands.defer(
             () -> new FullAutoCommand(REEF_TELEOP_AUTO_ENTRY.get(), swerve, elevatorSubsystem,
                     endEffectorSubsystem, lightsSubsystem),
-            Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN))
+            Set.of(swerve, elevatorSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN))
             .andThen(rumbleCommand.asProxy().withTimeout(Constants.SCORE_RUMBLE_TIME));
 
     Command stationCommand = Commands.defer(
             () -> new FullAutoCommand(STATION_TELEOP_AUTO_ENTRY.get(), swerve, elevatorSubsystem,
                     endEffectorSubsystem, lightsSubsystem),
-            Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
+            Set.of(swerve, elevatorSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
 
     Command algaeCommand = Commands.defer(
             () -> new RemoveAlgaeCommand(swerve, elevatorSubsystem, lightsSubsystem),
-            Set.of(swerve, elevatorSubsystem, lightsSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
+            Set.of(swerve, elevatorSubsystem)).handleInterrupt(() -> lightsSubsystem.setPattern(IDLE_PATTERN));
 
     Command sweepCommand = Commands.defer(
         () -> new SweepCommand(swerve), Set.of(swerve));

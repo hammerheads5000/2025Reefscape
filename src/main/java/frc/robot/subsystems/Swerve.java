@@ -203,7 +203,10 @@ public class Swerve extends SubsystemBase {
     }
 
     public void stop() {
-        drivetrain.setControl(brakeRequest);
+        drivetrain.setControl(fieldCentricRequest
+                .withVelocityX(0)
+                .withVelocityY(0)
+                .withRotationalRate(0));
     }
 
     public void driveFieldCentric(LinearVelocity xVel, LinearVelocity yVel, AngularVelocity rotVel) {

@@ -4,24 +4,18 @@
 
 package frc.robot.commands;
 
-import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Value;
 import static frc.robot.Constants.LightsConstants.*;
 
-import java.util.Map;
-
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.LEDPattern;
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.LightsPattern;
 import frc.robot.subsystems.LightsSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
+@Logged
 public class DisabledLightsCommand extends Command {
     LightsSubsystem lightsSubsystem;
     VisionSubsystem visionSubsystem;
@@ -29,91 +23,88 @@ public class DisabledLightsCommand extends Command {
     private boolean previousHasTargetFL = false;
     private boolean previousHasTargetFR = false;
 
-    private Timer fadeLeft = new Timer();
-    private Timer fadeRight = new Timer();
+    private LEDPattern leftSteps = LEDPattern.solid(HAS_TARGET_COLOR)
+            .mask(LEDPattern.progressMaskLayer(this::getVisionProportionL))
+            .overlayOn(LEDPattern.solid(HAS_NO_TARGET_COLOR));
+    private LEDPattern rightSteps = LEDPattern.solid(HAS_TARGET_COLOR)
+            .mask(LEDPattern.progressMaskLayer(this::getVisionProportionR))
+            .overlayOn(LEDPattern.solid(HAS_NO_TARGET_COLOR));
+
+    private LightsPattern.Fade leftPattern = new LightsPattern.Fade(leftSteps, FADE_START, FADE_DURATION);
+
+    private LightsPattern.Fade rightPattern = new LightsPattern.Fade(rightSteps, FADE_START, FADE_DURATION);
 
     public DisabledLightsCommand(LightsSubsystem lightsSubsystem, VisionSubsystem visionSubsystem) {
         this.lightsSubsystem = lightsSubsystem;
         this.visionSubsystem = visionSubsystem;
     }
 
-    private double getVisionProportionL() {
-        if (!visionSubsystem.hasHadTargetFL) return 0;
+    public double getVisionProportionL() {
+        if (!visionSubsystem.hasHadTargetFL)
+            return 0;
 
         Distance distance = visionSubsystem.getDistanceToEstimatedFL();
         return MAX_VISION_DISTANCE.minus(distance).div(MAX_VISION_DISTANCE).magnitude();
     }
 
-    private double getVisionProportionR() {
-        if (!visionSubsystem.hasHadTargetFR) return 0;
-        
+    public double getVisionProportionR() {
+        if (!visionSubsystem.hasHadTargetFR)
+            return 0;
+
         Distance distance = visionSubsystem.getDistanceToEstimatedFR();
         return MAX_VISION_DISTANCE.minus(distance).div(MAX_VISION_DISTANCE).magnitude();
     }
-
-    public double getFadeLeft() {
-        Time fadeTime = Seconds.of(fadeLeft.get());
-        return 1 - fadeTime.minus(FADE_START).div(FADE_DURATION).in(Value);
-    } 
-
-    public double getFadeRight() {
-        Time fadeTime = Seconds.of(fadeRight.get());
-        return 1 - fadeTime.minus(FADE_START).div(FADE_DURATION).in(Value);
-    } 
-
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
     }
 
+    @Override
+    public boolean runsWhenDisabled() {
+        return true;
+    }
+
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        lightsSubsystem.setRainbow();
-        if (!DriverStation.isFMSAttached()) {
-            return;
-        }
+        // lightsSubsystem.setRainbow();
+        // if (!DriverStation.isFMSAttached()) {
+        //     return;
+        // }
 
-        if (RobotController.getMeasureBatteryVoltage().lte(LOW_BATTERY_VOLTAGE)) {
-            lightsSubsystem.setSegmentColor("Top Left", LOW_BATTERY_COLOR);
-            lightsSubsystem.setSegmentColor("Top Right", LOW_BATTERY_COLOR);
-            return;
-        }
+        // if (RobotController.getMeasureBatteryVoltage().lte(LOW_BATTERY_VOLTAGE)) {
+        //     lightsSubsystem.setSolidColor(LOW_BATTERY_COLOR);
+        //     return;
+        // }
 
-        if (visionSubsystem.hasTargetFL && !previousHasTargetFL) {
-            fadeLeft.restart();
+        if (visionSubsystem.hasTargetFL) {
+            leftPattern.resetFade();
         }
-        if (visionSubsystem.hasTargetFR && !previousHasTargetFR) {
-            fadeRight.restart();
+        if (visionSubsystem.hasTargetFR) {
+            rightPattern.resetFade();
         }
 
         previousHasTargetFL = visionSubsystem.hasTargetFL;
         previousHasTargetFR = visionSubsystem.hasTargetFR;
         
         if (visionSubsystem.flConnected()) {
-            LEDPattern pattern = LEDPattern.steps(Map.of(
-                    0, Color.lerpRGB(HAS_NO_TARGET_COLOR, HAS_TARGET_COLOR, getFadeLeft()),
-                    getVisionProportionL(), HAS_NO_TARGET_COLOR));
-            lightsSubsystem.setSegmentPattern("Front Left", pattern);
+            lightsSubsystem.setLeftPattern(leftPattern);
         } else {
-            lightsSubsystem.setSegmentColor("Front Left", NO_VISION_COLOR);
+            lightsSubsystem.setColorLeft(NO_VISION_COLOR);
         }
 
         if (visionSubsystem.frConnected()) {
-            LEDPattern pattern = LEDPattern.steps(Map.of(
-                    0, Color.lerpRGB(HAS_NO_TARGET_COLOR, HAS_TARGET_COLOR, getFadeRight()), 
-                    getVisionProportionR(), HAS_NO_TARGET_COLOR));
-            lightsSubsystem.setSegmentPattern("Front Right", pattern);
+            lightsSubsystem.setRightPattern(rightPattern);
         } else {
-            lightsSubsystem.setSegmentColor("Front Right", NO_VISION_COLOR);
+            lightsSubsystem.setColorRight(NO_VISION_COLOR);
         }
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        
+
     }
 
     // Returns true when the command should end.
