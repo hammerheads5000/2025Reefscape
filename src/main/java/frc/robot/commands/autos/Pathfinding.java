@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static frc.robot.Constants.AutoConstants.APPROACH_CONSTRAINTS;
 import static frc.robot.Constants.AutoConstants.APPROACH_DISTANCE;
 import static frc.robot.Constants.AutoConstants.CONSTRAINTS;
+import static frc.robot.Constants.AutoConstants.FAST_CONSTRAINTS;
 import static frc.robot.Constants.AutoConstants.MIN_PATH_SPEED;
 import static frc.robot.Constants.AutoConstants.TRAVERSE_DISTANCE;
 import static frc.robot.Constants.FieldConstants.REEF_CENTER_BLUE;
@@ -117,15 +118,16 @@ public class Pathfinding {
         }
 
         ArrayList<RotationTarget> rotationTargets = new ArrayList<>();
-        rotationTargets.add(new RotationTarget(1, endPose.getRotation()));
+        rotationTargets.add(new RotationTarget(poses.size()-2, endPose.getRotation()));
 
         ArrayList<PointTowardsZone> pointTowardsZones = new ArrayList<>();
-        //Translation2d reefCenter = AutoBuilder.shouldFlip() ? REEF_CENTER_RED : REEF_CENTER_BLUE;
-        //pointTowardsZones.add(new PointTowardsZone("Point At Reef", reefCenter, 0, poses.size()-2));
+        Translation2d reefCenter = AutoBuilder.shouldFlip() ? REEF_CENTER_RED : REEF_CENTER_BLUE;
+        pointTowardsZones.add(new PointTowardsZone("Point At Reef", reefCenter, 0, poses.size()-2));
 
         ArrayList<ConstraintsZone> constraintsZones = new ArrayList<>();
         double slowAmount;
         
+        constraintsZones.add(new ConstraintsZone(0, 0.5, FAST_CONSTRAINTS));
         constraintsZones.add(new ConstraintsZone(poses.size()-2, poses.size()-1, APPROACH_CONSTRAINTS));
 
         PathPlannerPath path = new PathPlannerPath(
@@ -184,7 +186,7 @@ public class Pathfinding {
         poses.add(0, startPose);
         
         ArrayList<ConstraintsZone> constraintsZones = new ArrayList<>();
-        constraintsZones.add(new ConstraintsZone(poses.size()-1.15, poses.size(), APPROACH_CONSTRAINTS));
+        constraintsZones.add(new ConstraintsZone(poses.size()-1.25, poses.size()-1, APPROACH_CONSTRAINTS));
 
         PathPlannerPath path = new PathPlannerPath(
                 PathPlannerPath.waypointsFromPoses(poses),
@@ -192,7 +194,7 @@ public class Pathfinding {
                 new ArrayList<PointTowardsZone>(),
                 constraintsZones,
                 new ArrayList<EventMarker>(),
-                CONSTRAINTS,
+                FAST_CONSTRAINTS,
                 new IdealStartingState(chassisSpeedsToVelocity(startSpeeds), currentPose.getRotation()),
                 new GoalEndState(0, endPose.getRotation().rotateBy(Rotation2d.k180deg)),
                 false

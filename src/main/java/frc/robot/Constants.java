@@ -77,6 +77,7 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
+import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.util.Color;
@@ -96,10 +97,10 @@ public class Constants {
     public static final Distance BUMPER_THICKNESS = Inches.of(3.5);
 
     public static class SwerveConstants {
-        public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(2.5);//define later
+        public static final LinearVelocity DEFAULT_DRIVE_SPEED = MetersPerSecond.of(2.5);
         public static final AngularVelocity DEFAULT_ROT_SPEED = RotationsPerSecond.of(1.25);
 
-        public static final LinearVelocity FAST_DRIVE_SPEED = MetersPerSecond.of(5);//find values later
+        public static final LinearVelocity FAST_DRIVE_SPEED = MetersPerSecond.of(3.8);
         public static final AngularVelocity FAST_ROT_SPEED = RotationsPerSecond.of(4);
 
         public static final LinearVelocity SLOW_DRIVE_SPEED = MetersPerSecond.of(1);
@@ -128,7 +129,7 @@ public class Constants {
 
         private static final SteerFeedbackType STEER_FEEDBACK_TYPE = SteerFeedbackType.FusedCANcoder;
 
-        private static final Current SLIP_CURRENT = Amps.of(70.0); // NEEDS TUNING
+        private static final Current SLIP_CURRENT = Amps.of(80.0); // NEEDS TUNING
 
         private static final TalonFXConfiguration DRIVE_CONFIGS = new TalonFXConfiguration()
                 .withCurrentLimits(new CurrentLimitsConfigs()
@@ -156,7 +157,7 @@ public class Constants {
 
         private static final double DRIVE_GEAR_RATIO = 6.746031746031747;
         private static final double STEER_GEAR_RATIO = 21.428571428571427;
-        private static final Distance WHEEL_RADIUS = Inches.of(1.875);
+        private static final Distance WHEEL_RADIUS = Inches.of(1.873);
 
         private static final int PIGEON_ID = 1;
 
@@ -268,9 +269,9 @@ public class Constants {
 
         public static final Frequency ODOMETRY_UPDATE_FREQ = Hertz.of(0); // 0 Hz = default 250 Hz for CAN FD
         public static final Matrix<N3, N1> ODOMETRY_STD_DEV = VecBuilder.fill(0.02, 0.02, 0.01);
-        public static final Matrix<N3, N1> VISION_STD_DEV_0M = VecBuilder.fill(0.03, 0.03, 0.3);
-        public static final Matrix<N3, N1> VISION_STD_DEV_MULTITAG = VecBuilder.fill(0.03, 0.03, 0.3);
-        public static final Matrix<N3, N1> VISION_STD_DEV_5M = VecBuilder.fill(1.5, 1.5, 3);
+        public static final Matrix<N3, N1> VISION_STD_DEV_0M = VecBuilder.fill(0.02, 0.02, 0.3);
+        public static final Matrix<N3, N1> VISION_STD_DEV_MULTITAG = VecBuilder.fill(0.02, 0.02, 0.3);
+        public static final Matrix<N3, N1> VISION_STD_DEV_5M = VecBuilder.fill(0.5, 0.5, 2);
 
         public static final DriveRequestType DRIVE_REQUEST_TYPE = DriveRequestType.Velocity;
         public static final SteerRequestType STEER_REQUEST_TYPE = SteerRequestType.MotionMagicExpo;
@@ -282,7 +283,7 @@ public class Constants {
 
         // output: m/s, measure: m
         public static final ControlConstants SCORING_PID_TRANSLATION = new ControlConstants()
-                .withPID(5, 0.75, 0.05).withTolerance(Inches.of(1.5).in(Meters), 0.1)
+                .withPID(4, 0.5, 0.05).withTolerance(Inches.of(1.5).in(Meters), 0.1)
                 .withProfile(DEFAULT_DRIVE_SPEED.in(MetersPerSecond), DEFAULT_DRIVE_SPEED.in(MetersPerSecond)/0.5);
 
         public static ControlConstants ALGAE_PID_TRANSLATION = new ControlConstants(SCORING_PID_TRANSLATION)
@@ -304,36 +305,43 @@ public class Constants {
         public static final Time ALIGN_TIME = Seconds.of(0.1); // amount to wait to make sure aligned
 
         // output: m/s, measure: m
-        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(10, 1, 0.5);
+        public static final PIDConstants PP_TRANSLATIONAL_PID = new PIDConstants(5, 0.75, 0.5);
         // output: rad/s, measure: rad
         public static final PIDConstants PP_ROTATIONAL_PID = new PIDConstants(3, 0.1, 0.1);
     }
 
     public static class AutoConstants {
         // Test Autos
+        public static final PathConstraints FAST_CONSTRAINTS = new PathConstraints(
+                MetersPerSecond.of(3.8), 
+                MetersPerSecondPerSecond.of(6), 
+                RotationsPerSecond.of(1.25),
+                RotationsPerSecondPerSecond.of(1.25));
+
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
-                SwerveConstants.FAST_DRIVE_SPEED.times(1.3),
-                SwerveConstants.DEFAULT_DRIVE_SPEED.div(Seconds.of(0.75)),
-                SwerveConstants.DEFAULT_ROT_SPEED,
-                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
+                MetersPerSecond.of(3.8),
+                MetersPerSecondPerSecond.of(2),
+                RotationsPerSecond.of(1.25),
+                RotationsPerSecondPerSecond.of(1.25));
 
         public static final PathConstraints APPROACH_CONSTRAINTS = new PathConstraints(
-                SwerveConstants.SLOW_DRIVE_SPEED,
-                SwerveConstants.SLOW_DRIVE_SPEED.div(Seconds.of(1)),
-                SwerveConstants.DEFAULT_ROT_SPEED,
-                SwerveConstants.DEFAULT_ROT_SPEED.div(Seconds.of(1.5)));
+                MetersPerSecond.of(1.75),
+                MetersPerSecondPerSecond.of(2.5),
+                RotationsPerSecond.of(1.25),
+                RotationsPerSecondPerSecond.of(1.25));
 
 
         public static final Distance SIDE_DISTANCE = Meters.of(3);
     
         public static final Distance DISTANCE_TO_REEF = Inches.of(29 / 2).plus(BUMPER_THICKNESS);
 
-        public static final Distance APPROACH_DISTANCE = Inches.of(24); // *extra* distance to reef when approaching
+        public static final Distance APPROACH_DISTANCE = Inches.of(30); // *extra* distance to reef when approaching
         public static final Distance PULL_DISTANCE = Inches.of(15);
         public static final Distance ELEVATOR_DEPLOY_DISTANCE = Inches.of(10);
         public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side
 
-        public static final Time AFTER_WAIT_TIME = Seconds.of(0.1);
+        public static final Time AFTER_WAIT_TIME = Seconds.of(0.15);
+        public static final Time ELEVATOR_SETTLE_TIME = Seconds.of(0.5); // for L1-L3
         public static final Time INTAKE_WAIT_TIME = Seconds.of(0.5);
 
         public static final LinearVelocity MIN_PATH_SPEED = MetersPerSecond.of(1);
@@ -412,7 +420,7 @@ public class Constants {
                 .withRotorToSensorRatio(GEAR_RATIO);
 
         public static final Slot0Configs GAINS = new Slot0Configs()
-                .withKP(20).withKI(15).withKD(0.75)
+                .withKP(20).withKI(15).withKD(0.5)
                 .withKV(0.74).withKA(0.0)
                 .withKS(0.09).withKG(0.48);
 
@@ -526,8 +534,8 @@ public class Constants {
 
         public static final int PWM_PORT = 0; // TODO define
 
-        public static final int LEDS_LEFT = 50;
-        public static final int LEDS_RIGHT = 50;
+        public static final int LEDS_LEFT = 106;
+        public static final int LEDS_RIGHT = 107;
 
         public static final int HIGH_TIME_0_NS = 400;
         public static final int HIGH_TIME_1_NS = 900;
@@ -536,28 +544,28 @@ public class Constants {
         public static final int SYNC_TIME_US = 280;
         public static final ColorOrder COLOR_ORDER = ColorOrder.kGRB;
 
-        public static final Dimensionless BRIGHTNESS = Percent.of(15);
+        public static final Dimensionless BRIGHTNESS = Percent.of(35);
         
-        public static final LightsPattern RAINBOW = new LightsPattern(LEDPattern.rainbow(255, 128)
-                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.15), LED_SPACING));
+        public static final LEDPattern RAINBOW = LEDPattern.rainbow(255, 128)
+                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.15), LED_SPACING);
 
-        public static final Color PATH_FOLLOWING_COLOR = Color.kBlue;
-        public static final Color ALIGNMENT_COLOR = Color.kPink;
-        public static final Color ALIGNED_COLOR = Color.kMagenta;
-        public static final Color INTAKE_COLOR = Color.kPurple;
-        public static final Color ALGAE_COLOR = Color.kMediumAquamarine;
-        public static final LightsPattern IDLE_PATTERN = RAINBOW;
+        public static final LEDPattern PATH_FOLLOWING_PATTERN = LEDPattern.solid(Color.kBlue);
+        public static final LEDPattern ALIGNMENT_PATTERN = LEDPattern.solid(Color.kPink);
+        public static final LEDPattern ALIGNED_PATTERN = LEDPattern.solid(Color.kMagenta);
+        public static final LEDPattern INTAKE_PATTERN = LEDPattern.solid(Color.kPurple);
+        public static final LEDPattern ALGAE_PATTERN = LEDPattern.solid(Color.kMediumAquamarine);
+        public static final LEDPattern IDLE_PATTERN = RAINBOW;
 
-        public static final Color HAS_TARGET_COLOR = Color.lerpRGB(Color.kBlack, Color.kWhite, BRIGHTNESS.in(Value));
-        public static final Color HAS_NO_TARGET_COLOR = Color.kLightBlue;
-        public static final Color NO_VISION_COLOR = Color.kOrange;
-        public static final Color LOW_BATTERY_COLOR = Color.kRed;
+        public static final LEDPattern HAS_TARGET_PATTERN = LEDPattern.gradient(GradientType.kDiscontinuous, Color.kDarkBlue, Color.kLightBlue);
+        public static final LEDPattern HAS_NO_TARGET_PATTERN = LEDPattern.solid(Color.kBlack);
+        public static final LEDPattern NO_VISION_PATTERN = LEDPattern.solid(Color.kOrange).breathe(Seconds.of(1));
+        public static final LEDPattern LOW_BATTERY_PATTERN = LEDPattern.solid(Color.kRed).breathe(Seconds.of(0.3));
 
-        public static final Distance MAX_VISION_DISTANCE = Meters.of(1);
+        public static final Distance MAX_VISION_DISTANCE = Meters.of(0.5);
         public static final Voltage LOW_BATTERY_VOLTAGE = Volts.of(12.4);
 
         public static final Time FADE_START = Seconds.of(1);
-        public static final Time FADE_DURATION = Seconds.of(3);
+        public static final Time FADE_DURATION = Seconds.of(2);
     }
 
     public static class FieldConstants {

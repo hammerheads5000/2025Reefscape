@@ -5,9 +5,9 @@
 package frc.robot.commands.autos;
 
 import static frc.robot.Constants.AutoConstants.*;
-import static frc.robot.Constants.LightsConstants.ALIGNMENT_COLOR;
+import static frc.robot.Constants.LightsConstants.ALIGNMENT_PATTERN;
 import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
-import static frc.robot.Constants.LightsConstants.PATH_FOLLOWING_COLOR;
+import static frc.robot.Constants.LightsConstants.PATH_FOLLOWING_PATTERN;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -64,7 +64,7 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         // don't generate too short of paths
         if (AlignToPoseCommand.withinApproachRange(swerve.getPose(), target)) {
             addCommands(
-                    lightsSubsystem.setSolidColorCommand(ALIGNMENT_COLOR),
+                    lightsSubsystem.setPatternCommand(ALIGNMENT_PATTERN),
                     alignToReefCommand,
                     lightsSubsystem.setPatternCommand(IDLE_PATTERN)
             );
@@ -76,9 +76,9 @@ public class ApproachReefCommand extends SequentialCommandGroup {
         // First follow generated path
         // Then, alignToReefCommand to ensure alignment
         addCommands(
-            lightsSubsystem.setSolidColorCommand(PATH_FOLLOWING_COLOR),
+            lightsSubsystem.setPatternCommand(PATH_FOLLOWING_PATTERN),
             followPathCommand,
-            lightsSubsystem.setSolidColorCommand(ALIGNMENT_COLOR),
+            lightsSubsystem.setPatternCommand(ALIGNMENT_PATTERN),
             alignToReefCommand,
             lightsSubsystem.setPatternCommand(IDLE_PATTERN)
         );

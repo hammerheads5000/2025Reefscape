@@ -121,6 +121,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     private Matrix<N3, N1> calculateStdDevs(Distance distance) {
         double meters = distance.in(Meters);
+        meters = meters*meters;
         double xDev = VISION_STD_DEV_0M.get(0, 0) + X_DEV_SLOPE*meters;
         double yDev = VISION_STD_DEV_0M.get(1, 0) + Y_DEV_SLOPE*meters;
         double rotDev = VISION_STD_DEV_0M.get(2, 0) + ROT_DEV_SLOPE*meters;

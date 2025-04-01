@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Volts;
+import static frc.robot.Constants.AutoConstants.ELEVATOR_SETTLE_TIME;
 import static frc.robot.Constants.ElevatorConstants.*;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -189,15 +190,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Command goToL1Command(boolean instant) {
-        return goToHeightCommand(instant, L1_HEIGHT);
+        return goToHeightCommand(instant, L1_HEIGHT).andThen(Commands.waitTime(ELEVATOR_SETTLE_TIME));
     }
 
     public Command goToL2Command(boolean instant) {
-        return goToHeightCommand(instant, L2_HEIGHT);
+        return goToHeightCommand(instant, L2_HEIGHT).andThen(Commands.waitTime(ELEVATOR_SETTLE_TIME));
     }
 
     public Command goToL3Command(boolean instant) {
-        return goToHeightCommand(instant, L3_HEIGHT);
+        return goToHeightCommand(instant, L3_HEIGHT).andThen(Commands.waitTime(ELEVATOR_SETTLE_TIME));
     }
 
     public Command goToL4Command(boolean instant) {

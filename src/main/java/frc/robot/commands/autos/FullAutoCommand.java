@@ -6,10 +6,10 @@ package frc.robot.commands.autos;
 
 import static frc.robot.Constants.AutoConstants.*;
 import static frc.robot.Constants.FieldConstants.L1_RELATIVE_POS;
-import static frc.robot.Constants.LightsConstants.ALIGNED_COLOR;
-import static frc.robot.Constants.LightsConstants.ALIGNMENT_COLOR;
+import static frc.robot.Constants.LightsConstants.ALIGNED_PATTERN;
+import static frc.robot.Constants.LightsConstants.ALIGNMENT_PATTERN;
 import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
-import static frc.robot.Constants.LightsConstants.INTAKE_COLOR;
+import static frc.robot.Constants.LightsConstants.INTAKE_PATTERN;
 
 import java.util.Set;
 
@@ -41,7 +41,7 @@ public class FullAutoCommand extends SequentialCommandGroup {
             command = command.alongWith(elevatorSubsystem.goToIntakePosCommand(false))
                     .alongWith(new ScheduleCommand(endEffectorSubsystem.coolerIntakeCommand() // use ScheduleCommand to branch off
                             .beforeStarting(Commands.waitTime(INTAKE_WAIT_TIME)))) // wait slightly to start intake to avoid stopping early
-                    .andThen(lightsSubsystem.setSolidColorCommand(INTAKE_COLOR))
+                    .andThen(lightsSubsystem.setPatternCommand(INTAKE_PATTERN))
                     .until(() -> !endEffectorSubsystem.getIntakeLidar() 
                                                    || !endEffectorSubsystem.getBackLidar())
                     .andThen(lightsSubsystem.setPatternCommand(IDLE_PATTERN));
@@ -90,11 +90,8 @@ public class FullAutoCommand extends SequentialCommandGroup {
             relativePos *= L1_RELATIVE_POS;
         }
 
-        elevatorPosCommand = elevatorPosCommand.beforeStarting(() -> {
-            lightsSubsystem.setSolidColor(ALIGNMENT_COLOR);
-        }).andThen(() -> {
-            lightsSubsystem.setSolidColor(ALIGNED_COLOR);
-        });
+        elevatorPosCommand = elevatorPosCommand.beforeStarting(() -> lightsSubsystem.setPattern(ALIGNMENT_PATTERN))
+            .andThen(() -> lightsSubsystem.setPattern(ALIGNED_PATTERN));
 
         commandToAdd = new ApproachReefCommand(side, relativePos, swerve, lightsSubsystem);
         if (Robot.isReal()) {

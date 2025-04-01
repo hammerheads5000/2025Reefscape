@@ -7,7 +7,7 @@ package frc.robot.commands.autos;
 import static edu.wpi.first.units.Units.Meters;
 import static frc.robot.Constants.AutoConstants.PULL_DISTANCE;
 import static frc.robot.Constants.ElevatorConstants.L1_HEIGHT;
-import static frc.robot.Constants.LightsConstants.ALGAE_COLOR;
+import static frc.robot.Constants.LightsConstants.ALGAE_PATTERN;
 import static frc.robot.Constants.LightsConstants.IDLE_PATTERN;
 import static frc.robot.Constants.SwerveConstants.ALGAE_PID_ANGLE;
 import static frc.robot.Constants.SwerveConstants.ALGAE_PID_TRANSLATION;
@@ -43,7 +43,7 @@ public class RemoveAlgaeCommand extends SequentialCommandGroup {
 
 
         addCommands(
-            lightsSubsystem.setSolidColorCommand(ALGAE_COLOR),
+            lightsSubsystem.setPatternCommand(ALGAE_PATTERN),
             Commands.parallel(
                 new AlignToPoseCommand(algaePose, ALGAE_PID_TRANSLATION, ALGAE_PID_ANGLE, swerve),
                 elevatorSubsystem.goToL4Command(false)
