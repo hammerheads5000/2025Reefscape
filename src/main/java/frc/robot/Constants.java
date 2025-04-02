@@ -55,7 +55,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.networktables.DoubleArrayTopic;
+import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.DoubleTopic;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringEntry;
@@ -80,6 +82,7 @@ import edu.wpi.first.wpilibj.AddressableLED.ColorOrder;
 import edu.wpi.first.wpilibj.LEDPattern.GradientType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.util.Color;
 
 public class Constants {
@@ -314,18 +317,18 @@ public class Constants {
         // Test Autos
         public static final PathConstraints FAST_CONSTRAINTS = new PathConstraints(
                 MetersPerSecond.of(3.8), 
-                MetersPerSecondPerSecond.of(6), 
+                MetersPerSecondPerSecond.of(7), 
                 RotationsPerSecond.of(1.25),
                 RotationsPerSecondPerSecond.of(1.25));
 
         public static final PathConstraints CONSTRAINTS = new PathConstraints(
                 MetersPerSecond.of(3.8),
-                MetersPerSecondPerSecond.of(2),
+                MetersPerSecondPerSecond.of(1.8),
                 RotationsPerSecond.of(1.25),
                 RotationsPerSecondPerSecond.of(1.25));
 
         public static final PathConstraints APPROACH_CONSTRAINTS = new PathConstraints(
-                MetersPerSecond.of(1.75),
+                MetersPerSecond.of(1.6),
                 MetersPerSecondPerSecond.of(2.5),
                 RotationsPerSecond.of(1.25),
                 RotationsPerSecondPerSecond.of(1.25));
@@ -341,8 +344,8 @@ public class Constants {
         public static final Distance TRAVERSE_DISTANCE = Inches.of(40); // *extra* distance to reef when moving around to other side
 
         public static final Time AFTER_WAIT_TIME = Seconds.of(0.15);
-        public static final Time ELEVATOR_SETTLE_TIME = Seconds.of(0.5); // for L1-L3
-        public static final Time INTAKE_WAIT_TIME = Seconds.of(0.5);
+        public static final Time ELEVATOR_SETTLE_TIME = Seconds.of(0.6); // for L1-L3
+        public static final Time INTAKE_WAIT_TIME = Seconds.of(0.2);
 
         public static final LinearVelocity MIN_PATH_SPEED = MetersPerSecond.of(1);
 
@@ -441,9 +444,6 @@ public class Constants {
 
 
         public static final Angle TOLERANCE = Rotations.of(0.05);
-
-        public static final DoubleTopic SETPOINT_TOPIC = INST.getTable("Elevator").getDoubleTopic("ElevatorSetpoint_rotations");
-
         
         // Manual control (duty cycle)
         public static final double MANUAL_UP_SPEED = 0.3;
@@ -544,10 +544,10 @@ public class Constants {
         public static final int SYNC_TIME_US = 280;
         public static final ColorOrder COLOR_ORDER = ColorOrder.kGRB;
 
-        public static final Dimensionless BRIGHTNESS = Percent.of(35);
+        public static final Dimensionless BRIGHTNESS = Percent.of(60);
         
         public static final LEDPattern RAINBOW = LEDPattern.rainbow(255, 128)
-                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.15), LED_SPACING);
+                .scrollAtAbsoluteSpeed(MetersPerSecond.of(0.3), LED_SPACING);
 
         public static final LEDPattern PATH_FOLLOWING_PATTERN = LEDPattern.solid(Color.kBlue);
         public static final LEDPattern ALIGNMENT_PATTERN = LEDPattern.solid(Color.kPink);
@@ -558,7 +558,7 @@ public class Constants {
 
         public static final LEDPattern HAS_TARGET_PATTERN = LEDPattern.gradient(GradientType.kDiscontinuous, Color.kDarkBlue, Color.kLightBlue);
         public static final LEDPattern HAS_NO_TARGET_PATTERN = LEDPattern.solid(Color.kBlack);
-        public static final LEDPattern NO_VISION_PATTERN = LEDPattern.solid(Color.kOrange).breathe(Seconds.of(1));
+        public static final LEDPattern NO_VISION_PATTERN = LEDPattern.solid(Color.kOrange).breathe(Seconds.of(0.5));
         public static final LEDPattern LOW_BATTERY_PATTERN = LEDPattern.solid(Color.kRed).breathe(Seconds.of(0.3));
 
         public static final Distance MAX_VISION_DISTANCE = Meters.of(0.5);
@@ -566,6 +566,15 @@ public class Constants {
 
         public static final Time FADE_START = Seconds.of(1);
         public static final Time FADE_DURATION = Seconds.of(2);
+
+        public static final BooleanEntry OVERRIDE_ENTRY = INST.getTable("Lights").getBooleanTopic("Override")
+                .getEntry(false);
+
+        public static final StringEntry COLOR_ENTRY = INST.getTable("Lights").getStringTopic("Color Hex")
+                .getEntry("#0000FF");
+
+        public static final DoubleEntry SPEED_ENTRY = INST.getTable("Lights").getDoubleTopic("Speed")
+                .getEntry(2);
     }
 
     public static class FieldConstants {

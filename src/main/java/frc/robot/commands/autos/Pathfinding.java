@@ -186,7 +186,7 @@ public class Pathfinding {
         poses.add(0, startPose);
         
         ArrayList<ConstraintsZone> constraintsZones = new ArrayList<>();
-        constraintsZones.add(new ConstraintsZone(poses.size()-1.25, poses.size()-1, APPROACH_CONSTRAINTS));
+        constraintsZones.add(new ConstraintsZone(poses.size()-1.3, poses.size()-1, APPROACH_CONSTRAINTS));
 
         PathPlannerPath path = new PathPlannerPath(
                 PathPlannerPath.waypointsFromPoses(poses),
